@@ -31,9 +31,10 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="checkable divide-y divide-gray-200">
+                        <tbody class="divide-y divide-gray-200">
                             @forelse ($operators->sortBy('name') as $operator)
-                                <tr class="bg-white" role="button">
+                                <tr x-data class="bg-white" role="button"
+                                    @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                     <td class="px-6 py-3 text-sm">
                                         <input class="rounded" type="checkbox" name="operators[]" value="{{ $operator->id }}">
                                     </td>
@@ -96,9 +97,10 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="checkable divide-y divide-gray-200">
+                        <tbody class="divide-y divide-gray-200">
                             @forelse ($users as $user)
-                                <tr class="bg-white" role="button">
+                                <tr x-data class="bg-white" role="button"
+                                    @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                     <td class="px-6 py-3 text-sm">
                                         <input class="rounded" type="checkbox" name="operators[]" value="{{ $user->id }}">
                                     </td>

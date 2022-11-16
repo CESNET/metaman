@@ -27,7 +27,7 @@
                             &nbsp;</th>
                     </tr>
                 </thead>
-                <tbody class="clickable divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-200">
                     @forelse ($notifications as $notification)
                         <tr
                             class="hover:bg-blue-100 dark:hover:bg-gray-700
@@ -58,8 +58,8 @@
                                 {{ $notification->created_at->diffForHumans() }}
                             </td>
                             <td class="px-6 py-3 text-sm text-right">
-                                <form class="inline-block"
-                                    action="{{ route('notifications.update', $notification->id) }}" method="post">
+                                <form class="inline-block" action="{{ route('notifications.update', $notification->id) }}"
+                                    method="post">
                                     @csrf
                                     @method('patch')
                                     <input type="hidden" name="page" value="{{ request('page') }}">
@@ -74,8 +74,8 @@
                                     </button>
                                 </form>
                                 <span class="mx-1">|</span>
-                                <form class="inline-block"
-                                    action="{{ route('notifications.destroy', $notification->id) }}" method="post">
+                                <form class="inline-block" action="{{ route('notifications.destroy', $notification->id) }}"
+                                    method="post">
                                     @csrf
                                     @method('delete')
                                     <input type="hidden" name="page" value="{{ request('page') }}">

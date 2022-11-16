@@ -29,9 +29,10 @@
                                     {{ __('common.status') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="checkable divide-y divide-gray-200">
+                        <tbody class="divide-y divide-gray-200">
                             @forelse ($members as $entity)
-                                <tr class="hover:bg-blue-50" role="button">
+                                <tr x-data class="hover:bg-blue-50" role="button"
+                                    @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                     <td class="px-6 py-3 text-sm">
                                         <input class="rounded" type="checkbox" name="entities[]" value="{{ $entity->id }}">
                                     </td>
@@ -100,9 +101,10 @@
                                     {{ __('common.status') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="checkable divide-y divide-gray-200">
+                        <tbody class="divide-y divide-gray-200">
                             @forelse ($entities as $entity)
-                                <tr class="hover:bg-blue-50" role="button">
+                                <tr x-data class="hover:bg-blue-50" role="button"
+                                    @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                     <td class="px-6 py-3 text-sm">
                                         <input class="rounded" type="checkbox" name="entities[]" value="{{ $entity->id }}">
                                     </td>

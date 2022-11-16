@@ -33,10 +33,11 @@
                     </tr>
                 </thead>
 
-                <tbody class="clickable divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-200">
 
                     @forelse ($users as $user)
-                        <tr class="hover:bg-blue-50 dark:hover:bg-gray-700" role="button">
+                        <tr x-data class="hover:bg-blue-50 dark:hover:bg-gray-700" role="button"
+                            @click="window.location = $el.querySelectorAll('a')[1].href">
                             <td class="whitespace-nowrap px-6 py-3 text-sm">
                                 <div class="font-bold">
                                     {{ $user->name }}
@@ -53,7 +54,7 @@
                                 <x-pils.status :model="$user" />
                             </td>
                             <td class="px-6 py-3 text-sm text-right">
-                                <a class="hover:underline link text-blue-600"
+                                <a class="hover:underline text-blue-600"
                                     href="{{ route('users.show', $user->id) }}">{{ __('common.show') }}</a>
                             </td>
                         </tr>

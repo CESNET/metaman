@@ -34,10 +34,11 @@
                     </tr>
 
                 </thead>
-                <tbody class="clickable divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-200">
 
                     @forelse ($groups as $group)
-                        <tr class="hover:bg-blue-50 dark:hover:bg-gray-700" role="button">
+                        <tr x-data class="hover:bg-blue-50 dark:hover:bg-gray-700" role="button"
+                            @click="window.location = $el.querySelectorAll('a')[0].href">
                             <td class="px-6 py-3 text-sm">
                                 {{ $group->name }}
                             </td>
@@ -48,7 +49,7 @@
                                 {{ $group->entities_count }}
                             </td>
                             <td class="px-6 py-3 text-sm">
-                                <a class="hover:underline link text-blue-500"
+                                <a class="hover:underline text-blue-500"
                                     href="{{ route('groups.show', $group) }}">{{ __('common.show') }}</a>
                             </td>
                         </tr>

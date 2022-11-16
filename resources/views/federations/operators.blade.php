@@ -31,12 +31,12 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="checkable divide-y divide-gray-200">
+                        <tbody class="divide-y divide-gray-200">
                             @forelse ($operators as $operator)
-                                <tr class="bg-white" role="button">
+                                <tr x-data class="bg-white" role="button"
+                                    @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                     <td class="px-6 py-3 text-sm">
-                                        <input class="rounded" type="checkbox" name="operators[]"
-                                            value="{{ $operator->id }}">
+                                        <input class="rounded" type="checkbox" name="operators[]" value="{{ $operator->id }}">
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-3 text-sm">
                                         {{ $operator->name }}
@@ -71,8 +71,8 @@
             <div class="mb-4">
                 <form class="">
                     <label class="sr-only" for="search">{{ __('common.search') }}</label>
-                    <input class="dark:bg-transparent w-full px-4 py-2 border rounded-lg" type="text" name="search" id="search"
-                        value="{{ request('search') }}" placeholder="{{ __('users.searchbox') }}">
+                    <input class="dark:bg-transparent w-full px-4 py-2 border rounded-lg" type="text" name="search"
+                        id="search" value="{{ request('search') }}" placeholder="{{ __('users.searchbox') }}">
                 </form>
             </div>
             <form id="add_operators" action="{{ route('federations.update', $federation) }}" method="post">
@@ -97,12 +97,12 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="checkable divide-y divide-gray-200">
+                        <tbody class="divide-y divide-gray-200">
                             @forelse ($users as $user)
-                                <tr class="bg-white" role="button">
+                                <tr x-data class="bg-white" role="button"
+                                    @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                     <td class="px-6 py-3 text-sm">
-                                        <input class="rounded" type="checkbox" name="operators[]"
-                                            value="{{ $user->id }}">
+                                        <input class="rounded" type="checkbox" name="operators[]" value="{{ $user->id }}">
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-3 text-sm">
                                         {{ $user->name }}

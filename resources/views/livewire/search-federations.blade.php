@@ -34,10 +34,11 @@
                     </tr>
                 </thead>
 
-                <tbody class="clickable divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-200">
 
                     @forelse ($federations as $federation)
-                        <tr class="hover:bg-blue-50 dark:hover-bg-gray-700" role="button">
+                        <tr x-data class="hover:bg-blue-50 dark:hover-bg-gray-700" role="button"
+                            @click="window.location = $el.querySelectorAll('a')[0].href">
                             <td class="whitespace-nowrap px-6 py-3 text-sm">
                                 {{ $federation->name }}
                             </td>
@@ -50,7 +51,7 @@
                                 <x-pils.state :model="$federation" />
                             </td>
                             <td class="px-6 py-3 text-sm text-right">
-                                <a class="hover:underline link text-blue-500"
+                                <a class="hover:underline text-blue-500"
                                     href="{{ route('federations.show', $federation->id) }}">{{ __('common.show') }}</a>
                             </td>
                         </tr>

@@ -24,9 +24,10 @@
                                         {{ __('common.description') }}</th>
                                 </tr>
                             </thead>
-                            <tbody class="checkable divide-y divide-gray-300">
+                            <tbody class="divide-y divide-gray-300">
                                 @foreach ($federations as $federation)
-                                    <tr class="bg-white" role="button">
+                                    <tr x-data class="bg-white" role="button"
+                                        @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                         <td class="px-6 py-3 text-sm">
                                             <input class="rounded" type="checkbox" name="federations[]"
                                                 value="{{ $federation->id }}">
