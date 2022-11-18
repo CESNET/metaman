@@ -128,4 +128,5 @@ return [
     'add_rs' => 'Add R&S?',
     'add_rs_body' => 'Would you like to add R&S to :name?',
     'metadata' => 'Metadata',
+    'confirm' => 'Confirm',
 ];

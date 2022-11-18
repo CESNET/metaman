@@ -53,8 +53,7 @@
                             @foreach (explode(', ', $federation->filters) as $filter)
                                 <li>
                                     <a class="font-mono text-sm text-blue-500"
-                                        href="{{ config('git.metadata_base_url') }}/{{ $filter }}"
-                                        target="_blank">
+                                        href="{{ config('git.metadata_base_url') }}/{{ $filter }}" target="_blank">
                                         {{ config('git.metadata_base_url') }}/{{ $filter }}
                                     </a>
                                 </li>
@@ -114,11 +113,28 @@
                 @endunless
             @endcan
 
-            <x-forms.cancel route="federations" :model="$federation" />
-            <x-forms.approve route="federations" :model="$federation" />
-            <x-forms.change-status route="federations" :model="$federation" />
-            <x-forms.change-state route="federations" :model="$federation" />
-            <x-forms.destroy route="federations" :model="$federation" />
+            @includeWhen(request()->user()->can('do-everything') &&
+                    !$federation->approved &&
+                    !$federation->trashed(),
+                'federations.partials.approve')
+
+            @includeWhen(request()->user()->can('do-everything') && $federation->trashed(),
+                'federations.partials.destroy')
+
+            @includeWhen(request()->user()->can('update', $federation) &&
+                    !$federation->trashed() &&
+                    !$federation->approved,
+                'federations.partials.reject')
+
+            @includeWhen(request()->user()->can('update', $federation) &&
+                    !$federation->trashed() &&
+                    $federation->approved,
+                'federations.partials.status')
+
+            @includeWhen(request()->user()->can('update', $federation) &&
+                    $federation->approved &&
+                    !$federation->active,
+                'federations.partials.state')
 
         </div>
     </div>
