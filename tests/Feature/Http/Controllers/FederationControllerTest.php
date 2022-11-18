@@ -597,7 +597,7 @@ class FederationControllerTest extends TestCase
     }
 
     /** @test */
-    public function a_user_with_operator_permission_can_cancel_a_new_federation_request()
+    public function a_user_with_operator_permission_can_reject_a_new_federation_request()
     {
         Notification::fake();
 
@@ -618,9 +618,9 @@ class FederationControllerTest extends TestCase
             ->followingRedirects()
             ->actingAs($user)
             ->patch(route('federations.update', $federation), [
-                'action' => 'cancel',
+                'action' => 'reject',
             ])
-            ->assertSeeText(__('federations.cancelled', ['name' => $federationName]));
+            ->assertSeeText(__('federations.rejected', ['name' => $federationName]));
 
         $this->assertEquals(0, Federation::count());
         $this->assertEquals(route('federations.index'), url()->current());
@@ -1239,40 +1239,6 @@ class FederationControllerTest extends TestCase
             return $job->federation->is($federation) &&
                 $job->entities->contains($new_entity);
         });
-    }
-
-    /** @test */
-    public function an_admin_can_cancel_a_new_federation_request()
-    {
-        $this->withoutExceptionHandling();
-
-        Notification::fake();
-
-        $admin = User::factory()->create(['admin' => true]);
-        User::factory()->create(['admin' => true]);
-
-        $federation = Federation::factory()->create([
-            'approved' => false,
-            'active' => false,
-        ]);
-        $federationName = $federation->name;
-
-        $this->assertEquals(2, User::count());
-        $this->assertEquals(1, Federation::count());
-
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'cancel',
-            ])
-            ->assertSeeText(__('federations.cancelled', ['name' => $federationName]));
-
-        $this->assertEquals(0, Federation::count());
-        $this->assertEquals(route('federations.index'), url()->current());
-
-        $admins = User::activeAdmins()->get();
-        Notification::assertSentTo([$admins], FederationCancelled::class);
     }
 
     /** @test */
