@@ -159,11 +159,19 @@
                 @endunless
             @endcan
 
-            <x-forms.change-status route="entities" :model="$entity" />
-            <x-forms.change-state route="entities" :model="$entity" />
-            <x-forms.destroy route="entities" :model="$entity" />
+            @includeWhen(request()->user()->can('do-everything') && $entity->trashed(),
+                'entities.partials.destroy')
 
-            <x-modals.confirm :model="$entity" form="status" />
+            @includeWhen(request()->user()->can('update', $entity) &&
+                    !$entity->trashed() &&
+                    $entity->approved,
+                'entities.partials.status')
+
+            @includeWhen(request()->user()->can('update', $entity) &&
+                    $entity->approved &&
+                    !$entity->active,
+                'entities.partials.state')
+
         </div>
     </div>
 
