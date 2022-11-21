@@ -10,7 +10,7 @@
         @if (count($federations))
             <div class="mb-4">
                 <h3 class="text-lg font-semibold">{{ __('entities.leave_federations') }}</h3>
-                <form id="leave_federations" action="{{ route('entities.leave', $entity) }}" method="post">
+                <form x-data="{ open: false }" id="leave_federations" action="{{ route('entities.leave', $entity) }}" method="post">
                     @csrf
                     <input type="hidden" name="action" value="leave_federations">
                     <div class="overflow-x-auto bg-gray-100 border rounded-lg">
@@ -44,9 +44,13 @@
                         </table>
                         @if (count($federations))
                             <div class="px-4 py-3 bg-gray-100">
-                                <x-button color="red" target="true" data-target="leave_federations">
-                                    {{ __('entities.leave_federations') }}</x-button>
-                                <x-modals.confirm :model="$entity" form="leave_federations" />
+                                <x-button color="red" @click.prevent="open = !open">{{ __('entities.leave_federations') }}
+                                </x-button>
+
+                                <x-modal>
+                                    <x-slot:title>{{ __('common.confirm_leave_federations') }}</x-slot:title>
+                                    {{ __('common.confirm_leave_federations_body') }}
+                                </x-modal>
                             </div>
                         @endif
                     </div>

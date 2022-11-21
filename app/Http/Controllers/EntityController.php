@@ -404,8 +404,7 @@ class EntityController extends Controller
                 $this->authorize('update', $entity);
 
                 if (! request('operators')) {
-                    return redirect()
-                        ->route('entities.show', $entity)
+                    return to_route('entities.operators', $entity)
                         ->with('status', __('entities.add_empty_operators'))
                         ->with('color', 'red');
                 }
@@ -429,8 +428,7 @@ class EntityController extends Controller
                 $this->authorize('update', $entity);
 
                 if (! request('operators')) {
-                    return redirect()
-                        ->back()
+                    return to_route('entities.operators', $entity)
                         ->with('status', __('entities.delete_empty_operators'))
                         ->with('color', 'red');
                 }

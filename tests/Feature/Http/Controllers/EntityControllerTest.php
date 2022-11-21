@@ -22,9 +22,9 @@ class EntityControllerTest extends TestCase
     public function an_anonymouse_user_isnt_shown_an_entities_list()
     {
         $this
-      ->followingRedirects()
-      ->get(route('federations.index'))
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->get(route('federations.index'))
+          ->assertSeeText('login');
 
         $this->assertEquals(route('login'), url()->current());
     }
@@ -35,9 +35,9 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this
-      ->followingRedirects()
-      ->get(route('entities.show', $entity))
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->get(route('entities.show', $entity))
+          ->assertSeeText('login');
 
         $this->assertEquals(route('login'), url()->current());
     }
@@ -46,9 +46,9 @@ class EntityControllerTest extends TestCase
     public function an_anonymouse_user_isnt_shown_a_form_to_add_a_new_entity()
     {
         $this
-      ->followingRedirects()
-      ->get(route('entities.create'))
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->get(route('entities.create'))
+          ->assertSeeText('login');
 
         $this->assertEquals(route('login'), url()->current());
     }
@@ -58,13 +58,13 @@ class EntityControllerTest extends TestCase
     {
         // metadata URL
         $this
-      ->followingRedirects()
-      ->post(route('entities.store'), [
-          'url' => "https://{$this->faker->domainName()}/{$this->faker->unique()->slug(3)}",
-          'federation' => Federation::factory()->create()->id,
-          'explanation' => $this->faker->catchPhrase(),
-      ])
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->post(route('entities.store'), [
+              'url' => "https://{$this->faker->domainName()}/{$this->faker->unique()->slug(3)}",
+              'federation' => Federation::factory()->create()->id,
+              'explanation' => $this->faker->catchPhrase(),
+          ])
+          ->assertSeeText('login');
 
         $this->assertEquals(route('login'), url()->current());
 
@@ -77,9 +77,9 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this
-      ->followingRedirects()
-      ->get(route('entities.edit', $entity))
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->get(route('entities.edit', $entity))
+          ->assertSeeText('login');
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('login'), url()->current());
@@ -91,9 +91,9 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this
-      ->followingRedirects()
-      ->patch(route('entities.update', $entity), ['action' => 'update'])
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->patch(route('entities.update', $entity), ['action' => 'update'])
+          ->assertSeeText('login');
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('login'), url()->current());
@@ -107,9 +107,9 @@ class EntityControllerTest extends TestCase
         $this->assertTrue($entity->active);
 
         $this
-      ->followingRedirects()
-      ->patch(route('entities.update', $entity), ['action' => 'status'])
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->patch(route('entities.update', $entity), ['action' => 'status'])
+          ->assertSeeText('login');
 
         $this->assertTrue($entity->active);
         $this->assertEquals(route('login'), url()->current());
@@ -123,9 +123,9 @@ class EntityControllerTest extends TestCase
         $this->assertFalse($entity->trashed());
 
         $this
-      ->followingRedirects()
-      ->patch(route('entities.update', $entity), ['action' => 'state'])
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->patch(route('entities.update', $entity), ['action' => 'state'])
+          ->assertSeeText('login');
 
         $this->assertFalse($entity->trashed());
         $this->assertEquals(route('login'), url()->current());
@@ -141,23 +141,23 @@ class EntityControllerTest extends TestCase
         $user = User::factory()->create();
 
         $this
-      ->followingRedirects()
-      ->patch(route('entities.update', $entity), [
-          'action' => 'add_operators',
-          'operators' => [$user->id],
-      ])
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->patch(route('entities.update', $entity), [
+              'action' => 'add_operators',
+              'operators' => [$user->id],
+          ])
+          ->assertSeeText('login');
 
         $this->assertEquals(1, $entity->operators()->count());
         $this->assertEquals(route('login'), url()->current());
 
         $this
-      ->followingRedirects()
-      ->patch(route('entities.update', $entity), [
-          'action' => 'delete_operators',
-          'operators' => [User::find(1)->id],
-      ])
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->patch(route('entities.update', $entity), [
+              'action' => 'delete_operators',
+              'operators' => [User::find(1)->id],
+          ])
+          ->assertSeeText('login');
 
         $this->assertEquals(1, $entity->operators()->count());
         $this->assertEquals(route('login'), url()->current());
@@ -169,14 +169,14 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this
-      ->followingRedirects()
-      ->post(route('entities.join', $entity))
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->post(route('entities.join', $entity))
+          ->assertSeeText('login');
 
         $this
-      ->followingRedirects()
-      ->post(route('entities.leave', $entity))
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->post(route('entities.leave', $entity))
+          ->assertSeeText('login');
     }
 
     /** @test */
@@ -188,9 +188,9 @@ class EntityControllerTest extends TestCase
         ]);
 
         $this
-      ->followingRedirects()
-      ->delete(route('entities.destroy', $entity))
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->delete(route('entities.destroy', $entity))
+          ->assertSeeText('login');
 
         $this->assertEquals(route('login'), url()->current());
     }
@@ -208,9 +208,9 @@ class EntityControllerTest extends TestCase
         $membership = Membership::find(1);
 
         $this
-      ->followingRedirects()
-      ->delete(route('memberships.destroy', $membership))
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->delete(route('memberships.destroy', $membership))
+          ->assertSeeText('login');
     }
 
     /** @test */
@@ -226,9 +226,9 @@ class EntityControllerTest extends TestCase
         $membership = Membership::find(1);
 
         $this
-      ->followingRedirects()
-      ->patch(route('memberships.update', $membership))
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->patch(route('memberships.update', $membership))
+          ->assertSeeText('login');
     }
 
     /** @test */
@@ -240,11 +240,11 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this
-      ->actingAs($user)
-      ->get(route('entities.index'))
-      ->assertSeeText($entity->name)
-      ->assertSeeText($entity->description)
-      ->assertSeeText(__('common.active'));
+          ->actingAs($user)
+          ->get(route('entities.index'))
+          ->assertSeeText($entity->name)
+          ->assertSeeText($entity->description)
+          ->assertSeeText(__('common.active'));
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.index'), url()->current());
@@ -259,12 +259,12 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this
-      ->actingAs($user)
-      ->get(route('entities.show', $entity))
-      ->assertSeeText($entity->name)
-      ->assertSeeText($entity->description)
-      ->assertSeeText($entity->entityid)
-      ->assertSeeText($entity->type->name);
+          ->actingAs($user)
+          ->get(route('entities.show', $entity))
+          ->assertSeeText($entity->name)
+          ->assertSeeText($entity->description)
+          ->assertSeeText($entity->entityid)
+          ->assertSeeText($entity->type->name);
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.show', $entity), url()->current());
@@ -276,9 +276,9 @@ class EntityControllerTest extends TestCase
         $user = User::factory()->create();
 
         $this
-      ->actingAs($user)
-      ->get(route('entities.create'))
-      ->assertSeeText(__('entities.add'));
+          ->actingAs($user)
+          ->get(route('entities.create'))
+          ->assertSeeText(__('entities.add'));
 
         $this->assertEquals(route('entities.create'), url()->current());
     }
@@ -428,41 +428,41 @@ class EntityControllerTest extends TestCase
 
         // add an entity using wrong metadata content
         // $this
-        //     ->followingRedirects()
-        //     ->actingAs($user)
-        //     ->post(route('entities.store', [
-        //         'metadata' => '',
-        //         'federation' => $federation->id,
-        //         'explanation' => $this->faker->catchPhrase(),
-        //     ]))
-        //     ->assertSeeText(__('entities.no_metadata'));
+    //     ->followingRedirects()
+    //     ->actingAs($user)
+    //     ->post(route('entities.store', [
+    //         'metadata' => '',
+    //         'federation' => $federation->id,
+    //         'explanation' => $this->faker->catchPhrase(),
+    //     ]))
+    //     ->assertSeeText(__('entities.no_metadata'));
 
         $this->assertEquals(0, Entity::count());
 
         // add an entity using corrent metadata content
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->post(route('entities.store', [
-          'metadata' => $whoami,
-          'federation' => $federation->id,
-          'explanation' => $this->faker->catchPhrase(),
-      ]))
-      ->assertSeeText(__('entities.entity_requested', ['name' => 'https://whoami.cesnet.cz/idp/shibboleth']));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->post(route('entities.store', [
+              'metadata' => $whoami,
+              'federation' => $federation->id,
+              'explanation' => $this->faker->catchPhrase(),
+          ]))
+          ->assertSeeText(__('entities.entity_requested', ['name' => 'https://whoami.cesnet.cz/idp/shibboleth']));
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.index'), url()->current());
 
         // add already existing entity
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->post(route('entities.store', [
-          'metadata' => $whoami,
-          'federation' => $federation->id,
-          'explanation' => $this->faker->catchPhrase(),
-      ]))
-      ->assertSeeText(__('entities.existing_already'));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->post(route('entities.store', [
+              'metadata' => $whoami,
+              'federation' => $federation->id,
+              'explanation' => $this->faker->catchPhrase(),
+          ]))
+          ->assertSeeText(__('entities.existing_already'));
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.show', Entity::find(1)), url()->current());
@@ -476,10 +476,10 @@ class EntityControllerTest extends TestCase
         $user->entities()->attach($entity);
 
         $this
-      ->actingAs($user)
-      ->get(route('entities.edit', $entity))
-      ->assertSeeText(__('entities.edit', ['name' => $entity->name_en]))
-      ->assertSeeText(__('entities.profile'));
+          ->actingAs($user)
+          ->get(route('entities.edit', $entity))
+          ->assertSeeText(__('entities.edit', ['name' => $entity->name_en]))
+          ->assertSeeText(__('entities.profile'));
 
         $this->assertEquals(route('entities.edit', $entity), url()->current());
     }
@@ -631,13 +631,13 @@ class EntityControllerTest extends TestCase
         </EntityDescriptor>';
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->patch(route('entities.update', $entity), [
-          'action' => 'update',
-          'metadata' => $whoami,
-      ])
-      ->assertSeeText(__('entities.entity_updated'));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->patch(route('entities.update', $entity), [
+              'action' => 'update',
+              'metadata' => $whoami,
+          ])
+          ->assertSeeText(__('entities.entity_updated'));
 
         $this->assertEquals(route('entities.show', $entity), url()->current());
 
@@ -656,20 +656,20 @@ class EntityControllerTest extends TestCase
         $this->assertTrue($entity->active);
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->patch(route('entities.update', $entity), ['action' => 'status'])
-      ->assertSeeText(__('entities.inactive', ['name' => $entity->name_en]));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->patch(route('entities.update', $entity), ['action' => 'status'])
+          ->assertSeeText(__('entities.inactive', ['name' => $entity->name_en]));
 
         $entity->refresh();
         $this->assertFalse($entity->active);
         $this->assertEquals(route('entities.show', $entity), url()->current());
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->patch(route('entities.update', $entity), ['action' => 'status'])
-      ->assertSeeText(__('entities.active', ['name' => $entity->name_en]));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->patch(route('entities.update', $entity), ['action' => 'status'])
+          ->assertSeeText(__('entities.active', ['name' => $entity->name_en]));
 
         $entity->refresh();
         $this->assertTrue($entity->active);
@@ -689,10 +689,10 @@ class EntityControllerTest extends TestCase
         $this->assertFalse($entity->trashed());
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->patch(route('entities.update', $entity), ['action' => 'state'])
-      ->assertSeeText(__('entities.deleted', ['name' => $entity->name_en]));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->patch(route('entities.update', $entity), ['action' => 'state'])
+          ->assertSeeText(__('entities.deleted', ['name' => $entity->name_en]));
 
         Bus::assertDispatched(GitDeleteEntity::class, function ($job) use ($entity) {
             return $job->entity->is($entity);
@@ -703,10 +703,10 @@ class EntityControllerTest extends TestCase
         $this->assertEquals(route('entities.show', $entity), url()->current());
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->patch(route('entities.update', $entity), ['action' => 'state'])
-      ->assertSeeText(__('entities.restored', ['name' => $entity->name_en]));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->patch(route('entities.update', $entity), ['action' => 'state'])
+          ->assertSeeText(__('entities.restored', ['name' => $entity->name_en]));
 
         $entity->refresh();
         $this->assertFalse($entity->trashed());
@@ -728,26 +728,26 @@ class EntityControllerTest extends TestCase
         $this->assertEquals(1, $entity->operators()->count());
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->patch(route('entities.update', $entity), [
-          'action' => 'add_operators',
-          'operators' => [$new_operator->id],
-      ])
-      ->assertSeeText(__('entities.operators_added'));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->patch(route('entities.update', $entity), [
+              'action' => 'add_operators',
+              'operators' => [$new_operator->id],
+          ])
+          ->assertSeeText(__('entities.operators_added'));
 
         $entity->refresh();
         $this->assertEquals(2, $entity->operators()->count());
         $this->assertEquals(route('entities.show', $entity), url()->current());
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->patch(route('entities.update', $entity), [
-          'action' => 'delete_operators',
-          'operators' => [$new_operator->id],
-      ])
-      ->assertSeeText(__('entities.operators_deleted'));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->patch(route('entities.update', $entity), [
+              'action' => 'delete_operators',
+              'operators' => [$new_operator->id],
+          ])
+          ->assertSeeText(__('entities.operators_deleted'));
 
         $entity->refresh();
         $this->assertEquals(1, $entity->operators()->count());
@@ -768,13 +768,13 @@ class EntityControllerTest extends TestCase
         $this->assertEquals(0, Membership::whereApproved(false)->count());
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->post(route('entities.join', $entity), [
-          'federation' => $federation->id,
-          'explanation' => $this->faker->sentence(),
-      ])
-      ->assertSeeText(__('entities.join_requested', ['name' => $federation->name]));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->post(route('entities.join', $entity), [
+              'federation' => $federation->id,
+              'explanation' => $this->faker->sentence(),
+          ])
+          ->assertSeeText(__('entities.join_requested', ['name' => $federation->name]));
 
         $this->assertEquals(1, Membership::whereApproved(false)->count());
     }
@@ -786,9 +786,9 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this
-      ->actingAs($user)
-      ->get(route('entities.edit', $entity))
-      ->assertForbidden();
+          ->actingAs($user)
+          ->get(route('entities.edit', $entity))
+          ->assertForbidden();
     }
 
     /** @test */
@@ -797,12 +797,12 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create(['entityid' => 'https://whoami.cesnet.cz/idp/shibboleth']);
 
         $this
-      ->followingRedirects()
-      ->patch(route('entities.update', $entity), [
-          'action' => 'update',
-          'url' => 'https://whoami.cesnet.cz/idp/shibboleth',
-      ])
-      ->assertSeeText('login');
+          ->followingRedirects()
+          ->patch(route('entities.update', $entity), [
+              'action' => 'update',
+              'url' => 'https://whoami.cesnet.cz/idp/shibboleth',
+          ])
+          ->assertSeeText('login');
     }
 
     /** @test */
@@ -814,9 +814,9 @@ class EntityControllerTest extends TestCase
         $this->assertEquals(1, Entity::count());
 
         $this
-      ->actingAs($user)
-      ->patch(route('entities.update', $entity), ['action' => 'status'])
-      ->assertForbidden();
+          ->actingAs($user)
+          ->patch(route('entities.update', $entity), ['action' => 'status'])
+          ->assertForbidden();
     }
 
     /** @test */
@@ -828,9 +828,9 @@ class EntityControllerTest extends TestCase
         $this->assertEquals(1, Entity::count());
 
         $this
-      ->actingAs($user)
-      ->patch(route('entities.update', $entity), ['action' => 'state'])
-      ->assertForbidden();
+          ->actingAs($user)
+          ->patch(route('entities.update', $entity), ['action' => 'state'])
+          ->assertForbidden();
     }
 
     /** @test */
@@ -841,23 +841,23 @@ class EntityControllerTest extends TestCase
         $new_operator = User::factory()->create();
 
         $this
-      ->actingAs($user)
-      ->patch(route('entities.update', $entity), [
-          'action' => 'add_operators',
-          'operators' => [$new_operator->id],
-      ])
-      ->assertForbidden();
+          ->actingAs($user)
+          ->patch(route('entities.update', $entity), [
+              'action' => 'add_operators',
+              'operators' => [$new_operator->id],
+          ])
+          ->assertForbidden();
 
         $entity->refresh();
         $this->assertEquals(0, $entity->operators()->count());
 
         $this
-      ->actingAs($user)
-      ->patch(route('entities.update', $entity), [
-          'action' => 'delete_operators',
-          'operators' => [$new_operator->id],
-      ])
-      ->assertForbidden();
+          ->actingAs($user)
+          ->patch(route('entities.update', $entity), [
+              'action' => 'delete_operators',
+              'operators' => [$new_operator->id],
+          ])
+          ->assertForbidden();
     }
 
     /** @test */
@@ -873,13 +873,13 @@ class EntityControllerTest extends TestCase
         $this->assertEquals(0, Membership::whereApproved(false)->count());
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->post(route('entities.join', $entity), [
-          'federation' => $federation->id,
-          'explanation' => $this->faker->sentence(),
-      ])
-      ->assertForbidden();
+          ->followingRedirects()
+          ->actingAs($user)
+          ->post(route('entities.join', $entity), [
+              'federation' => $federation->id,
+              'explanation' => $this->faker->sentence(),
+          ])
+          ->assertForbidden();
 
         $this->assertEquals(0, Membership::whereApproved(false)->count());
     }
@@ -894,10 +894,10 @@ class EntityControllerTest extends TestCase
         ]);
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->delete(route('entities.destroy', $entity))
-      ->assertForbidden();
+          ->followingRedirects()
+          ->actingAs($user)
+          ->delete(route('entities.destroy', $entity))
+          ->assertForbidden();
     }
 
     /** @test */
@@ -914,10 +914,10 @@ class EntityControllerTest extends TestCase
         $membership = Membership::find(1);
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->delete(route('memberships.destroy', $membership))
-      ->assertForbidden();
+          ->followingRedirects()
+          ->actingAs($user)
+          ->delete(route('memberships.destroy', $membership))
+          ->assertForbidden();
     }
 
     /** @test */
@@ -935,10 +935,10 @@ class EntityControllerTest extends TestCase
         $membership = Membership::find(1);
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->patch(route('memberships.update', $membership))
-      ->assertForbidden();
+          ->followingRedirects()
+          ->actingAs($user)
+          ->patch(route('memberships.update', $membership))
+          ->assertForbidden();
     }
 
     /** @test */
@@ -948,11 +948,11 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this
-      ->actingAs($admin)
-      ->get(route('entities.index'))
-      ->assertSeeText($entity->name)
-      ->assertSeeText($entity->description)
-      ->assertSeeText(__('common.active'));
+          ->actingAs($admin)
+          ->get(route('entities.index'))
+          ->assertSeeText($entity->name)
+          ->assertSeeText($entity->description)
+          ->assertSeeText(__('common.active'));
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.index'), url()->current());
@@ -965,12 +965,12 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this
-      ->actingAs($admin)
-      ->get(route('entities.show', $entity))
-      ->assertSeeText($entity->name)
-      ->assertSeeText($entity->description)
-      ->assertSeeText($entity->entityid)
-      ->assertSeeText($entity->type->name);
+          ->actingAs($admin)
+          ->get(route('entities.show', $entity))
+          ->assertSeeText($entity->name)
+          ->assertSeeText($entity->description)
+          ->assertSeeText($entity->entityid)
+          ->assertSeeText($entity->type->name);
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.show', $entity), url()->current());
@@ -982,9 +982,9 @@ class EntityControllerTest extends TestCase
         $admin = User::factory()->create(['admin' => true]);
 
         $this
-      ->actingAs($admin)
-      ->get(route('entities.create'))
-      ->assertSeeText(__('entities.add'));
+          ->actingAs($admin)
+          ->get(route('entities.create'))
+          ->assertSeeText(__('entities.add'));
 
         $this->assertEquals(route('entities.create'), url()->current());
     }
@@ -1135,28 +1135,28 @@ class EntityControllerTest extends TestCase
         // add an entity using wrong metadata content
         // add an entity using correct metadata content
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->post(route('entities.store', [
-          'metadata' => $whoami,
-          'federation' => $federation->id,
-          'explanation' => $this->faker->catchPhrase(),
-      ]))
-      ->assertSeeText(__('entities.entity_requested', ['name' => 'https://whoami.cesnet.cz/idp/shibboleth']));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->post(route('entities.store', [
+              'metadata' => $whoami,
+              'federation' => $federation->id,
+              'explanation' => $this->faker->catchPhrase(),
+          ]))
+          ->assertSeeText(__('entities.entity_requested', ['name' => 'https://whoami.cesnet.cz/idp/shibboleth']));
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.index'), url()->current());
 
         // add already existing entity
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->post(route('entities.store', [
-          'metadata' => $whoami,
-          'federation' => $federation->id,
-          'explanation' => $this->faker->catchPhrase(),
-      ]))
-      ->assertSeeText(__('entities.existing_already'));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->post(route('entities.store', [
+              'metadata' => $whoami,
+              'federation' => $federation->id,
+              'explanation' => $this->faker->catchPhrase(),
+          ]))
+          ->assertSeeText(__('entities.existing_already'));
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.show', Entity::find(1)), url()->current());
@@ -1169,10 +1169,10 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this
-      ->actingAs($admin)
-      ->get(route('entities.edit', $entity))
-      ->assertSeeText(__('entities.edit', ['name' => $entity->name_en]))
-      ->assertSeeText(__('entities.profile'));
+          ->actingAs($admin)
+          ->get(route('entities.edit', $entity))
+          ->assertSeeText(__('entities.edit', ['name' => $entity->name_en]))
+          ->assertSeeText(__('entities.profile'));
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.edit', $entity), url()->current());
@@ -1324,13 +1324,13 @@ class EntityControllerTest extends TestCase
         </EntityDescriptor>';
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->patch(route('entities.update', $entity), [
-          'action' => 'update',
-          'metadata' => $whoami,
-      ])
-      ->assertSeeText(__('entities.entity_updated'));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->patch(route('entities.update', $entity), [
+              'action' => 'update',
+              'metadata' => $whoami,
+          ])
+          ->assertSeeText(__('entities.entity_updated'));
 
         $this->assertEquals(route('entities.show', $entity), url()->current());
         Bus::assertDispatched(GitUpdateEntity::class, function ($job) use ($entity) {
@@ -1348,20 +1348,20 @@ class EntityControllerTest extends TestCase
         $this->assertTrue($entity->active);
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->patch(route('entities.update', $entity), ['action' => 'status'])
-      ->assertSeeText(__('entities.inactive', ['name' => $entity->name_en]));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->patch(route('entities.update', $entity), ['action' => 'status'])
+          ->assertSeeText(__('entities.inactive', ['name' => $entity->name_en]));
 
         $entity->refresh();
         $this->assertFalse($entity->active);
         $this->assertEquals(route('entities.show', $entity), url()->current());
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->patch(route('entities.update', $entity), ['action' => 'status'])
-      ->assertSeeText(__('entities.active', ['name' => $entity->name_en]));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->patch(route('entities.update', $entity), ['action' => 'status'])
+          ->assertSeeText(__('entities.active', ['name' => $entity->name_en]));
 
         $entity->refresh();
         $this->assertTrue($entity->active);
@@ -1380,10 +1380,10 @@ class EntityControllerTest extends TestCase
         $this->assertFalse($entity->trashed());
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->patch(route('entities.update', $entity), ['action' => 'state'])
-      ->assertSeeText(__('entities.deleted', ['name' => $entity->name_en]));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->patch(route('entities.update', $entity), ['action' => 'state'])
+          ->assertSeeText(__('entities.deleted', ['name' => $entity->name_en]));
 
         Bus::assertDispatched(GitDeleteEntity::class, function ($job) use ($entity) {
             return $job->entity->is($entity);
@@ -1394,10 +1394,10 @@ class EntityControllerTest extends TestCase
         $this->assertEquals(route('entities.show', $entity), url()->current());
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->patch(route('entities.update', $entity), ['action' => 'state'])
-      ->assertSeeText(__('entities.restored', ['name' => $entity->name_en]));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->patch(route('entities.update', $entity), ['action' => 'state'])
+          ->assertSeeText(__('entities.restored', ['name' => $entity->name_en]));
 
         $entity->refresh();
         $this->assertFalse($entity->trashed());
@@ -1420,46 +1420,46 @@ class EntityControllerTest extends TestCase
         $this->assertEquals(0, $entity->operators()->count());
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->patch(route('entities.update', $entity), ['action' => 'add_operators'])
-      ->assertSeeText(__('entities.add_empty_operators'));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->patch(route('entities.update', $entity), ['action' => 'add_operators'])
+          ->assertSeeText(__('entities.add_empty_operators'));
 
         $entity->refresh();
         $this->assertEquals(0, $entity->operators()->count());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
+        $this->assertEquals(route('entities.operators', $entity), url()->current());
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->patch(route('entities.update', $entity), [
-          'action' => 'add_operators',
-          'operators' => [$new_operator->id],
-      ])
-      ->assertSeeText(__('entities.operators_added'));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->patch(route('entities.update', $entity), [
+              'action' => 'add_operators',
+              'operators' => [$new_operator->id],
+          ])
+          ->assertSeeText(__('entities.operators_added'));
 
         $entity->refresh();
         $this->assertEquals(1, $entity->operators()->count());
         $this->assertEquals(route('entities.show', $entity), url()->current());
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->patch(route('entities.update', $entity), ['action' => 'delete_operators'])
-      ->assertSeeText(__('entities.delete_empty_operators'));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->patch(route('entities.update', $entity), ['action' => 'delete_operators'])
+          ->assertSeeText(__('entities.delete_empty_operators'));
 
         $entity->refresh();
         $this->assertEquals(1, $entity->operators()->count());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
+        $this->assertEquals(route('entities.operators', $entity), url()->current());
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->patch(route('entities.update', $entity), [
-          'action' => 'delete_operators',
-          'operators' => [$new_operator->id],
-      ])
-      ->assertSeeText(__('entities.operators_deleted'));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->patch(route('entities.update', $entity), [
+              'action' => 'delete_operators',
+              'operators' => [$new_operator->id],
+          ])
+          ->assertSeeText(__('entities.operators_deleted'));
 
         $entity->refresh();
         $this->assertEquals(0, $entity->operators()->count());
@@ -1480,13 +1480,13 @@ class EntityControllerTest extends TestCase
         $this->assertEquals(0, Membership::whereApproved(false)->count());
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->post(route('entities.join', $entity), [
-          'federation' => $federation->id,
-          'explanation' => $this->faker->sentence(),
-      ])
-      ->assertSeeText(__('entities.join_requested', ['name' => $federation->name]));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->post(route('entities.join', $entity), [
+              'federation' => $federation->id,
+              'explanation' => $this->faker->sentence(),
+          ])
+          ->assertSeeText(__('entities.join_requested', ['name' => $federation->name]));
 
         $this->assertEquals(1, Membership::whereApproved(false)->count());
     }
@@ -1502,10 +1502,10 @@ class EntityControllerTest extends TestCase
         $name = $entity->name_en;
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->delete(route('entities.destroy', $entity))
-      ->assertSeeText(__('entities.destroyed', ['name' => $name]));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->delete(route('entities.destroy', $entity))
+          ->assertSeeText(__('entities.destroyed', ['name' => $name]));
     }
 
     /** @test */
@@ -1521,10 +1521,10 @@ class EntityControllerTest extends TestCase
         $membership = Membership::find(1);
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->delete(route('memberships.destroy', $membership))
-      ->assertSeeText(__('federations.membership_rejected', ['entity' => $entity->name_en]));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->delete(route('memberships.destroy', $membership))
+          ->assertSeeText(__('federations.membership_rejected', ['entity' => $entity->name_en]));
     }
 
     /** @test */
@@ -1542,10 +1542,10 @@ class EntityControllerTest extends TestCase
         $membership = Membership::find(1);
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->patch(route('memberships.update', $membership))
-      ->assertSeeText(__('federations.membership_accepted', ['entity' => $entity->entityid]));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->patch(route('memberships.update', $membership))
+          ->assertSeeText(__('federations.membership_accepted', ['entity' => $entity->entityid]));
     }
 
     /** @test */
@@ -1555,9 +1555,9 @@ class EntityControllerTest extends TestCase
         $entity = Entity::factory()->create();
 
         $this
-      ->followingRedirects()
-      ->actingAs($admin)
-      ->put(route('entities.update', $entity));
+          ->followingRedirects()
+          ->actingAs($admin)
+          ->put(route('entities.update', $entity));
 
         $this->assertEquals(route('home'), url()->current());
     }
@@ -1570,23 +1570,23 @@ class EntityControllerTest extends TestCase
         $user->entities()->attach($entity);
 
         $this
-      ->actingAs($user)
-      ->get(route('entities.show', $entity))
-      ->assertDontSeeText(__('entities.ask_rs'));
+          ->actingAs($user)
+          ->get(route('entities.show', $entity))
+          ->assertDontSeeText(__('entities.ask_rs'));
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->post(route('entities.rs', $entity))
-      ->assertStatus(403)
-      ->assertSeeText(__('entities.rs_only_for_eduidcz_members'));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->post(route('entities.rs', $entity))
+          ->assertStatus(403)
+          ->assertSeeText(__('entities.rs_only_for_eduidcz_members'));
     }
 
     /** @test */
     public function ask_rs_is_shown_for_sp_entities_in_rs_federation()
     {
         $user = User::factory()->create();
-        $entity = Entity::factory()->create(['type' => 'sp']);
+        $entity = Entity::factory()->create(['type' => 'sp', 'rs' => false]);
         $user->entities()->attach($entity);
         $federation = Federation::factory()->create(['xml_name' => config('git.rs_federation')]);
         $federation->entities()->attach($entity, [
@@ -1597,15 +1597,15 @@ class EntityControllerTest extends TestCase
         ]);
 
         $this
-      ->actingAs($user)
-      ->get(route('entities.show', $entity))
-      ->assertSeeText(__('entities.ask_rs'));
+          ->actingAs($user)
+          ->get(route('entities.show', $entity))
+          ->assertSeeText(__('entities.ask_rs'));
 
         $this
-      ->followingRedirects()
-      ->actingAs($user)
-      ->post(route('entities.rs', $entity))
-      ->assertStatus(200)
-      ->assertSeeText(__('entities.rs_asked'));
+          ->followingRedirects()
+          ->actingAs($user)
+          ->post(route('entities.rs', $entity))
+          ->assertStatus(200)
+          ->assertSeeText(__('entities.rs_asked'));
     }
 }

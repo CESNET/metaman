@@ -40,77 +40,48 @@
                 <div class="dark:bg-gray-800 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 px-4 py-5 bg-white">
                     <dt class="text-sm text-gray-500">{{ __('common.entity_categories_controlled') }}</dt>
                     <dd class="sm:col-span-2">
-                        @can('do-everything')
-                            @unless($entity->trashed())
-                                @if ($entity->active && $entity->approved && $entity->type->value === 'sp')
-                                    <form class="inline-block" id="rs" action="{{ route('entities.update', $entity) }}"
-                                        method="POST">
-                                        @csrf
-                                        @method('patch')
-                                        <input type="hidden" name="action" value="rs">
-                                        <input type="checkbox" name="rsbox" id="rsbox" class="open-modal" data-target="rs"
-                                            @if ($entity->rs) checked @endif onchange="this.form.submit()">
-                                    </form>
-                                    <x-modals.confirm :model="$entity" form="rs" />
-                                    <x-pil linethrough="{{ !$entity->rs }}">{{ __('common.rs') }}</x-pil>
-                                @endif
-                                @if ($entity->active && $entity->approved && $entity->type->value === 'idp')
-                                    <x-pil linethrough="{{ !$entity->rs }}">{{ __('common.rs') }}</x-pil>
-                                    <form class="inline-block" id="hfd" action="{{ route('entities.update', $entity) }}"
-                                        method="POST">
-                                        @csrf
-                                        @method('patch')
-                                        <input type="hidden" name="action" value="hfd">
-                                        <input type="checkbox" name="hfdbox" id="hfdbox" class="open-modal" data-target="hfd"
-                                            @if ($entity->hfd) checked @endif onchange="this.form.submit()">
-                                    </form>
-                                    <x-modals.confirm :model="$entity" form="hfd" />
-                                    <x-pil linethrough="{{ !$entity->hfd }}">{{ __('common.hfd') }}</x-pil>
-                                @endif
-                            @endunless
-                        @else
-                            @if ($entity->type->value === 'sp')
-                                <x-pil linethrough="{{ !$entity->rs }}">{{ __('common.rs') }}</x-pil>
-                                @if ($entity->federations()->where('xml_name', Config::get('git.rs_federation'))->count())
-                                    @can('update', $entity)
-                                        <form class="inline-block" id="askrs" action="{{ route('entities.rs', $entity) }}"
-                                            method="POST">
-                                            @csrf
-                                            <x-button color="gray">{{ __('entities.ask_rs') }}</x-button>
-                                        </form>
-                                    @endcan
-                                @endif
-                            @elseif ($entity->type->value === 'idp')
-                                <x-pil linethrough="{{ !$entity->hfd }}">{{ __('common.hfd') }}</x-pil>
-                            @endif
-                        @endcan
+                        @includeWhen(request()->user()->can('do-everything') &&
+                                !$entity->trashed() &&
+                                $entity->active &&
+                                $entity->approved &&
+                                $entity->type->value === 'sp',
+                            'entities.partials.rs')
+
+                        @includeWhen(request()->user()->cannot('do-everything') &&
+                                request()->user()->can('update', $entity) &&
+                                $entity->type->value === 'sp' &&
+                                $entity->federations()->where('xml_name', Config::get('git.rs_federation'))->count() &&
+                                !$entity->rs,
+                            'entities.partials.askrs')
+
+                        <x-pil linethrough="{{ !$entity->rs }}">{{ __('common.rs') }}</x-pil>
+
+                        @includeWhen(request()->user()->can('do-everything') &&
+                                !$entity->trashed() &&
+                                $entity->active &&
+                                $entity->approved &&
+                                $entity->type->value === 'idp',
+                            'entities.partials.hfd')
+                        @if ($entity->type->value === 'idp')
+                            <x-pil linethrough="{{ !$entity->hfd }}">{{ __('common.hfd') }}</x-pil>
+                        @endif
                     </dd>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-900 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 px-4 py-5">
                     <dt class="text-sm text-gray-500">{{ __('common.edugain_membership') }}</dt>
                     <dd class="sm:col-span-2">
-                        @can('update', $entity)
-                            @unless($entity->trashed())
-                                @if ($entity->active && $entity->approved)
-                                    <form class="inline-block" id="edugain" action="{{ route('entities.update', $entity) }}"
-                                        method="POST">
-                                        @csrf
-                                        @method('patch')
-                                        <input type="hidden" name="action" value="edugain">
-                                        <input type="checkbox" name="edugainbox" id="edugainbox" class="open-modal"
-                                            data-target="edugain" @if ($entity->edugain) checked @endif
-                                            onchange="this.form.submit()">
-                                    </form>
-                                    <x-modals.confirm :model="$entity" form="edugain" />
-                                @endif
-                            @endunless
-                        @else
+                        @includeWhen(request()->user()->can('update', $entity) &&
+                                !$entity->trashed() &&
+                                $entity->active &&
+                                $entity->approved,
+                            'entities.partials.edugain')
+                        @cannot('update', $entity)
                             @if ($entity->edugain)
                                 {{ __('common.yes') }}
                             @else
                                 {{ __('common.no') }}
                             @endif
-                        @endcan
+                        @endcannot
                     </dd>
                 </div>
                 @can('do-everything')

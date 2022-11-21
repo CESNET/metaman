@@ -1121,7 +1121,7 @@ class FederationControllerTest extends TestCase
 
         $federation->refresh();
         $this->assertEquals(0, $federation->operators()->count());
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.operators', $federation), url()->current());
 
         $this
             ->followingRedirects()
@@ -1145,7 +1145,7 @@ class FederationControllerTest extends TestCase
             ->assertSeeText(__('federations.delete_empty_operators'));
 
         $this->assertEquals(1, $federation->operators()->count());
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.operators', $federation), url()->current());
 
         $this
             ->followingRedirects()
@@ -1191,7 +1191,7 @@ class FederationControllerTest extends TestCase
             ->assertSeeText(__('federations.add_empty_entities'));
 
         $this->assertEquals(1, $federation->entities()->count());
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.entities', $federation), url()->current());
 
         $this
             ->followingRedirects()
@@ -1220,7 +1220,7 @@ class FederationControllerTest extends TestCase
             ->assertSeeText(__('federations.delete_empty_entities'));
 
         $this->assertEquals(2, $federation->entities()->count());
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.entities', $federation), url()->current());
 
         $this
             ->followingRedirects()

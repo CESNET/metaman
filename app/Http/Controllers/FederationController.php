@@ -279,8 +279,7 @@ class FederationController extends Controller
                 $this->authorize('update', $federation);
 
                 if (! request('operators')) {
-                    return redirect()
-                        ->route('federations.show', $federation)
+                    return to_route('federations.operators', $federation)
                         ->with('status', __('federations.add_empty_operators'))
                         ->with('color', 'red');
                 }
@@ -304,8 +303,7 @@ class FederationController extends Controller
                 $this->authorize('update', $federation);
 
                 if (! request('operators')) {
-                    return redirect()
-                        ->route('federations.show', $federation)
+                    return to_route('federations.operators', $federation)
                         ->with('status', __('federations.delete_empty_operators'))
                         ->with('color', 'red');
                 }
@@ -329,8 +327,7 @@ class FederationController extends Controller
                 $this->authorize('update', $federation);
 
                 if (! request('entities')) {
-                    return redirect()
-                        ->route('federations.show', $federation)
+                    return to_route('federations.entities', $federation)
                         ->with('status', __('federations.add_empty_entities'))
                         ->with('color', 'red');
                 }
@@ -356,8 +353,7 @@ class FederationController extends Controller
                 $this->authorize('update', $federation);
 
                 if (! request('entities')) {
-                    return redirect()
-                        ->route('federations.show', $federation)
+                    return to_route('federations.entities', $federation)
                         ->with('status', __('federations.delete_empty_entities'))
                         ->with('color', 'red');
                 }

@@ -109,8 +109,11 @@
     <div>
         <x-buttons.back href="{{ URL::previous() }}" />
 
-        <x-forms.change-user-status route="users" :user="$user" />
-        <x-forms.change-role :user="$user" />
+        @includeWhen(request()->user()->can('update', $user) && Auth::id() !== $user->id,
+            'users.partials.status')
+
+        @includeWhen(request()->user()->can('do-everything') && Auth::id() !== $user->id,
+            'users.partials.role')
     </div>
 
 @endsection

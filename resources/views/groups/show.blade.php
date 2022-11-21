@@ -59,7 +59,20 @@
             <a class="hover:bg-yellow-200 inline-block px-4 py-2 text-yellow-600 bg-yellow-300 rounded shadow"
                 href="{{ route('groups.edit', $group) }}">{{ __('common.edit') }}</a>
 
-            <x-forms.destroy-group :group="$group" />
+            @if (count($group->entities) === 0)
+                <form x-data="{ open: false }" class="inline-block" action="{{ route('groups.destroy', $group) }}"
+                    method="POST">
+                    @csrf
+                    @method('delete')
+
+                    <x-button color="red" @click.prevent="open = !open">{{ __('common.destroy') }}</x-button>
+
+                    <x-modal>
+                        <x-slot:title>{{ __('common.destroy_model', ['name' => $group->name]) }}</x-slot:title>
+                        {{ __('common.destroy_model_body', ['name' => $group->name, 'type' => 'group']) }}
+                    </x-modal>
+                </form>
+            @endif
 
         </div>
     </div>
