@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'binary' => env('GIT_BINARY'),
-    'ssh_key' => env('GIT_SSH_KEY'),
     'remote' => env('GIT_REMOTE'),
     'remote_branch' => env('GIT_REMOTE_BRANCH') ?? 'master',
     'local' => env('GIT_LOCAL'),
