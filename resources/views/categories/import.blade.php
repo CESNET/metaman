@@ -29,10 +29,10 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @foreach ($categories as $category)
-                        <tr class="hover:bg-blue-50 dark:hover:bg-gray-700">
+                        <tr x-data class="hover:bg-blue-50 dark:hover:bg-gray-700"
+                            @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                             <td class="px-6 py-3 text-sm">
-                                <input class="rounded" type="checkbox" name="categories[]"
-                                    value="{{ $category }}">
+                                <input class="rounded" type="checkbox" name="categories[]" value="{{ $category }}">
                             </td>
                             <td class="px-6 py-3 text-sm">
                                 <code class="text-sm text-pink-500">

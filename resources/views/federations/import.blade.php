@@ -37,7 +37,8 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @foreach ($federations as $federation)
-                        <tr class="hover:bg-blue-50 dark:hover:bg-gray-700" role="button">
+                        <tr x-data class="hover:bg-blue-50 dark:hover:bg-gray-700" role="button"
+                            @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                             <td class="px-6 py-3 text-sm">
                                 <input class="rounded" type="checkbox" name="federations[]"
                                     value="{{ $federation['cfgfile'] }}">
@@ -46,8 +47,7 @@
                                 <input class="rounded" type="text" name="names[{{ $federation['cfgfile'] }}]">
                             </td>
                             <td class="px-6 py-3 text-sm">
-                                <input class="rounded" type="text"
-                                    name="descriptions[{{ $federation['cfgfile'] }}]">
+                                <input class="rounded" type="text" name="descriptions[{{ $federation['cfgfile'] }}]">
                             </td>
                             <td class="px-6 py-3 text-sm">
                                 {{ $federation['xml_id'] }}
