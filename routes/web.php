@@ -74,6 +74,7 @@ Route::post('entities/{entity}/leave', [EntityController::class, 'leave'])->name
 Route::post('entities/{entity}/rs', [EntityController::class, 'rs'])->name('entities.rs');
 Route::get('entities/{entity}/metadata', [EntityController::class, 'metadata'])->name('entities.metadata');
 Route::get('entities/{entity}/showmetadata', [EntityController::class, 'showmetadata'])->name('entities.showmetadata');
+Route::post('entities/{entity}/organization', [EntityController::class, 'organization'])->name('entities.organization');
 Route::resource('entities', EntityController::class);
 Route::get('entities/{entity}', [EntityController::class, 'show'])->name('entities.show')->withTrashed();
 Route::match(['put', 'patch'], 'entities/{entity}', [EntityController::class, 'update'])->name('entities.update')->withTrashed();

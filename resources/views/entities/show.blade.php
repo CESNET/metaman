@@ -108,6 +108,37 @@
                         </div>
                     @endif
                 @endcan
+                @env(['production', 'local'])
+                @unless($entity->hfd)
+                    <div class="bg-gray-50 dark:bg-gray-900 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 px-4 py-5">
+                        <dt class="text-sm text-gray-500">{{ __('common.organization') }}</dt>
+                        <dd class="sm:col-span-2">
+                            @if ($eduidczOrganization)
+                                <a class="hover:underline text-blue-500"
+                                    href="https://ciselnik.cesnet.cz/organizations/{{ $eduidczOrganization->getFirstAttribute('oPointer') }}">{{ $cesnetOrganization->getFirstAttribute('o') }}</a>
+                            @else
+                                <form class="inline-block" action="{{ route('entities.organization', $entity) }}"
+                                    method="post">
+                                    @csrf
+                                    <input type="hidden" name="action" value="organization">
+                                    <input class="w-96 px-4 py-2 mb-2 border rounded shadow" type="text" name="organization"
+                                        id="organization" list="cesnetOrganizations" required>
+                                    <datalist id="cesnetOrganizations">
+                                        @foreach ($cesnetOrganizations as $o)
+                                            <option value="{{ Str::remove('dc=', $o->getRdn()) }}">
+                                                {{ $o->getFirstAttribute('o') }}</option>
+                                        @endforeach
+                                    </datalist>
+                                    <button class="hover:bg-gray-200 px-4 py-2 text-gray-600 bg-gray-300 rounded shadow"
+                                        type="reset">{{ __('common.reset') }}</button>
+                                    <x-button>{{ __('common.update') }}</x-button>
+                                </form>
+                                {!! $errors->first('organization', '<div class="float-left text-sm font-semibold text-red-600">:message</div>') !!}
+                            @endif
+                        </dd>
+                    </div>
+                @endunless
+                @endenv
             </dl>
         </div>
         <div class="px-6 py-3 bg-gray-100">
