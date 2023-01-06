@@ -177,9 +177,11 @@ class EntityController extends Controller
         $this->authorize('view', $entity);
 
         if (! app()->environment('testing')) {
-            $eduidczOrganization = EduidczOrganization::whereEntityIDofIdP($entity->entityid)->first();
-            $cesnetOrganization = CesnetOrganization::find($eduidczOrganization?->getFirstAttribute('oPointer'));
-            $cesnetOrganizations = is_null($cesnetOrganization) ? CesnetOrganization::select('o')->get() : null;
+            if ($entity->type->value === 'idp' && ! $entity->hfd) {
+                $eduidczOrganization = EduidczOrganization::whereEntityIDofIdP($entity->entityid)->first();
+                $cesnetOrganization = CesnetOrganization::find($eduidczOrganization?->getFirstAttribute('oPointer'));
+                $cesnetOrganizations = is_null($cesnetOrganization) ? CesnetOrganization::select('o')->get() : null;
+            }
         }
 
         return view('entities.show', [
@@ -923,18 +925,26 @@ class EntityController extends Controller
     {
         $this->authorize('do-everything');
 
+        abort_if($entity->type->value !== 'idp', 500);
+
         try {
             $organization = CesnetOrganization::select('dn')->whereDc($request->organization)->firstOrFail();
         } catch (\LdapRecord\Models\ModelNotFoundException) {
             abort(500);
         }
 
+        // FIXME
+        // EduidczOrganization::create([
         $o = new EduidczOrganization([
             'dc' => now()->timestamp,
             'oPointer' => $organization->getDn(),
             'entityIDofIdP' => $entity->entityid,
         ]);
 
-        dd("Assign IdP ({$entity->entityid}) to {$organization->getDn()}");
+        // FIXME
+        dd("Assign IdP ({$entity->entityid}) to {$organization->getDn()}", $o);
+
+        return to_route('entities.show', $entity)
+            ->with('status', __('entities.organization_assigned'));
     }
 }

@@ -109,7 +109,7 @@
                     @endif
                 @endcan
                 @env(['production', 'local'])
-                @unless($entity->hfd)
+                @if ($entity->type->value === 'idp' && !$entity->hfd)
                     <div class="bg-gray-50 dark:bg-gray-900 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 px-4 py-5">
                         <dt class="text-sm text-gray-500">{{ __('common.organization') }}</dt>
                         <dd class="sm:col-span-2">
@@ -121,8 +121,8 @@
                                     method="post">
                                     @csrf
                                     <input type="hidden" name="action" value="organization">
-                                    <input class="w-96 px-4 py-2 mb-2 border rounded shadow" type="text" name="organization"
-                                        id="organization" list="cesnetOrganizations" required>
+                                    <input class="w-96 px-4 py-2 mb-2 border rounded shadow" type="text"
+                                        name="organization" id="organization" list="cesnetOrganizations" required>
                                     <datalist id="cesnetOrganizations">
                                         @foreach ($cesnetOrganizations as $o)
                                             <option value="{{ Str::remove('dc=', $o->getRdn()) }}">
@@ -137,7 +137,7 @@
                             @endif
                         </dd>
                     </div>
-                @endunless
+                @endif
                 @endenv
             </dl>
         </div>

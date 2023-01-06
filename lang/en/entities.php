@@ -68,4 +68,5 @@ return [
     'unknown_error_while_registration' => 'An unknown error has occured while registering your entity.',
     'update' => 'Update entity',
     'url_placeholder' => "Enter entity's metadata URL",
+    'organization_assigned' => 'Organization has been successfully assigned.',
 ];

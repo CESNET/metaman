@@ -16,4 +16,9 @@ class CesnetOrganization extends Model
         'dcObject',
         'cesnetOrganization',
     ];
+
+    protected function getCreatableRdnAttribute()
+    {
+        return 'dc';
+    }
 }

@@ -17,4 +17,9 @@ class EduidczOrganization extends Model
         'top',
         'eduidczorganization',
     ];
+
+    protected function getCreatableRdnAttribute()
+    {
+        return 'dc';
+    }
 }

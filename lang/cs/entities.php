@@ -68,4 +68,5 @@ return [
     'unknown_error_while_registration' => 'Během registrace entity nastala neznámá chyba.',
     'update' => 'Upravit entitu',
     'url_placeholder' => 'Vložte URL metadat entity',
+    'organization_assigned' => 'Organizace byla úspěšně přiřazena.',
 ];
