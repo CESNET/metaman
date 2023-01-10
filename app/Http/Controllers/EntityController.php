@@ -659,8 +659,12 @@ class EntityController extends Controller
         $locale = app()->getLocale();
         $name = $entity->{"name_$locale"} ?? $entity->entityid;
 
-        $eduidczOrganization = EduidczOrganization::whereEntityIDofIdP($entity->entityid)->first();
-        $eduidczOrganization->delete();
+        if (! app()->environment('testing')) {
+            if ($entity->type->value === 'idp' && ! $entity->hfd) {
+                $eduidczOrganization = EduidczOrganization::whereEntityIDofIdP($entity->entityid)->first();
+                $eduidczOrganization->delete();
+            }
+        }
 
         $entity->forceDelete();
 
