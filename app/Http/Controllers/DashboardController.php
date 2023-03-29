@@ -9,7 +9,7 @@ class DashboardController extends Controller
         $this->middleware('auth');
     }
 
-    public function dashboard()
+    public function index()
     {
         return view('dashboard');
     }

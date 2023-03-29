@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AssignOrganization;
-use App\Http\Requests\JoinFederation;
 use App\Http\Requests\StoreEntity;
 use App\Jobs\GitAddEntity;
 use App\Jobs\GitAddMember;
@@ -14,7 +12,6 @@ use App\Jobs\GitAddToRs;
 use App\Jobs\GitDeleteEntity;
 use App\Jobs\GitDeleteFromCategory;
 use App\Jobs\GitDeleteFromEdugain;
-use App\Jobs\GitDeleteFromFederation;
 use App\Jobs\GitDeleteFromHfd;
 use App\Jobs\GitDeleteFromRs;
 use App\Jobs\GitRestoreToCategory;
@@ -22,7 +19,6 @@ use App\Jobs\GitRestoreToEdugain;
 use App\Jobs\GitUpdateEntity;
 use App\Ldap\CesnetOrganization;
 use App\Ldap\EduidczOrganization;
-use App\Mail\AskRs;
 use App\Mail\NewIdentityProvider;
 use App\Models\Category;
 use App\Models\Entity;
@@ -30,7 +26,6 @@ use App\Models\Federation;
 use App\Models\User;
 use App\Notifications\EntityAddedToHfd;
 use App\Notifications\EntityAddedToRs;
-use App\Notifications\EntityDeletedFromFederation;
 use App\Notifications\EntityDeletedFromHfd;
 use App\Notifications\EntityDeletedFromRs;
 use App\Notifications\EntityDestroyed;
@@ -191,42 +186,6 @@ class EntityController extends Controller
             'eduidczOrganization' => $eduidczOrganization ?? null,
             'cesnetOrganization' => $cesnetOrganization ?? null,
             'cesnetOrganizations' => $cesnetOrganizations ?? null,
-        ]);
-    }
-
-    public function operators(Entity $entity)
-    {
-        $this->authorize('view', $entity);
-
-        $operators = $entity->operators()->paginate(10, ['*'], 'operatorsPage');
-        $ops = $entity->operators->pluck('id');
-        $users = User::orderBy('name')
-            ->whereNotIn('id', $ops)
-            ->search(request('search'))
-            ->paginate(10, ['*'], 'usersPage');
-
-        return view('entities.operators', [
-            'entity' => $entity,
-            'operators' => $operators,
-            'users' => $users,
-        ]);
-    }
-
-    public function federations(Entity $entity)
-    {
-        $this->authorize('view', $entity);
-
-        $federations = $entity->federations;
-        $requested = $entity->federationsRequested;
-        $collection = $federations->concat($requested);
-        $joinable = Federation::orderBy('name')
-            ->whereNotIn('id', $collection->pluck('id'))
-            ->get();
-
-        return view('entities.federations', [
-            'entity' => $entity,
-            'federations' => $federations,
-            'joinable' => $joinable,
         ]);
     }
 
@@ -598,56 +557,6 @@ class EntityController extends Controller
         }
     }
 
-    public function join(JoinFederation $request, Entity $entity)
-    {
-        $this->authorize('update', $entity);
-
-        if (empty(request('federation'))) {
-            return back()
-                ->with('status', __('entities.join_empty_federations'))
-                ->with('color', 'red');
-        }
-
-        $entity
-            ->federations()
-            ->attach($request->input('federation'), [
-                'requested_by' => Auth::id(),
-                'explanation' => $request->input('explanation'),
-            ]);
-
-        return redirect()
-            ->back()
-            ->with('status', __('entities.join_requested', [
-                'name' => Federation::findOrFail($request->input('federation'))->name,
-            ]));
-    }
-
-    public function leave(Request $request, Entity $entity)
-    {
-        $this->authorize('update', $entity);
-
-        if (empty(request('federations'))) {
-            return back()
-                ->with('status', __('entities.leave_empty_federations'))
-                ->with('color', 'red');
-        }
-
-        $entity
-            ->federations()
-            ->detach($request->input('federations'));
-
-        foreach (request('federations') as $f) {
-            $federation = Federation::find($f);
-            GitDeleteFromFederation::dispatch($entity, $federation, Auth::user());
-            Notification::send($entity->operators, new EntityDeletedFromFederation($entity, $federation));
-            Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromFederation($entity, $federation));
-        }
-
-        return redirect()
-            ->back()
-            ->with('status', __('entities.federations_left'));
-    }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -675,294 +584,5 @@ class EntityController extends Controller
 
         return redirect('entities')
             ->with('status', __('entities.destroyed', ['name' => $name]));
-    }
-
-    public function unknown()
-    {
-        $this->authorize('do-everything');
-
-        $this->initializeGit();
-
-        $xmlfiles = [];
-        $tagfiles = [];
-        foreach (Storage::files() as $file) {
-            if (preg_match('/\.xml$/', $file)) {
-                $xmlfiles[] = $file;
-            }
-
-            if (preg_match('/\.tag$/', $file)) {
-                if (preg_match('/^'.config('git.edugain_tag').'$/', $file)) {
-                    continue;
-                }
-
-                $federation = Federation::whereTagfile($file)->first();
-                if ($federation === null && Storage::exists(preg_replace('/\.tag/', '.cfg', $file))) {
-                    return redirect()
-                        ->route('entities.index')
-                        ->with('status', __('entities.missing_federations'))
-                        ->with('color', 'red');
-                } else {
-                    $tagfiles[] = $file;
-                }
-            }
-        }
-
-        $tagfiles[] = config('git.edugain_tag');
-
-        $entities = Entity::select('file')->get()->pluck('file')->toArray();
-
-        $unknown = [];
-        foreach ($xmlfiles as $xmlfile) {
-            if (in_array($xmlfile, $entities)) {
-                continue;
-            }
-
-            $metadata = Storage::get($xmlfile);
-            $metadata = $this->parseMetadata($metadata);
-            $entity = json_decode($metadata, true);
-
-            $unknown[$xmlfile]['type'] = $entity['type'];
-            $unknown[$xmlfile]['entityid'] = $entity['entityid'];
-            $unknown[$xmlfile]['file'] = $xmlfile;
-            $unknown[$xmlfile]['name_en'] = $entity['name_en'];
-            $unknown[$xmlfile]['name_cs'] = $entity['name_cs'];
-            $unknown[$xmlfile]['description_en'] = $entity['description_en'];
-            $unknown[$xmlfile]['description_cs'] = $entity['description_cs'];
-
-            foreach ($tagfiles as $tagfile) {
-                $content = Storage::get($tagfile);
-                $pattern = preg_quote($entity['entityid'], '/');
-                $pattern = "/^$pattern\$/m";
-
-                if (preg_match_all($pattern, $content)) {
-                    if (strcmp($tagfile, config('git.edugain_tag')) === 0) {
-                        $unknown[$xmlfile]['federations'][] = 'eduGAIN';
-
-                        continue;
-                    }
-
-                    $federation = Federation::whereTagfile($tagfile)->first();
-                    $unknown[$xmlfile]['federations'][] = $federation->name ?? null;
-                }
-            }
-        }
-
-        if (empty($unknown)) {
-            return redirect()
-                ->route('entities.index')
-                ->with('status', __('entities.nothing_to_import'));
-        }
-
-        return view('entities.import', [
-            'entities' => $unknown,
-        ]);
-    }
-
-    public function import(Request $request)
-    {
-        $this->authorize('do-everything');
-
-        if (empty(request('entities'))) {
-            return back()
-                ->with('status', __('entities.empty_import'))
-                ->with('color', 'red');
-        }
-
-        // ADD SELECTED ENTITIES FROM XML FILES TO DATABASE
-        $imported = 0;
-        foreach (request('entities') as $xmlfile) {
-            $xml_entity = $this->parseMetadata(Storage::get($xmlfile));
-            $new_entity = json_decode($xml_entity, true);
-
-            DB::transaction(function () use ($new_entity) {
-                $entity = Entity::create($new_entity);
-
-                $entity->approved = true;
-                $entity->update();
-            });
-
-            $imported++;
-        }
-
-        // FIX FEDERATIONS MEMBERSHIP
-        foreach (request('entities') as $xmlfile) {
-            $entity = Entity::whereFile($xmlfile)->first();
-
-            foreach (Federation::select('id', 'tagfile')->get() as $federation) {
-                $members = Storage::get($federation->tagfile);
-                $pattern = preg_quote($entity->entityid, '/');
-                $pattern = "/^$pattern\$/m";
-
-                if (! preg_match_all($pattern, $members)) {
-                    continue;
-                }
-
-                $entity->federations()->attach($federation, [
-                    'requested_by' => Auth::id(),
-                    'approved_by' => Auth::id(),
-                    'approved' => true,
-                    'explanation' => 'Imported from Git repository.',
-                ]);
-            }
-        }
-
-        // FIX HIDE FROM DISCOVERY MEMBERSHIP
-        $hfd = array_filter(preg_split("/\r\n|\r|\n/", Storage::get(config('git.hfd'))));
-        foreach ($hfd as $entityid) {
-            Entity::whereEntityid($entityid)->update(['hfd' => true]);
-        }
-
-        // FIX EDUGAIN MEMBERSHIP
-        $edugain = array_filter(preg_split("/\r\n|\r|\n/", Storage::get(config('git.edugain_tag'))));
-        foreach ($edugain as $entityid) {
-            Entity::whereEntityid($entityid)->update(['edugain' => true]);
-        }
-
-        // FIX RESEARCH AND EDUCATION MEMBERSHIP
-        $rs = array_filter(preg_split("/\r\n|\r|\n/", Storage::get(config('git.ec_rs'))));
-        foreach ($rs as $entityid) {
-            Entity::whereEntityid($entityid)->update(['rs' => true]);
-        }
-
-        return redirect('entities')
-            ->with('status', trans_choice('entities.imported', $imported));
-    }
-
-    public function refresh()
-    {
-        $this->authorize('do-everything');
-
-        $this->initializeGit();
-
-        $xmlfiles = [];
-        foreach (Storage::files() as $file) {
-            if (preg_match('/\.xml/', $file)) {
-                $xmlfiles[] = $file;
-            }
-        }
-
-        $entities = Entity::select('file')->get()->pluck('file')->toArray();
-
-        $refreshed = 0;
-        foreach ($xmlfiles as $xmlfile) {
-            if (! in_array($xmlfile, $entities)) {
-                continue;
-            }
-
-            $metadata = Storage::get($xmlfile);
-            $refreshed_entity = json_decode($this->parseMetadata($metadata), true);
-
-            if ($refreshed_entity['type'] === 'sp') {
-                unset($refreshed_entity['rs']);
-            }
-
-            $entity = Entity::whereFile($xmlfile)->first();
-            $entity->update($refreshed_entity);
-
-            $edugain = Storage::get(config('git.edugain_tag'));
-            $pattern = preg_quote($refreshed_entity['entityid'], '/');
-            $pattern = "/^$pattern\$/m";
-
-            if (preg_match_all($pattern, $edugain)) {
-                $entity->update(['edugain' => true]);
-            } else {
-                $entity->update(['edugain' => false]);
-            }
-
-            if ($entity->type->value === 'idp') {
-                $hfd = Storage::get(config('git.hfd'));
-                $pattern = preg_quote($refreshed_entity['entityid'], '/');
-                $pattern = "/^$pattern\$/m";
-
-                if (preg_match_all($pattern, $hfd)) {
-                    $entity->update(['hfd' => true]);
-                } else {
-                    $entity->update(['hfd' => false]);
-                }
-            }
-
-            if ($entity->type->value === 'sp') {
-                $rs = Storage::get(config('git.ec_rs'));
-                $pattern = preg_quote($refreshed_entity['entityid'], '/');
-                $pattern = "/^$pattern\$/m";
-
-                if (preg_match_all($pattern, $rs)) {
-                    $entity->update(['rs' => true]);
-                } else {
-                    $entity->update(['rs' => false]);
-                }
-            }
-
-            if ($entity->wasChanged()) {
-                $refreshed++;
-            }
-        }
-
-        return redirect('entities')
-            ->with('status', trans_choice('entities.refreshed', $refreshed));
-    }
-
-    public function rs(Entity $entity)
-    {
-        $this->authorize('update', $entity);
-
-        abort_unless($entity->federations()->where('xml_name', config('git.rs_federation'))->count(), 403, __('entities.rs_only_for_eduidcz_members'));
-
-        Mail::to(config('mail.admin.address'))
-            ->send(new AskRs($entity));
-
-        return redirect()
-            ->back()
-            ->with('status', __('entities.rs_asked'));
-    }
-
-    public function metadata(Entity $entity)
-    {
-        $this->authorize('view', $entity);
-
-        if (! $entity->approved) {
-            return to_route('entities.show', $entity)
-                ->with('status', __('entities.not_yet_approved'))
-                ->with('color', 'red');
-        }
-
-        return Storage::download($entity->file);
-    }
-
-    public function showmetadata(Entity $entity)
-    {
-        $this->authorize('view', $entity);
-
-        if (! $entity->approved) {
-            return to_route('entities.show', $entity)
-                ->with('status', __('entities.not_yet_approved'))
-                ->with('color', 'red');
-        }
-
-        return response()->file(Storage::path($entity->file));
-    }
-
-    public function organization(Entity $entity, AssignOrganization $request)
-    {
-        $this->authorize('do-everything');
-
-        abort_if($entity->type->value !== 'idp', 500);
-
-        try {
-            $organization = CesnetOrganization::select('dn')->whereDc($request->organization)->firstOrFail();
-        } catch (\LdapRecord\Models\ModelNotFoundException) {
-            abort(500);
-        }
-
-        $eduidczOrganization = EduidczOrganization::create([
-            'dc' => now()->timestamp,
-            'oPointer' => $organization->getDn(),
-            'entityIDofIdP' => $entity->entityid,
-        ]);
-
-        abort_if(is_null($eduidczOrganization), 500);
-
-        return to_route('entities.show', $entity)
-            ->with('status', __('entities.organization_assigned'));
     }
 }
