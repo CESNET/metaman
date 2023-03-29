@@ -3,39 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class FakeController extends Controller
 {
-    public function login(int $id = null)
+    public function store(Request $request): RedirectResponse
     {
-        if (! App::environment(['local', 'testing'])) {
-            dd('Only for `local` and `testing` environments!');
+        if (App::environment(['local', 'testing'])) {
+            $user = User::findOrFail($request->id);
+
+            Auth::login($user);
+            Session::regenerate();
+
+            return redirect()->intended('/');
         }
-
-        $user = User::findOrFail($id ?? request('id'));
-
-        if (! $user->active) {
-            return redirect('/blocked');
-        }
-
-        Auth::login($user);
-        Session::regenerate();
-
-        return redirect()->intended('/');
     }
 
-    public function logout()
+    public function destroy(): RedirectResponse
     {
-        if (! App::environment(['local', 'testing'])) {
-            dd('Only for `local` and `testing` environments!');
+        if (App::environment(['local', 'testing'])) {
+            Auth::logout();
+            Session::flush();
+
+            return redirect('/');
         }
-
-        Auth::logout();
-        Session::flush();
-
-        return redirect('/');
     }
 }

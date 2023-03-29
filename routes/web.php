@@ -42,8 +42,8 @@ Route::get('blocked', function () {
 });
 
 if (App::environment(['local', 'testing'])) {
-    Route::match(['get', 'post'], '/fakelogin/{id?}', [FakeController::class, 'login']);
-    Route::get('fakelogout', [FakeController::class, 'logout']);
+    Route::post('fakelogin', [FakeController::class, 'store'])->name('fakelogin');
+    Route::get('fakelogout', [FakeController::class, 'destroy'])->name('fakelogout');
 }
 
 Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
