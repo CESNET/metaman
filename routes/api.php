@@ -14,4 +14,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('statistics', [StatisticController::class, 'index']);
+Route::get('statistics', [StatisticController::class, 'index'])->name('api:statistics');
