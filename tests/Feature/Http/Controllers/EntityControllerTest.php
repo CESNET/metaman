@@ -267,6 +267,23 @@ class EntityControllerTest extends TestCase
     }
 
     /** @test */
+    public function a_user_cannot_add_metadata_using_invalid_url()
+    {
+        $user = User::factory()->create(['active' => true]);
+        $federation = Federation::factory()->create();
+
+        $this
+          ->followingRedirects()
+          ->actingAs($user)
+          ->post(route('entities.store', [
+              'metadata' => 'http://example.com',
+              'federation' => $federation->id,
+              'explanation' => $this->faker()->catchPhrase(),
+          ]))
+          ->assertSeeText(__('entities.no_metadata'));
+    }
+
+    /** @test */
     public function a_user_can_add_a_new_entity()
     {
         $user = User::factory()->create();
