@@ -19,7 +19,6 @@ use App\Http\Controllers\FederationOperatorController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupManagementController;
 use App\Http\Controllers\MembershipController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ShibbolethController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\App;
@@ -59,10 +58,6 @@ if (App::environment(['local', 'testing'])) {
 }
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-// Route::get('notifications', [NotificationController::class, 'index'])->name('notifications');
-// Route::patch('notifications/{id}', [NotificationController::class, 'update'])->name('notifications.update');
-// Route::delete('notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
 Route::get('federations/import', [FederationManagementController::class, 'index'])->name('federations.unknown');
 Route::post('federations/import', [FederationManagementController::class, 'store'])->name('federations.import');
