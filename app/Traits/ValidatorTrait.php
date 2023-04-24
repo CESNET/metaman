@@ -113,6 +113,15 @@ trait ValidatorTrait
         return $xpath->query('/md:EntityDescriptor')->item(0)->getAttribute('entityID');
     }
 
+    public function getEntityScope(object $xpath): ?string
+    {
+        if (! $this->isIDP($xpath)) {
+            return null;
+        }
+
+        return $xpath->query('/md:EntityDescriptor/md:IDPSSODescriptor/md:Extensions/shibmd:Scope')->item(0)->nodeValue;
+    }
+
     public function getEntityFile(object $xpath): string
     {
         return urlencode(preg_replace('#^https://#', '', $this->getEntityId($xpath))).'.xml';
@@ -193,6 +202,7 @@ trait ValidatorTrait
         if ($this->checkForEntityDescriptorElement($xpath)) {
             return json_encode([
                 'type' => $this->getEntityType($xpath),
+                'scope' => $this->getEntityScope($xpath),
                 'entityid' => $this->getEntityId($xpath),
                 'file' => $this->getEntityFile($xpath),
                 'name_en' => $this->getEntityNameEn($xpath),

@@ -6,9 +6,12 @@ use App\Http\Requests\AssignOrganization;
 use App\Ldap\CesnetOrganization;
 use App\Ldap\EduidczOrganization;
 use App\Models\Entity;
+use App\Traits\ValidatorTrait;
 
 class EntityOrganizationController extends Controller
 {
+    use ValidatorTrait;
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -26,10 +29,13 @@ class EntityOrganizationController extends Controller
             abort(500);
         }
 
+        $parsed_metadata = json_decode($this->parseMetadata($entity->metadata), true);
+
         $eduidczOrganization = EduidczOrganization::create([
             'dc' => now()->timestamp,
             'oPointer' => $organization->getDn(),
             'entityIDofIdP' => $entity->entityid,
+            'eduIDczScope' => $parsed_metadata['scope'],
         ]);
 
         abort_if(is_null($eduidczOrganization), 500);
