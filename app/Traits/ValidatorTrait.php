@@ -119,7 +119,7 @@ trait ValidatorTrait
             return null;
         }
 
-        return $xpath->query('/md:EntityDescriptor/md:IDPSSODescriptor/md:Extensions/shibmd:Scope')->item(0)->nodeValue;
+        return $xpath->query('/md:EntityDescriptor/md:IDPSSODescriptor/md:Extensions/shibmd:Scope')->item(0)->nodeValue ?? null;
     }
 
     public function getEntityFile(object $xpath): string
