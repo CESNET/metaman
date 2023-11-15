@@ -281,7 +281,7 @@ class EntityController extends Controller
 
                         return redirect()
                             ->route('entities.show', $entity)
-                            ->with('status', __('entities.entity_updated'));
+                            ->with('status', __('entities.entity_updated')." {$result['message']}");
 
                         break;
 

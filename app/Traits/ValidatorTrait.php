@@ -513,7 +513,7 @@ trait ValidatorTrait
         $AAScope = $xpath->query('/md:EntityDescriptor/md:AttributeAuthorityDescriptor/md:Extensions/shibmd:Scope');
 
         if ($IDPSSOScope->length !== 1) {
-            $this->error .= 'Precisely 1 EntityDescriptor/IDPSSODescriptor/Extensions/Scope required. ';
+            $this->message .= 'WARNING: Precisely 1 EntityDescriptor/IDPSSODescriptor/Extensions/Scope is HIGHLY recommended. ';
         }
 
         if ($AAScope->length > 1) {
