@@ -149,10 +149,14 @@
                 <a class="hover:bg-blue-700 text-blue-50 inline-block px-4 py-2 bg-blue-600 rounded shadow"
                     href="{{ route('entities.showmetadata', $entity) }}"
                     target="_blank">{{ __('entities.show_metadata') }}</a>
+            @else
+                <a class="hover:bg-blue-700 text-blue-50 inline-block px-4 py-2 bg-blue-600 rounded shadow"
+                    href="{{ route('entities.previewmetadata', $entity) }}"
+                    target="_blank">{{ __('entities.show_metadata') }}</a>
             @endif
 
             @can('update', $entity)
-                @unless($entity->trashed())
+                @unless ($entity->trashed())
                     <a class="hover:bg-yellow-200 inline-block px-4 py-2 text-yellow-600 bg-yellow-300 rounded shadow"
                         href="{{ route('entities.edit', $entity) }}">{{ __('common.edit') }}</a>
                 @endunless

@@ -10,6 +10,7 @@ use App\Http\Controllers\EntityManagementController;
 use App\Http\Controllers\EntityMetadataController;
 use App\Http\Controllers\EntityOperatorController;
 use App\Http\Controllers\EntityOrganizationController;
+use App\Http\Controllers\EntityPreviewMetadataController;
 use App\Http\Controllers\EntityRsController;
 use App\Http\Controllers\FakeController;
 use App\Http\Controllers\FederationController;
@@ -89,6 +90,7 @@ Route::post('entities/{entity}/rs', [EntityRsController::class, 'store'])->name(
 
 Route::get('entities/{entity}/metadata', [EntityMetadataController::class, 'store'])->name('entities.metadata');
 Route::get('entities/{entity}/showmetadata', [EntityMetadataController::class, 'show'])->name('entities.showmetadata');
+Route::get('entities/{entity}/previewmetadata', [EntityPreviewMetadataController::class, 'show'])->name('entities.previewmetadata');
 
 Route::post('entities/{entity}/organization', [EntityOrganizationController::class, 'update'])->name('entities.organization');
 
