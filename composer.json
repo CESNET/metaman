@@ -14,7 +14,6 @@
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
         "laravel/tinker": "^2.7",
-        "larswiegers/laravel-translations-checker": "^0.3",
         "livewire/livewire": "^2.10"
     },
     "require-dev": {
@@ -30,8 +29,7 @@
         "phpunit/php-code-coverage": "^9.2",
         "phpunit/phpunit": "^9.5.10",
         "spatie/laravel-ignition": "^1.0",
-        "vlucas/phpdotenv": "^5.5",
-        "worksome/envy": "^0.5"
+        "vlucas/phpdotenv": "^5.5"
     },
     "config": {
         "optimize-autoloader": true,
