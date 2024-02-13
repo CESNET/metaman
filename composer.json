@@ -25,6 +25,7 @@
         "laravel/envoy": "^2.8",
         "laravel/pint": "^1.1",
         "laravel/sail": "^1.0.1",
+        "larswiegers/laravel-translations-checker": "^0.8.0",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^7.0",
         "phpunit/php-code-coverage": "^10.0",
