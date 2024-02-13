@@ -6,7 +6,7 @@ MetaMan (short for Metadata Manager) is [Laravel](https://laravel.com)-based web
 
 ## Requirements
 
-This application is written in Laravel 9 and uses PHP Enumerations thus it requires PHP version 8.1.0 or newer.
+This application is written in Laravel 10 and uses PHP Enumerations thus it requires PHP version 8.1.0 or newer.
 
 Authentication is expected to be managed by locally running Shibboleth Service Provider, so Apache web server is highly recommended as there is an official Shibboleth module for it. There is also an unofficial Shibboleth SP module for nginx web server, however, it has not been tested and so it is not recommended.
 
