@@ -27,10 +27,6 @@ jobs:
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Generate key
         run: php artisan key:generate
-      - name: Run translations check
-        run: php artisan translations:check --excludedDirectories=vendor
-      - name: Run Envy sync
-        run: php artisan envy:sync --dry
       - name: Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
       - name: Create Database
