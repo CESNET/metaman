@@ -29,7 +29,7 @@
                                     <tr x-data class="bg-white" role="button"
                                         @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                         <td class="px-6 py-3 text-sm">
-                                            <input class="rounded" type="checkbox" name="federations[]"
+                                            <input @click.stop class="rounded" type="checkbox" name="federations[]"
                                                 value="{{ $federation->id }}">
                                         </td>
                                         <td class="px-6 py-3 text-sm">

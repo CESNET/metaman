@@ -35,7 +35,8 @@
                                 <tr x-data class="hover:bg-blue-50" role="button"
                                     @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                     <td class="px-6 py-3 text-sm">
-                                        <input class="rounded" type="checkbox" name="entities[]" value="{{ $entity->id }}">
+                                        <input @click.stop class="rounded" type="checkbox" name="entities[]"
+                                            value="{{ $entity->id }}">
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-3 text-sm">
                                         {{ $entity->{"name_$locale"} }}
@@ -109,7 +110,8 @@
                                 <tr x-data class="hover:bg-blue-50" role="button"
                                     @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                     <td class="px-6 py-3 text-sm">
-                                        <input class="rounded" type="checkbox" name="entities[]" value="{{ $entity->id }}">
+                                        <input @click.stop class="rounded" type="checkbox" name="entities[]"
+                                            value="{{ $entity->id }}">
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-3 text-sm">
                                         {{ $entity->{"name_$locale"} }}

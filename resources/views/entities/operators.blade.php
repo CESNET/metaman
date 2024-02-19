@@ -36,7 +36,8 @@
                                 <tr x-data class="bg-white" role="button"
                                     @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                     <td class="px-6 py-3 text-sm">
-                                        <input class="rounded" type="checkbox" name="operators[]" value="{{ $operator->id }}">
+                                        <input @click.stop class="rounded" type="checkbox" name="operators[]"
+                                            value="{{ $operator->id }}">
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-3 text-sm">
                                         {{ $operator->name }}
@@ -108,7 +109,8 @@
                                 <tr x-data class="bg-white" role="button"
                                     @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
                                     <td class="px-6 py-3 text-sm">
-                                        <input class="rounded" type="checkbox" name="operators[]" value="{{ $user->id }}">
+                                        <input @click.stop class="rounded" type="checkbox" name="operators[]"
+                                            value="{{ $user->id }}">
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-3 text-sm">
                                         {{ $user->name }}
