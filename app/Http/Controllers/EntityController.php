@@ -573,7 +573,9 @@ class EntityController extends Controller
         if (! app()->environment('testing')) {
             if ($entity->type->value === 'idp' && ! $entity->hfd) {
                 $eduidczOrganization = EduidczOrganization::whereEntityIDofIdP($entity->entityid)->first();
-                $eduidczOrganization->delete();
+                if (!is_null($eduidczOrganization)) {
+                    $eduidczOrganization->delete();
+                }
             }
         }
 
