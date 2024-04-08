@@ -1,28 +1,26 @@
 <?php
 
-namespace App\View\Components\Buttons;
+namespace App\View\Components\FormTable;
 
+use Closure;
+use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Back extends Component
+class Row extends Component
 {
     /**
      * Create a new component instance.
-     *
-     * @return void
      */
-
     public function __construct()
     {
+        //
     }
 
     /**
      * Get the view / contents that represent the component.
-     *
-     * @return \Illuminate\Contracts\View\View|string
      */
-    public function render()
+    public function render(): View|Closure|string
     {
-        return view('components.buttons.back');
+        return view('components.form-table.row');
     }
 }

@@ -12,23 +12,8 @@
 
     <div class="max-w-screen-md mx-auto">
 
-        <noscript>
-            <div class="sm:px-8 dark:bg-red-900 text-red-50 p-4 mb-4 font-bold bg-red-700 rounded shadow">
-                <div class="flex items-center space-x-4">
-                    <div class="dark:bg-red-700 p-2 bg-red-900 rounded">
-                        <svg class="text-red-50 w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                        </svg>
-                    </div>
-                    <p>
-                        <span class="sm:hidden">{{ __('common.javascript_short') }}</span>
-                        <span class="sm:inline hidden">{{ __('common.javascript_long') }}</span>
-                    </p>
-                </div>
-            </div>
-        </noscript>
+        @include('layouts.scriptAttention')
+
 
         <div
             class="sm:p-8 dark:bg-gray-800 dark:border-gray-500 bg-gradient-to-br from-gray-100 dark:from-gray-800 to-gray-100 dark:to-gray-800 via-gray-200 dark:via-gray-900 p-4 bg-gray-100 border rounded shadow-md">
@@ -36,15 +21,11 @@
             <header>
                 <h1 class="sm:text-5xl pb-4 text-4xl font-bold tracking-wider">{{ config('app.name') }}</h1>
                 <p class="pb-4 font-bold text-right text-blue-500">[
-                    @if (App::currentLocale() == 'cs')
-                        <a href="/language/en">
-                        @else
-                            <a href="/language/cs">
-                    @endif
+                    <x-language-switcher>
+                        {{ __('welcome.switch_language') }}
+                    </x-language-switcher>
 
-                    {{ __('welcome.switch_language') }}</a>
-                    ]
-                </p>
+                    ]</p>
                 <p class="sm:text-lg leading-relaxed">{!! __('welcome.introduction') !!}</p>
                 <div
                     class="bg-gradient-to-r from-gray-100 dark:from-gray-800 to-gray-100 dark:to-gray-800 via-gray-800 dark:via-gray-100 w-full h-px my-8">

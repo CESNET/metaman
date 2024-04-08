@@ -1,59 +1,56 @@
-@extends('layout')
+@extends('layouts.defaultImport')
 @section('title', __('categories.import'))
+@section('form_action',route('categories.import'))
 
-@section('content')
 
-    <form action="{{ route('categories.import') }}" method="post">
-        @csrf
-        <div class="dark:bg-transparent overflow-x-auto bg-white border rounded-lg">
-            <table class="min-w-full border-b border-gray-300">
-                <thead>
-                    <tr>
-                        <th
-                            class="dark:bg-gray-700 px-6 py-3 text-xs tracking-widest text-left uppercase bg-gray-100 border-b">
-                            &nbsp;
-                        </th>
-                        <th
-                            class="dark:bg-gray-700 px-6 py-3 text-xs tracking-widest text-left uppercase bg-gray-100 border-b">
-                            {{ __('common.file') }}
-                        </th>
-                        <th
-                            class="dark:bg-gray-700 px-6 py-3 text-xs tracking-widest text-left uppercase bg-gray-100 border-b">
-                            {{ __('common.name') }}
-                        </th>
-                        <th
-                            class="dark:bg-gray-700 px-6 py-3 text-xs tracking-widest text-left uppercase bg-gray-100 border-b">
-                            {{ __('common.description') }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                    @foreach ($categories as $category)
-                        <tr x-data class="hover:bg-blue-50 dark:hover:bg-gray-700"
-                            @click="checkbox = $el.querySelector('input[type=checkbox]'); checkbox.checked = !checkbox.checked">
-                            <td class="px-6 py-3 text-sm">
-                                <input @click.stop class="rounded" type="checkbox" name="categories[]"
-                                    value="{{ $category }}">
-                            </td>
-                            <td class="px-6 py-3 text-sm">
-                                <code class="text-sm text-pink-500">
-                                    {{ $category }}
-                                </code>
-                            </td>
-                            <td class="px-6 py-3 text-sm">
-                                <input class="rounded" type="text" name="names[{{ $category }}]">
-                            </td>
-                            <td class="px-6 py-3 text-sm">
-                                <input class="rounded" type="text" name="descriptions[{{ $category }}]">
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        <div class="dark:bg-transparent px-4 py-4 bg-gray-100">
-            <x-button>{{ __('categories.import') }}</x-button>
-        </div>
-    </form>
+{{--Add all cells in table --}}
+@php
+    $cells = [
+        'common.name',
+        'common.description',
+        'common.file'
+    ];
+@endphp
 
+@section('specific_fields')
+    @foreach ($categories as $category)
+
+        <x-form-table.row>
+
+            <x-form-table.body-cell>
+                <label>
+                    <input @click.stop class="rounded" type="checkbox" name="categories[]"
+                           value="{{ $category }}"  x-bind:checked="selectAll" >
+                </label>
+            </x-form-table.body-cell>
+
+            <x-form-table.body-cell>
+                <label>
+                    <input class="rounded" type="text" name="names[{{ $category }}]">
+                </label>
+            </x-form-table.body-cell>
+
+            <x-form-table.body-cell>
+                <label>
+                    <input class="rounded" type="text" name="descriptions[{{ $category }}]">
+                </label>
+            </x-form-table.body-cell>
+
+            <x-form-table.body-cell>
+                <code class="text-sm text-pink-500">
+                    {{ $category }}
+                </code>
+            </x-form-table.body-cell>
+
+        </x-form-table.row>
+
+    @endforeach
 @endsection
+
+@section('submit_button')
+    <x-button>{{ __('categories.import') }}</x-button>
+@endsection
+
+
+
+

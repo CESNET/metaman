@@ -6,17 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>eduID.cz statistics</title>
-    <style>
-        table {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
+    <link rel="stylesheet" href="{{ asset('css/statistic.css') }}">
 
-        table td {
-            border: 1px solid black;
-            padding: 3px;
-        }
-    </style>
 </head>
 
 <body>

@@ -1,12 +1,10 @@
-@extends('layout')
+@extends('layouts.index')
 @section('title', __('common.users'))
 
-@section('subheader')
-
-    <a class="hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-700 px-2 py-1 text-sm bg-gray-300 border border-gray-400 rounded"
-        href="{{ route('users.create') }}">{{ __('common.add') }}</a>
-
+@section('create')
+    <x-buttons.subhead href="{{ route('users.create') }}">{{ __('common.add') }}</x-buttons.subhead>
 @endsection
+
 
 @section('content')
 
