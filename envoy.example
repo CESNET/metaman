@@ -2,7 +2,7 @@ TARGET_SERVER=server.example.org
 TARGET_USER=web
 TARGET_DIR=metaman
 
-REPOSITORY=https://github.com/JanOppolzer/metaman
+REPOSITORY=https://github.com/CESNET/metaman
 
 APP_NAME=MetaMan
 APP_ENV=production

@@ -2,7 +2,7 @@
 
 MetaMan (short for Metadata Manager) is [Laravel](https://laravel.com)-based web application intended for managing and storing SAML metadata for identity federations within [Git](https://git-scm.com) version control system.
 
-[![Actions Status](https://github.com/JanOppolzer/metaman-laravel/workflows/Laravel/badge.svg)](https://github.com/JanOppolzer/metaman-laravel/actions)
+[![Actions Status](https://github.com/CESNET/metaman-laravel/workflows/Laravel/badge.svg)](https://github.com/CESNET/metaman-laravel/actions)
 
 ## Requirements
 
@@ -171,7 +171,7 @@ The destination host should be running Ubuntu 22.04 LTS (Jammy Jellyfish) with P
 Clone this repository:
 
 ```bash
-git clone https://github.com/JanOppolzer/metaman
+git clone https://github.com/CESNET/metaman
 ```
 
 Install PHP dependencies:
