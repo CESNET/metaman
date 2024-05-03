@@ -752,11 +752,11 @@ trait ValidatorTrait
 
         $values = [];
         foreach ($xpath->query('/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:RequestedAttribute') as $attribute) {
-            $values[] = $attribute->getAttribute('Name');
+            $values[] = $attribute->getAttribute('FriendlyName').$attribute->getAttribute('Name').$attribute->getAttribute('NameFormat');
         }
 
-        if ($duplicates = array_diff_key($values, array_unique($values))) {
-            $this->error .= 'Duplicated RequestedAttribute element definitions: '.implode(', ', $duplicates);
+        if ($duplicates = count(array_diff_key($values, array_unique($values)))) {
+            $this->error .= trans_choice('{1} A duplicated RequestedAttribute element.|[2,*] Duplicated RequestedAttribute elements.', $duplicates);
         }
     }
 
