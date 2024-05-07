@@ -8,17 +8,18 @@ use Illuminate\View\Component;
 
 class LanguageSwitcher extends Component
 {
+    public string $switchTo;
 
-    public $switchTo;
-    public $linkUrl;
-    public $linkTitle;
+    public string $linkUrl;
+
+    public string $linkTitle;
 
     /**
      * Create a new component instance.
      */
     public function __construct()
     {
-        $this->switchTo = app() -> getLocale()  === 'cs' ? 'en' : 'cs';
+        $this->switchTo = app()->getLocale() === 'cs' ? 'en' : 'cs';
         $this->linkUrl = "/language/{$this->switchTo}";
         $this->linkTitle = app()->getLocale() === 'cs' ? __('Switch to English') : __('Přepnout do češtiny');
     }
