@@ -414,9 +414,9 @@ trait ValidatorTrait
                             $doc->load($logo->nodeValue);
                             if (strcmp($doc->documentElement->nodeName, 'svg') !== 0) {
                                 $this->error .= $SSODescriptor.'/UIInfo/Logo '.$logo->nodeValue.' is not an image. ';
-                            } else {
-                                return;
                             }
+
+                            return;
                         }
 
                         if (exif_imagetype($logo->nodeValue)) {
