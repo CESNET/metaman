@@ -409,6 +409,16 @@ trait ValidatorTrait
                     if (! $file) {
                         $this->error .= $SSODescriptor.'/UIInfo/Logo '.$logo->nodeValue.' could not be read. ';
                     } else {
+                        if (str_ends_with($logo->nodeValue, '.svg')) {
+                            $doc = new \DOMDocument();
+                            $doc->load($logo->nodeValue);
+                            if (strcmp($doc->documentElement->nodeName, 'svg') !== 0) {
+                                $this->error .= $SSODescriptor.'/UIInfo/Logo '.$logo->nodeValue.' is not an image. ';
+                            } else {
+                                return;
+                            }
+                        }
+
                         if (exif_imagetype($logo->nodeValue)) {
                             $imagesize = getimagesize($logo->nodeValue);
                             $img_width = $imagesize[0];
@@ -422,14 +432,6 @@ trait ValidatorTrait
 
                             if ($img_height != $md_height) {
                                 $this->error .= $SSODescriptor.'/UIInfo/Logo[@height="'.$md_height.'"] does not match the height ('.$img_height.'px) of the image '.$logo->nodeValue.'. ';
-                            }
-                        }
-
-                        if (! exif_imagetype($logo->nodeValue)) {
-                            $doc = new \DOMDocument();
-                            $doc->load($logo->nodeValue);
-                            if (strcmp($doc->documentElement->nodeName, 'svg') !== 0) {
-                                $this->error .= $SSODescriptor.'/UIInfo/Logo '.$logo->nodeValue.' is not an image. ';
                             }
                         }
                     }
