@@ -18,6 +18,7 @@ class CreateEntitiesTable extends Migration
             $table->enum('type', ['idp', 'sp']);
             $table->string('entityid')->unique();
             $table->string('file')->unique();
+            $table->longText("xml_file")->nullable();
             $table->string('name_en', 128)->nullable();
             $table->string('name_cs', 128)->nullable();
             $table->string('description_en')->nullable();

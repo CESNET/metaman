@@ -23,9 +23,9 @@ class DatabaseSeeder extends Seeder
         User::factory()->create(['active' => false, 'admin' => true]);
         User::factory()->create(['active' => true]);
         User::factory(96)->create();
-        Federation::factory(20)->create();
-        Entity::factory(100)->create();
-        Category::factory(20)->create();
-        Group::factory(20)->create();
+/*        Federation::factory(20)->create();
+        Entity::factory(100)->create();*/
+/*        Category::factory(20)->create();
+        Group::factory(20)->create();*/
     }
 }

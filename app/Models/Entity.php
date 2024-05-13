@@ -15,6 +15,7 @@ class Entity extends Model
         'type',
         'entityid',
         'file',
+        'xml_file',
         'name_en',
         'name_cs',
         'description_en',

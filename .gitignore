@@ -5,8 +5,10 @@
 /storage/*.key
 /storage/debugbar
 /storage/git
+/storage/metadata
 /tests/report
 /vendor
+/storage/logs
 .env
 .env.backup
 .env.dusk.local

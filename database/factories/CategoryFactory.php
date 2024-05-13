@@ -27,6 +27,7 @@ class CategoryFactory extends Factory
             'name' => $name,
             'description' => $this->faker->catchPhrase(),
             'tagfile' => generateFederationID($name).'.tag',
+            'xml_value' => $this->faker->unique()->url()
         ];
     }
 }

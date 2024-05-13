@@ -12,9 +12,26 @@ trait ValidatorTrait
 
     public string $error = '';
 
+    public array $errorsArray = [];
+
+    private  $context;
+
+
+
     // //////////////////////////////////////////////////
     // Helper functions
     // //////////////////////////////////////////////////
+    private function  initContext()
+    {
+        $this->context = stream_context_create(array(
+            'http' => array(
+                'timeout' => 5   // Timeout in seconds
+            )
+        ));
+    }
+
+
+
     public function getMetadata(Request $request): string
     {
         if ($request->hasFile('file')) {
@@ -28,6 +45,7 @@ trait ValidatorTrait
         if ($request->input('metadata')) {
             return $request->input('metadata');
         }
+
     }
 
     public function libxml_display_errors(): string
@@ -46,7 +64,11 @@ trait ValidatorTrait
     {
         libxml_use_internal_errors(true);
 
+
         $dom = new \DOMDocument();
+        $dom->formatOutput = true;
+        $dom->preserveWhiteSpace = false;
+
         $dom->loadXML($metadata);
 
         $result = null;
@@ -81,6 +103,7 @@ trait ValidatorTrait
         $xpath->registerNameSpace('mdattr', 'urn:oasis:names:tc:SAML:metadata:attribute');
         $xpath->registerNameSpace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion');
         $xpath->registerNameSpace('remd', 'http://refeds.org/metadata');
+        $xpath->registerNamespace('mdrpi','urn:oasis:names:tc:SAML:metadata:rpi');
 
         return $xpath;
     }
@@ -309,6 +332,7 @@ trait ValidatorTrait
         foreach ($URL as $key => $value) {
             if (! preg_match('/^https\:\/\//', $value)) {
                 $this->error .= "HTTPS missing in $key. ";
+                $this->errorsArray['https'] = $value;
             }
         }
     }
@@ -328,24 +352,29 @@ trait ValidatorTrait
 
         if (($RepublishRequestIDP->length > 0) or ($RepublishRequestSP->length > 0)) {
             $this->error .= 'RepublishRequest element placed incorrectly in /EntityDescriptor/'.$SSODescriptor.'/Extensions, but it has to be in /EntityDescriptor/Extensions. ';
+            $this->errorsArray['RepublishRequestIDP'] = $RepublishRequestIDP->item(0)->nodeValue;
         }
 
         if ($RepublishRequest->length > 0) {
             if ($RepublishTarget->length > 0) {
                 if (strcmp('http://edugain.org/', $RepublishTarget->item(0)->nodeValue) !== 0) {
                     $this->error .= '/EntityDescriptor/Extensions/RepublishRequest/RepublishTarget misconfigured.';
+                    $this->errorsArray['RepublishTarget'] = $RepublishTarget->item(0)->nodeValue;
                 }
             } else {
                 $this->error .= '/EntityDescriptor/Extensions/RepublishRequest/RepublishTarget missing.';
+                $this->errorsArray['RepublishTarget'] = $RepublishTarget->item(0)->nodeValue;
             }
         }
     }
 
+
     public function checkURLaddress(object $element): string
     {
-        foreach ($element as $e) {
-            @$file = file_get_contents(trim($e->nodeValue));
 
+        $this->initContext();
+        foreach ($element as $e) {
+            @$file = file_get_contents(trim($e->nodeValue),0,$this->context);
             if (@$http_response_header === null) {
                 return $e->nodeValue.' from '.$e->parentNode->nodeName.'/'.$e->nodeName.'[@xml:lang="'.$e->getAttribute('xml:lang').'"] could not be read, check www.ssllabs.com for possible SSL errors. ';
             } elseif (preg_match('/403|404|500/', $http_response_header[0])) {
@@ -357,6 +386,10 @@ trait ValidatorTrait
             }
         }
     }
+
+
+
+
 
     public function checkUIInfo(object $xpath): void
     {
@@ -378,60 +411,81 @@ trait ValidatorTrait
 
         if ($DisplayName_CS->length !== 1) {
             $this->error .= $SSODescriptor.'/UIInfo/DisplayName[@xml:lang="cs"] missing. ';
+            $this->errorsArray['DisplayNameCS'] = 'DisplayName[@xml:lang="cs"] missing';
         }
 
         if ($DisplayName_EN->length !== 1) {
             $this->error .= $SSODescriptor.'/UIInfo/DisplayName[@xml:lang="en"] missing. ';
+            $this->errorsArray['DisplayNameEN'] = 'DisplayName[@xml:lang="en"] missing';
         }
 
         if ($Description_CS->length !== 1) {
             $this->error .= $SSODescriptor.'/UIInfo/Description[@xml:lang="cs"] missing. ';
+            $this->errorsArray['DescriptionCS'] = 'Description[@xml:lang="cs"] missing';
         }
 
         if ($Description_EN->length !== 1) {
             $this->error .= $SSODescriptor.'/UIInfo/Description[@xml:lang="en"] missing. ';
+            $this->errorsArray['DescriptionEN'] = 'Description[@xml:lang="en"] missing';
         }
 
         if ($InformationURL_CS->length !== 1) {
             $this->error .= $SSODescriptor.'/UIInfo/InformationURL[@xml:lang="cs"] missing. ';
+            $this->errorsArray['InformationURLCS'] = 'InformationURL[@xml:lang="cs"] missing';
         }
 
         if ($InformationURL_EN->length !== 1) {
             $this->error .= $SSODescriptor.'/UIInfo/InformationURL[@xml:lang="en"] missing. ';
+            $this->errorsArray['InformationURLEN'] = 'InformationURL[@xml:lang="en"] missing';
         }
+
+
 
         if ($this->isIDP($xpath)) {
             if ($Logo->length < 1) {
                 $this->error .= $SSODescriptor.'/UIInfo/Logo missing. ';
+                $this->errorsArray['Logo'] = 'Logo is missing';
             } else {
+                $this->initContext();
                 foreach ($Logo as $logo) {
-                    @$file = file_get_contents($logo->nodeValue);
-                    if (! $file) {
+                    @$file = file_get_contents($logo->nodeValue,0,$this->context);
+                    if (!$file) {
                         $this->error .= $SSODescriptor.'/UIInfo/Logo '.$logo->nodeValue.' could not be read. ';
+                        $this->errorsArray['Logo'] = 'Logo '.$logo->nodeValue.' could not be read';
                     } else {
-                        if (exif_imagetype($logo->nodeValue)) {
-                            $imagesize = getimagesize($logo->nodeValue);
-                            $img_width = $imagesize[0];
-                            $img_height = $imagesize[1];
-                            $md_width = $logo->getAttribute('width');
-                            $md_height = $logo->getAttribute('height');
 
-                            if ($img_width != $md_width) {
-                                $this->error .= $SSODescriptor.'/UIInfo/Logo[@width="'.$md_width.'"] does not match the width ('.$img_width.'px) of the image '.$logo->nodeValue.'. ';
+                        $headers = get_headers($logo->nodeValue, true);
+                        if(! 'image/svg+xml'===$headers['Content-Type']) {
+
+                            if (exif_imagetype($logo->nodeValue)) {
+
+                                $imagesize = getimagesize($logo->nodeValue);
+                                $img_width = $imagesize[0];
+                                $img_height = $imagesize[1];
+                                $md_width = $logo->getAttribute('width');
+                                $md_height = $logo->getAttribute('height');
+
+                                if ($img_width != $md_width) {
+                                    $this->error .= $SSODescriptor.'/UIInfo/Logo[@width="'.$md_width.'"] does not match the width ('.$img_width.'px) of the image '.$logo->nodeValue.'. ';
+                                    $this->errorsArray['Logo'] = 'Logo '.$logo->nodeValue.' could not be read';
+                                }
+
+                                if ($img_height != $md_height) {
+                                    $this->error .= $SSODescriptor.'/UIInfo/Logo[@height="'.$md_height.'"] does not match the height ('.$img_height.'px) of the image '.$logo->nodeValue.'. ';
+                                    $this->errorsArray['Logo'] = 'Logo '.$logo->nodeValue.' could not be read';
+                                }
+
+                            }
+                            else
+                            {
+                                $this->errorsArray['Logo'] = 'Logo '.$logo->nodeValue.'  is not an image.';
                             }
 
-                            if ($img_height != $md_height) {
-                                $this->error .= $SSODescriptor.'/UIInfo/Logo[@height="'.$md_height.'"] does not match the height ('.$img_height.'px) of the image '.$logo->nodeValue.'. ';
-                            }
                         }
 
-                        if (! exif_imagetype($logo->nodeValue)) {
-                            $doc = new \DOMDocument();
-                            $doc->load($logo->nodeValue);
-                            if (strcmp($doc->documentElement->nodeName, 'svg') !== 0) {
-                                $this->error .= $SSODescriptor.'/UIInfo/Logo '.$logo->nodeValue.' is not an image. ';
-                            }
-                        }
+
+
+
                     }
                 }
             }
@@ -441,6 +495,7 @@ trait ValidatorTrait
             $r = $this->checkURLaddress($PrivacyStatementURL_CS);
             if ($r) {
                 $this->error .= $r;
+                $this->errorsArray['PrivacyStatementURL_CS'] = 'PrivacyStatementURL_CS';
             }
         }
 
@@ -448,6 +503,7 @@ trait ValidatorTrait
             $r = $this->checkURLaddress($PrivacyStatementURL_EN);
             if ($r) {
                 $this->error .= $r;
+                $this->errorsArray['PrivacyStatementURL_EN'] = 'PrivacyStatementURL_EN';
             }
         }
     }
@@ -589,6 +645,7 @@ trait ValidatorTrait
 
         if ($Organization->length === 0) {
             $this->error .= 'Organization element missing. ';
+            $this->errorsArray['organization'] = 'Organization element missing.';
         } else {
             $OrganizationName_CS = $xpath->query('/md:EntityDescriptor/md:Organization/md:OrganizationName[@xml:lang="cs"]');
             $OrganizationName_EN = $xpath->query('/md:EntityDescriptor/md:Organization/md:OrganizationName[@xml:lang="en"]');
@@ -599,26 +656,32 @@ trait ValidatorTrait
 
             if ($OrganizationName_CS->length === 0) {
                 $this->error .= 'Organization/OrganizationName[@xml:lang="cs"] missing. ';
+                $this->errorsArray['OrganizationNameCS'] = 'Organization/OrganizationName[@xml:lang="cs"] missing.';
             }
 
             if ($OrganizationName_EN->length === 0) {
                 $this->error .= 'Organization/OrganizationName[@xml:lang="en"] missing. ';
+                $this->errorsArray['OrganizationNameEN'] = 'Organization/OrganizationName[@xml:lang="en"] missing.';
             }
 
             if ($OrganizationDisplayName_CS->length === 0) {
                 $this->error .= 'Organization/OrganizationDisplayName[@xml:lang="cs"] missing. ';
+                $this->errorsArray['OrganizationDisplayNameCS'] = 'Organization/OrganizationDisplayName[@xml:lang="cs"] missing.';
             }
 
             if ($OrganizationDisplayName_EN->length === 0) {
                 $this->error .= 'Organization/OrganizationDisplayName[@xml:lang="en"] missing ';
+                $this->errorsArray['OrganizationDisplayNameEN'] = 'Organization/OrganizationDisplayName[@xml:lang="en"] missing.';
             }
 
             if ($OrganizationURL_CS->length === 0) {
                 $this->error .= 'Organization/OrganizationURL[@xml:lang="cs"] missing. ';
+                $this->errorsArray['OrganizationURLCS'] = 'Organization/OrganizationURL[@xml:lang="cs"] missing.';
             }
 
             if ($OrganizationURL_EN->length === 0) {
                 $this->error .= 'Organization/OrganizationURL[@xml:lang="cs"] missing. ';
+                $this->errorsArray['OrganizationURLEN'] = 'Organization/OrganizationURL[@xml:lang="cs"] missing.';
             }
         }
     }
@@ -633,11 +696,13 @@ trait ValidatorTrait
 
             if (! preg_match('/^mailto\:/', $email)) {
                 $this->error .= 'ContactPerson/EmailAddress does not contain "mailto:" scheme. ';
+                $this->errorsArray['contactPerson'] = 'ContactPerson/EmailAddress';
             }
         }
 
         if ($ContactPersonTechnical->length < 1) {
             $this->error .= 'ContactPerson[@contactType="technical"] undefined. ';
+            $this->errorsArray['contactPerson'] = 'ContactPerson/Technical';
         } else {
             foreach ($ContactPersonTechnical as $c) {
                 @$givenName = $c->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:metadata', 'GivenName')->item(0)->nodeValue;
@@ -646,14 +711,17 @@ trait ValidatorTrait
 
                 if (empty($givenName)) {
                     $this->error .= 'ContactPerson[@contactType="technical"]/GivenName missing. ';
+                    $this->errorsArray['contactPerson'] = 'ContactPerson/GivenName';
                 }
 
                 if (empty($sn)) {
                     $this->error .= 'ContactPerson[@contactType="technical"]/SurName missing. ';
+                    $this->errorsArray['contactPerson'] = 'ContactPerson/SurName';
                 }
 
                 if (empty($email)) {
                     $this->error .= 'ContactPerson[@contactType="technical"]/EmailAddress missing. ';
+                    $this->errorsArray['contactPerson'] = 'ContactPerson/EmailAddress';
                 }
             }
         }
@@ -699,6 +767,7 @@ trait ValidatorTrait
 
                     if ($PrivacyStatementURL_EN->length === 0) {
                         $this->error .= 'UIInfo/PrivacyStatementURL[@xml:lang="en"] missing. ';
+                        $this->errorsArray['PrivacyStatementURLEN']= 'UIInfo/PrivacyStatementURL[@xml:lang="en"]';
                     }
                 }
             }
@@ -769,10 +838,19 @@ trait ValidatorTrait
         }
     }
 
-    public function validateMetadata(string $metadata): string
+    private function  setValueToDefault() : void
     {
-        $this->checkDependencies();
+        $this->errorsArray = [];
+        $this->message='';
+        $this->error='';
+        $this->code=0;
+    }
 
+    public function validateMetadata(string $metadata,bool $withRestore = false): string
+    {
+
+        $this->setValueToDefault();
+        $this->checkDependencies();
         $dom = $this->createDOM($metadata);
         $xpath = $this->createXPath($dom);
 
@@ -793,11 +871,25 @@ trait ValidatorTrait
 
             $this->generateResult();
         }
+        if(!$withRestore)
+        {
+            return json_encode([
+                'code' => $this->code,
+                'message' => $this->message,
+                'error' => $this->error,
+            ], JSON_FORCE_OBJECT);
+        }
+        else
+        {
+            return json_encode([
+                'code' => $this->code,
+                'message' => $this->message,
+                'error' => $this->error,
+                'errorArray' => $this->errorsArray,
+            ], JSON_FORCE_OBJECT);
+        }
 
-        return json_encode([
-            'code' => $this->code,
-            'message' => $this->message,
-            'error' => $this->error,
-        ], JSON_FORCE_OBJECT);
+
+
     }
 }

@@ -36,6 +36,12 @@ return [
             'visibility' => 'public',
         ],
 
+        'metadata' => [
+            'driver' => 'local',
+            'root' => '/var/www/html/storage/metadata',
+            'visibility' => 'public',
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
