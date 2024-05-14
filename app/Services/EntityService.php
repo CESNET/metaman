@@ -20,7 +20,7 @@ class EntityService
         {
             Storage::disk('metadata')->makeDirectory($folderName);
         }
-        $filePath = $folderName . '/' . $fileName . 'xml';
+        $filePath = $folderName . '/' . $fileName;
         $content = $entity->xml_file;
         Storage::disk('metadata')->put($filePath, $content);
     }

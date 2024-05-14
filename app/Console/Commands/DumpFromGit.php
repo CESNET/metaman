@@ -39,14 +39,17 @@ class DumpFromGit extends Command
     protected $description = 'Command description';
 
 
-
-
     /**
      * Execute the console command.
+     * @throws \Exception no amin
      */
     public function handle()
     {
         $firstAdminId = User::where('admin', 1)->first()->id;
+        if(empty($firstAdminId))
+            throw new \Exception('firstAdminId is null');
+
+
         $this->initializeGit();
         $this->createFederations();
         $this->createEntities($firstAdminId);
