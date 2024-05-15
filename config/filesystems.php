@@ -38,7 +38,7 @@ return [
 
         'metadata' => [
             'driver' => 'local',
-            'root' => '/var/www/html/storage/metadata',
+            'root' => storage_path('metadata'),
             'visibility' => 'public',
         ],
 
