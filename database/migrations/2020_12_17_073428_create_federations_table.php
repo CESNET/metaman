@@ -17,8 +17,8 @@ class CreateFederationsTable extends Migration
             $table->id();
             $table->string('name', 32)->unique();
             $table->string('description');
-            $table->string('tagfile', 36)->unique();
-            $table->string('cfgfile', 36)->unique();
+            $table->string('tagfile', 36)->nullable()->default(null);
+            $table->string('cfgfile', 36)->nullable()->default(null);
             $table->string('xml_id', 128)->unique();
             $table->string('xml_name', 128)->unique();
             $table->string('filters')->unique();
