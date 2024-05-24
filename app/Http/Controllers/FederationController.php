@@ -171,8 +171,12 @@ class FederationController extends Controller
                 $this->authorize('update', $federation);
 
                 $validated = $request->validated();
-                $id = generateFederationID($validated['name']);
 
+                $id = $federation->name;
+                if(isset($validated['name']))
+                {
+                    $id = generateFederationID($validated['name']);
+                }
                 $additionalFilters = $request->input('sp_and_ip_feed', 0);
                 $filters = $id;
 

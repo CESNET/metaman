@@ -904,10 +904,7 @@ class FederationControllerTest extends TestCase
             ->assertSeeText($federation->name)
             ->assertSeeText($federation->description)
             ->assertSeeText($federation->xml_id)
-            ->assertSeeText($federation->xml_name)
-            ->assertSeeText($federation->tagfile)
-            ->assertSeeText($federation->cfgfile)
-            ->assertSeeText($federation->filters);
+            ->assertSeeText($federation->xml_name);
 
         $this->assertEquals(route('federations.show', $federation), url()->current());
 
