@@ -68,33 +68,6 @@
 @section('admin_section')
 
 
-
-
-    <x-element.body-section>
-        <x-slot name="dt">
-            {{ __('federations.tagfile') }}
-        </x-slot>
-
-        <x-slot name="dd">
-            <code class="text-sm text-pink-500">
-                {{ $federation->tagfile }}
-            </code>
-        </x-slot>
-    </x-element.body-section>
-
-    <x-element.body-section>
-        <x-slot name="dt">
-            {{ __('federations.cfgfile') }}
-        </x-slot>
-
-        <x-slot name="dd">
-            <code class="text-sm text-pink-500">
-                {{ $federation->cfgfile }}
-            </code>
-        </x-slot>
-    </x-element.body-section>
-
-
     <x-element.body-section>
         <x-slot name="dt">
             {{ __('common.add_sp_idp') }}

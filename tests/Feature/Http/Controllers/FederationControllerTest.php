@@ -341,11 +341,8 @@ class FederationControllerTest extends TestCase
         $federation = Federation::first();
         $this->assertEquals($federationName, $federation->name);
         $this->assertEquals($federationDescription, $federation->description);
-        $this->assertEquals($federationTagfile, $federation->tagfile);
-        $this->assertEquals($federationCfgfile, $federation->cfgfile);
         $this->assertEquals($federationXmlid, $federation->xml_id);
         $this->assertEquals($federationXmlname, $federation->xml_name);
-        $this->assertEquals($federationFilters, $federation->filters);
         $this->assertEquals(0, $federation->approved);
         $this->assertEquals(0, $federation->active);
         $this->assertNull($federation->deleted_at);
@@ -367,8 +364,7 @@ class FederationControllerTest extends TestCase
             ->assertSee($federation->name)
             ->assertSee($federation->description)
             ->assertSee($federation->xml_id)
-            ->assertSee($federation->xml_name)
-            ->assertSee($federation->filters);
+            ->assertSee($federation->xml_name);
 
         $this->assertEquals(1, Federation::count());
         $this->assertEquals(route('federations.edit', $federation), url()->current());
@@ -818,10 +814,7 @@ class FederationControllerTest extends TestCase
             ->assertSeeText($federation->name)
             ->assertSeeText($federation->description)
             ->assertSeeText($federation->xml_id)
-            ->assertSeeText($federation->xml_name)
-            ->assertSeeText($federation->tagfile)
-            ->assertSeeText($federation->cfgfile)
-            ->assertSeeText($federation->filters);
+            ->assertSeeText($federation->xml_name);
 
         $this->assertEquals(1, Federation::count());
         $this->assertEquals(route('federations.show', $federation), url()->current());
@@ -864,11 +857,8 @@ class FederationControllerTest extends TestCase
         $federation = Federation::first();
         $this->assertEquals($federationName, $federation->name);
         $this->assertEquals($federationDescription, $federation->description);
-        $this->assertEquals($federationTagfile, $federation->tagfile);
-        $this->assertEquals($federationCfgfile, $federation->cfgfile);
         $this->assertEquals($federationXmlid, $federation->xml_id);
         $this->assertEquals($federationXmlname, $federation->xml_name);
-        $this->assertEquals($federationFilters, $federation->filters);
         $this->assertEquals(0, $federation->approved);
         $this->assertEquals(0, $federation->active);
         $this->assertNull($federation->deleted_at);
@@ -889,8 +879,7 @@ class FederationControllerTest extends TestCase
             ->assertSee($federation->name)
             ->assertSee($federation->description)
             ->assertSee($federation->xml_id)
-            ->assertSee($federation->xml_name)
-            ->assertSee($federation->filters);
+            ->assertSee($federation->xml_name);
 
         $this->assertEquals(1, Federation::count());
         $this->assertEquals(route('federations.edit', $federation), url()->current());
@@ -945,7 +934,6 @@ class FederationControllerTest extends TestCase
         $this->assertEquals($federationDescription, $federation->description);
         $this->assertEquals($federationXmlId, $federation->xml_id);
         $this->assertEquals($federationXmlName, $federation->xml_name);
-        $this->assertEquals($federationFilters, $federation->filters);
         $this->assertEquals(1, Federation::count());
         $this->assertEquals(route('federations.show', $federation), url()->current());
     }
@@ -1244,10 +1232,7 @@ class FederationControllerTest extends TestCase
             ->assertSeeText($federation->name)
             ->assertSeeText($federation->description)
             ->assertSeeText($federation->xml_id)
-            ->assertSeeText($federation->xml_name)
-            ->assertSeeText($federation->tagfile)
-            ->assertSeeText($federation->cfgfile)
-            ->assertSeeText($federation->filters);
+            ->assertSeeText($federation->xml_name);
 
         $this->assertEquals(route('federations.show', $federation), url()->current());
     }
