@@ -38,8 +38,14 @@ trait CreateFederationTrait
             $unknown[$cfgfile]['xml_name'] = $xml_name[1];
         }
 
+
         foreach ($unknown as $fed) {
-            DB::transaction(function () use ($fed) {
+
+            $filtersArray = explode(', ', $fed['filters']);
+            $additionalFilters = sizeof($filtersArray)>1;
+
+
+            DB::transaction(function () use ($additionalFilters, $fed) {
                 $federation = Federation::create([
                     'name' => $fed['xml_id'],
                     'description' => $fed['xml_id'],
@@ -48,6 +54,7 @@ trait CreateFederationTrait
                     'xml_id' => $fed["xml_id"],
                     'xml_name' => $fed["xml_name"],
                     'filters' => $fed["filters"],
+                    'additional_filters' => $additionalFilters,
                     'explanation' => 'Imported from Git repository.',
                 ]);
 

@@ -18,6 +18,7 @@ class Federation extends Model
         'xml_id',
         'xml_name',
         'filters',
+        'additional_filters',
         'explanation',
     ];
 

@@ -22,6 +22,7 @@ class CreateFederationsTable extends Migration
             $table->string('xml_id', 128)->unique();
             $table->string('xml_name', 128)->unique();
             $table->string('filters')->unique();
+            $table->boolean('additional_filters')->default(0);
             $table->boolean('approved')->default(0);
             $table->boolean('active')->default(0);
             $table->string('explanation');
