@@ -130,4 +130,5 @@ return [
     'metadata' => 'Metadata',
     'confirm' => 'Confirm',
     'organization' => 'Organization',
+    'add_sp_idp' => 'Add additional IdP and Sp  feeds',
 ];

@@ -44,4 +44,5 @@ return [
     'updated' => 'Federace byla úspěšně upravena.',
     'xml_id' => 'Atribut XML ID',
     'xml_name' => 'Atribut XML Name',
+    'add_sp_and_idp' => 'Přidat SP & IDP',
 ];

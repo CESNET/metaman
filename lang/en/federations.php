@@ -44,4 +44,5 @@ return [
     'updated' => 'Federation has been successfully updated.',
     'xml_id' => 'XML ID attribute',
     'xml_name' => 'XML Name attribute',
+    'add_sp_and_idp' => 'Add SP & IDP',
 ];

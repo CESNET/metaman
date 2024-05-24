@@ -130,4 +130,5 @@ return [
     'metadata' => 'Metadata',
     'confirm' => 'Potvrdit',
     'organization' => 'Organizace',
+    'add_sp_idp' => 'Přidat IdP a Sp feedy',
 ];

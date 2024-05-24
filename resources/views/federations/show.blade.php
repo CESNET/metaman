@@ -67,6 +67,9 @@
 
 @section('admin_section')
 
+
+
+
     <x-element.body-section>
         <x-slot name="dt">
             {{ __('federations.tagfile') }}
@@ -91,15 +94,23 @@
         </x-slot>
     </x-element.body-section>
 
+
     <x-element.body-section>
         <x-slot name="dt">
-            {{ __('federations.filters') }}
+            {{ __('common.add_sp_idp') }}
         </x-slot>
 
         <x-slot name="dd">
-            {{ $federation->filters }}
+            <label for="use_sp" class="checkbox-label">
+                <input type="checkbox" name="sp_and_ip_feed" id="sp_and_ip_feed" value="1" disabled {{ $federation->additional_filters == 1 ? 'checked' : '' }}>
+                <span class="{{ $federation->additional_filters == 1 ? 'checked-label' : 'unchecked-label' }}">
+                {{ __('federations.add_sp_and_idp') }}
+            </span>
+            </label>
         </x-slot>
     </x-element.body-section>
+
+
 
 @endsection
 

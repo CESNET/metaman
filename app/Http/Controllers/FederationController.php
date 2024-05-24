@@ -70,12 +70,14 @@ class FederationController extends Controller
     {
         $this->authorize('create', Federation::class);
 
+
         $validated = $request->validated();
         $id = generateFederationID($validated['name']);
+
+
+
         $federation = DB::transaction(function () use ($validated, $id) {
             $federation = Federation::create(array_merge($validated, [
-                'tagfile' => "$id.tag",
-                'cfgfile' => "$id.cfg",
                 'xml_id' => $id,
                 'xml_name' => "urn:mace:cesnet.cz:$id",
                 'filters' => $id,
@@ -164,9 +166,23 @@ class FederationController extends Controller
                     ->with('status', __('federations.approved', ['name' => $federation->name]));
 
             case 'update':
+
+
                 $this->authorize('update', $federation);
 
                 $validated = $request->validated();
+                $id = generateFederationID($validated['name']);
+
+                $additionalFilters = $request->input('sp_and_ip_feed', 0);
+                $filters = $id;
+
+                if($additionalFilters){
+                    $filters .= ', '.$id.'+idp';
+                    $filters .= ', '.$id.'+sp';
+                }
+                $validated['filters'] = $filters;
+                $validated['additional_filters'] = $additionalFilters;
+
                 $federation->update($validated);
 
                 if (! $federation->wasChanged()) {
