@@ -10,6 +10,7 @@ use App\Traits\DumpFromGit\CreateEntitiesTrait;
 use App\Traits\DumpFromGit\CreateFederationTrait;
 use App\Traits\DumpFromGit\EntitiesHelp\FixEntityTrait;
 use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
+use App\Traits\EdugainTrait;
 use App\Traits\EntityFolderTrait;
 use App\Traits\FederationTrait;
 use App\Traits\GitTrait;
@@ -23,6 +24,7 @@ class DumpFromGit extends Command
     use GitTrait, ValidatorTrait,EntityFolderTrait;
     use CreateFederationTrait,CreateEntitiesTrait,CreateCategoriesAndGroupsTrait;
     use UpdateEntity,FederationTrait,FixEntityTrait;
+    use EdugainTrait;
 
     /**
      * The name and signature of the console command.
@@ -59,5 +61,8 @@ class DumpFromGit extends Command
         $this->updateFederationFolders();
         $this->fixEntities();
         $this->createAllMetadataFiles();
+        $this->makeEdu2Edugain();
+
+
     }
 }
