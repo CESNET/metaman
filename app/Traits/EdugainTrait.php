@@ -9,7 +9,7 @@ trait EdugainTrait{
 
     public function  makeEdu2Edugain()
     {
-        $folderName = 'edu2edugain';
+        $folderName = 'eduid2edugain';
         $eduFed = Entity::where('edugain',1 )->get();
 
         foreach ($eduFed as $edu) {
