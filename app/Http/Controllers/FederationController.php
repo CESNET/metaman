@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFederation;
 use App\Http\Requests\UpdateFederation;
-use App\Jobs\GitAddFederation;
 use App\Jobs\GitAddMembers;
-use App\Jobs\GitDeleteFederation;
 use App\Jobs\GitDeleteMembers;
 use App\Jobs\GitUpdateFederation;
 use App\Models\Entity;
@@ -212,12 +210,14 @@ class FederationController extends Controller
                 $state = $federation->trashed() ? 'deleted' : 'restored';
                 $color = $federation->trashed() ? 'red' : 'green';
 
-                if ($federation->trashed()) {
+                //TODO ask about what we  want to do with cfg and tag files
+
+/*                if ($federation->trashed()) {
                     GitDeleteFederation::dispatch($federation, Auth::user());
                 } else {
-                    //TODO ask about what we  want to do with cfg and tag files
-                   // GitAddFederation::dispatch($federation, 'state', Auth::user());
-                }
+
+                    GitAddFederation::dispatch($federation, 'state', Auth::user());
+                }*/
 
                 Notification::send($federation->operators, new FederationStateChanged($federation));
                 Notification::send(User::activeAdmins()->select('id', 'email')->get(), new FederationStateChanged($federation));

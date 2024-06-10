@@ -4,7 +4,7 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Jobs\Old_GitAddFederation;
 use App\Jobs\GitAddMembers;
-use App\Jobs\GitDeleteFederation;
+use App\Jobs\Old_GitDeleteFederation;
 use App\Jobs\GitDeleteMembers;
 use App\Jobs\GitUpdateFederation;
 use App\Models\Entity;
