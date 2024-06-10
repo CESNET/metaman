@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\GitAddFederation;
+use App\Jobs\Old_GitAddFederation;
 use App\Jobs\GitAddMembers;
 use App\Jobs\GitDeleteFederation;
 use App\Jobs\GitDeleteMembers;
@@ -437,7 +437,7 @@ class FederationControllerTest extends TestCase
         $this->assertFalse($federation->trashed());
         $this->assertEquals(route('federations.show', $federation), url()->current());
 
-        Bus::assertDispatched(GitAddFederation::class, function ($job) use ($federation) {
+        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
             return $job->federation->is($federation);
         });
     }
@@ -974,7 +974,7 @@ class FederationControllerTest extends TestCase
         $this->assertFalse($federation->trashed());
         $this->assertEquals(route('federations.show', $federation), url()->current());
 
-        Bus::assertDispatched(GitAddFederation::class, function ($job) use ($federation) {
+        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
             return $job->federation->is($federation);
         });
     }
@@ -1208,7 +1208,7 @@ class FederationControllerTest extends TestCase
 
         $this->assertEquals(route('federations.show', $federation), url()->current());
 
-        Bus::assertDispatched(GitAddFederation::class, function ($job) use ($federation) {
+        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
             return $job->federation->is($federation);
         });
     }

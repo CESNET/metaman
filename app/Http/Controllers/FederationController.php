@@ -157,7 +157,7 @@ class FederationController extends Controller
                 $federation->approved = true;
                 $federation->update();
 
-                GitAddFederation::dispatch($federation, 'approve', Auth::user());
+                //GitAddFederation::dispatch($federation, 'approve', Auth::user());
                 Notification::send($federation->operators, new FederationApproved($federation));
                 Notification::send(User::activeAdmins()->select('id', 'email')->get(), new FederationApproved($federation));
 
@@ -215,7 +215,8 @@ class FederationController extends Controller
                 if ($federation->trashed()) {
                     GitDeleteFederation::dispatch($federation, Auth::user());
                 } else {
-                    GitAddFederation::dispatch($federation, 'state', Auth::user());
+                    //TODO ask about what we  want to do with cfg and tag files
+                   // GitAddFederation::dispatch($federation, 'state', Auth::user());
                 }
 
                 Notification::send($federation->operators, new FederationStateChanged($federation));
