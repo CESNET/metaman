@@ -209,7 +209,6 @@ class FederationController extends Controller
                 $state = $federation->trashed() ? 'deleted' : 'restored';
                 $color = $federation->trashed() ? 'red' : 'green';
 
-                //TODO ask about what we  want to do with cfg and tag files
 
 /*                if ($federation->trashed()) {
                     GitDeleteFederation::dispatch($federation, Auth::user());

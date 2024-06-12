@@ -180,7 +180,36 @@ trait UpdateEntity
         return $dom->saveXML();
     }
 
+    /**
+     * @param array $timestampDocumentArray for add registration time from git file
+     * @return void update entity in db and return
+     */
+    public function updateEntityXml($entity,array $timestampDocumentArray = []): void
+    {
+        if(empty($entity->xml_file))
+            return;
 
+        $xml_document = $entity->xml_file;
+        $isIdp = false;
+        if($entity->type == "idp")
+            $isIdp = true;
+
+
+        if($entity->rs)
+        {
+            $xml_document = $this->updateResearchAndScholarship($xml_document,$isIdp);
+        }
+        if(!empty($entity->category_id))
+        {
+            $xml_document = $this->updateXmlCategories($xml_document,$entity->category_id);
+        }
+
+        $xml_document = $this->updateRegistrationInfo($xml_document,$entity->entityid,$timestampDocumentArray);
+
+
+        Entity::whereId($entity->id)->update(['xml_file' => $xml_document]);
+
+    }
 
 
     public function updateEntitiesXml() : void
@@ -196,28 +225,7 @@ trait UpdateEntity
 
         foreach (Entity::select()->get() as $entity)
         {
-            if(empty($entity->xml_file))
-                continue;
-
-            $xml_document = $entity->xml_file;
-            $isIdp = false;
-            if($entity->type == "idp")
-                $isIdp = true;
-
-
-            if($entity->rs)
-            {
-                $xml_document = $this->updateResearchAndScholarship($xml_document,$isIdp);
-            }
-            if(!empty($entity->category_id))
-            {
-                $xml_document = $this->updateXmlCategories($xml_document,$entity->category_id);
-            }
-
-            $xml_document = $this->updateRegistrationInfo($xml_document,$entity->entityid,$timestampDocumentArray);
-
-
-            Entity::whereId($entity->id)->update(['xml_file' => $xml_document]);
+            $this->updateEntityXml($entity,$timestampDocumentArray);
         }
     }
 
