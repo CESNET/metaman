@@ -1,8 +1,8 @@
-# MetaMan-Laravel
+# MetaMan
 
 MetaMan (short for Metadata Manager) is [Laravel](https://laravel.com)-based web application intended for managing and storing SAML metadata for identity federations within [Git](https://git-scm.com) version control system.
 
-[![Actions Status](https://github.com/CESNET/metaman-laravel/workflows/Laravel/badge.svg)](https://github.com/CESNET/metaman-laravel/actions)
+[![Actions Status](https://github.com/CESNET/metaman/workflows/Laravel/badge.svg)](https://github.com/CESNET/metaman/actions)
 
 ## Requirements
 
