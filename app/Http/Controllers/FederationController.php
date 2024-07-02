@@ -4,11 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFederation;
 use App\Http\Requests\UpdateFederation;
-use App\Jobs\GitAddFederation;
 use App\Jobs\GitAddMembers;
-use App\Jobs\GitDeleteFederation;
 use App\Jobs\GitDeleteMembers;
-use App\Jobs\GitUpdateFederation;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
@@ -157,7 +154,7 @@ class FederationController extends Controller
                 $federation->approved = true;
                 $federation->update();
 
-                GitAddFederation::dispatch($federation, 'approve', Auth::user());
+                //GitAddFederation::dispatch($federation, 'approve', Auth::user());
                 Notification::send($federation->operators, new FederationApproved($federation));
                 Notification::send(User::activeAdmins()->select('id', 'email')->get(), new FederationApproved($federation));
 
@@ -194,7 +191,7 @@ class FederationController extends Controller
                         ->route('federations.show', $federation);
                 }
 
-                GitUpdateFederation::dispatch($federation, Auth::user());
+              //  GitUpdateFederation::dispatch($federation, Auth::user());
                 Notification::send($federation->operators, new FederationUpdated($federation));
                 Notification::send(User::activeAdmins()->select('id', 'email')->get(), new FederationUpdated($federation));
 
@@ -212,11 +209,13 @@ class FederationController extends Controller
                 $state = $federation->trashed() ? 'deleted' : 'restored';
                 $color = $federation->trashed() ? 'red' : 'green';
 
-                if ($federation->trashed()) {
+
+/*                if ($federation->trashed()) {
                     GitDeleteFederation::dispatch($federation, Auth::user());
                 } else {
+
                     GitAddFederation::dispatch($federation, 'state', Auth::user());
-                }
+                }*/
 
                 Notification::send($federation->operators, new FederationStateChanged($federation));
                 Notification::send(User::activeAdmins()->select('id', 'email')->get(), new FederationStateChanged($federation));

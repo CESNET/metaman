@@ -37,6 +37,8 @@ use App\Notifications\EntityUpdated;
 use App\Notifications\FederationMemberChanged;
 use App\Notifications\IdpCategoryChanged;
 use App\Notifications\YourEntityRightsChanged;
+use App\Traits\DumpFromGit\EntitiesHelp\DeleteFromEntity;
+use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
 use App\Traits\GitTrait;
 use App\Traits\ValidatorTrait;
 use Illuminate\Http\Request;
@@ -50,6 +52,7 @@ use Illuminate\Support\Facades\Storage;
 class EntityController extends Controller
 {
     use ValidatorTrait, GitTrait;
+    use DeleteFromEntity,UpdateEntity;
 
     public function __construct()
     {
@@ -127,6 +130,8 @@ class EntityController extends Controller
                     if ($new_entity['type'] === 'idp') {
                         $new_entity = array_merge($new_entity, ['hfd' => true]);
                     }
+                    $new_entity= array_merge($new_entity, ['xml_file' => $this->deleteTags($new_entity['metadata']) ]);
+
                     $entity = Entity::create($new_entity);
                     $entity->operators()->attach(Auth::id());
                     $entity->federations()->attach($federation, [
@@ -134,6 +139,7 @@ class EntityController extends Controller
                         'requested_by' => Auth::id(),
                     ]);
 
+                    $this->updateEntityXml(Entity::where('id', $entity['id'])->first());
                     return $entity;
                 });
 

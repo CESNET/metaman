@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 
 use App\Facades\EntityFacade;
+use App\Models\Membership;
 use App\Models\User;
 use App\Traits\DumpFromGit\CreateCategoriesAndGroupsTrait;
 use App\Traits\DumpFromGit\CreateEntitiesTrait;
@@ -11,17 +12,16 @@ use App\Traits\DumpFromGit\CreateFederationTrait;
 use App\Traits\DumpFromGit\EntitiesHelp\FixEntityTrait;
 use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
 use App\Traits\EdugainTrait;
-use App\Traits\EntityFolderTrait;
 use App\Traits\FederationTrait;
 use App\Traits\GitTrait;
+use Exception;
 use Illuminate\Console\Command;
 use App\Traits\ValidatorTrait;
-use Illuminate\Support\Facades\Artisan;
 
 
 class DumpFromGit extends Command
 {
-    use GitTrait, ValidatorTrait,EntityFolderTrait;
+    use GitTrait, ValidatorTrait;
     use CreateFederationTrait,CreateEntitiesTrait,CreateCategoriesAndGroupsTrait;
     use UpdateEntity,FederationTrait,FixEntityTrait;
     use EdugainTrait;
@@ -38,18 +38,27 @@ class DumpFromGit extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Dump all old information from git';
+
+    private function createMetadataFiles(): void
+    {
+        $this->updateFederationFolders();
+        $membership = Membership::select('entity_id','federation_id')->whereApproved(1)->get();
+        foreach ($membership as $member) {
+            EntityFacade::saveMetadataToFederationFolder($member->entity_id, $member->federation_id);
+        }
+    }
 
 
     /**
      * Execute the console command.
-     * @throws \Exception no amin
+     * @throws Exception no amin
      */
     public function handle()
     {
         $firstAdminId = User::where('admin', 1)->first()->id;
         if(empty($firstAdminId))
-            throw new \Exception('firstAdminId is null');
+            throw new Exception('firstAdminId is null');
 
 
         $this->initializeGit();
@@ -60,7 +69,7 @@ class DumpFromGit extends Command
         $this->updateEntitiesXml();
         $this->updateFederationFolders();
         $this->fixEntities();
-        $this->createAllMetadataFiles();
+        $this->createMetadataFiles();
         $this->makeEdu2Edugain();
 
 

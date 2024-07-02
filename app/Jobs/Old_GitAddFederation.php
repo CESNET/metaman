@@ -13,9 +13,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitDeleteFederation implements ShouldQueue
+class Old_GitAddFederation implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, GitTrait;
 
@@ -26,6 +27,7 @@ class GitDeleteFederation implements ShouldQueue
      */
     public function __construct(
         public Federation $federation,
+        public string $action,
         public User $user
     ) {
     }
@@ -37,15 +39,24 @@ class GitDeleteFederation implements ShouldQueue
      */
     public function handle()
     {
+        $content = "[{$this->federation->xml_id}]\n";
+        $content .= "filters = {$this->federation->filters}\n";
+        $content .= "name = {$this->federation->xml_name}";
+
         $git = $this->initializeGit();
 
-        $git->removeFile($this->federation->cfgfile);
-        $git->removeFile($this->federation->tagfile);
+        Storage::put($this->federation->cfgfile, $content);
+        Storage::put($this->federation->tagfile, '');
 
         if ($git->hasChanges()) {
+            $git->addFile($this->federation->cfgfile);
+            $git->addFile($this->federation->tagfile);
+
             $git->commit(
-                $this->committer().": {$this->federation->xml_id} (delete)\n\n"
-                    ."Deleted by: {$this->user->name} ({$this->user->uniqueid})\n"
+                $this->committer().": {$this->federation->xml_id} (add)\n\n"
+                    ."Requested by: {$this->federation->operators[0]->name} ({$this->federation->operators[0]->uniqueid})\n"
+                    .wordwrap("Explanation: {$this->federation->explanation}", 72)."\n\n"
+                    ."Approved by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
             $git->push();
