@@ -157,7 +157,6 @@ class EntityController extends Controller
                     ->back()
                     ->with('status', "{$result['error']} {$result['message']}")
                     ->with('color', 'red');
-
                 break;
 
             default:
@@ -256,6 +255,7 @@ class EntityController extends Controller
                 switch ($result['code']) {
                     case '0':
 
+                        $xml_file = $this->deleteTags($updated_entity['metadata']);
                         $entity->update([
                             'name_en' => $updated_entity['name_en'],
                             'name_cs' => $updated_entity['name_cs'],
@@ -264,6 +264,7 @@ class EntityController extends Controller
                             'cocov1' => $updated_entity['cocov1'],
                             'sirtfi' => $updated_entity['sirtfi'],
                             'metadata' => $updated_entity['metadata'],
+                            'xml_file' => $xml_file,
                         ]);
 
                         if ($entity->type->value === 'idp') {
@@ -276,14 +277,14 @@ class EntityController extends Controller
                                 ->with('status', __('entities.not_changed'));
                         }
 
-                        Bus::chain([
+/*                        Bus::chain([
                             new GitUpdateEntity($entity, Auth::user()),
                             function () use ($entity) {
                                 $admins = User::activeAdmins()->select('id', 'email')->get();
                                 Notification::send($entity->operators, new EntityUpdated($entity));
                                 Notification::send($admins, new EntityUpdated($entity));
                             },
-                        ])->dispatch();
+                        ])->dispatch();*/
 
                         return redirect()
                             ->route('entities.show', $entity)
@@ -313,10 +314,11 @@ class EntityController extends Controller
             case 'state':
                 $this->authorize('delete', $entity);
 
+                // TODO  restore
                 if ($entity->trashed()) {
                     $entity->restore();
 
-                    Bus::chain([
+/*                    Bus::chain([
                         new GitAddEntity($entity, Auth::user()),
                         new GitAddToHfd($entity, Auth::user()),
                         new GitRestoreToEdugain($entity, Auth::user()),
@@ -330,22 +332,24 @@ class EntityController extends Controller
                                 Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToHfd($entity));
                             }
                         },
-                    ])->dispatch();
+                    ])->dispatch();*/
 
+                    // TODO here M:N  connection wit federation
                     foreach ($entity->federations as $federation) {
-                        Bus::chain([
+/*                        Bus::chain([
                             new GitAddMember($federation, $entity, Auth::user()),
                             function () use ($federation, $entity) {
                                 $admins = User::activeAdmins()->select('id', 'email')->get();
                                 Notification::send($federation->operators, new FederationMemberChanged($federation, $entity, 'added'));
                                 Notification::send($admins, new FederationMemberChanged($federation, $entity, 'added'));
                             },
-                        ])->dispatch();
+                        ])->dispatch();*/
                     }
                 } else {
                     $entity->delete();
 
-                    Bus::chain([
+                    //TODO delete chain
+/*                    Bus::chain([
                         new GitDeleteEntity($entity, Auth::user()),
                         new GitDeleteFromHfd($entity, Auth::user()),
                         new GitDeleteFromEdugain($entity, Auth::user()),
@@ -359,7 +363,7 @@ class EntityController extends Controller
                                 Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromHfd($entity));
                             }
                         },
-                    ])->dispatch();
+                    ])->dispatch();*/
                 }
 
                 $state = $entity->trashed() ? 'deleted' : 'restored';
