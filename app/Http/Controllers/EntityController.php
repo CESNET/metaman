@@ -335,16 +335,16 @@ class EntityController extends Controller
                     ])->dispatch();*/
 
                     // TODO here M:N  connection wit federation
-                    foreach ($entity->federations as $federation) {
-/*                        Bus::chain([
+/*                    foreach ($entity->federations as $federation) {
+                        Bus::chain([
                             new GitAddMember($federation, $entity, Auth::user()),
                             function () use ($federation, $entity) {
                                 $admins = User::activeAdmins()->select('id', 'email')->get();
                                 Notification::send($federation->operators, new FederationMemberChanged($federation, $entity, 'added'));
                                 Notification::send($admins, new FederationMemberChanged($federation, $entity, 'added'));
                             },
-                        ])->dispatch();*/
-                    }
+                        ])->dispatch();
+                    }*/
                 } else {
                     $entity->delete();
 
@@ -435,7 +435,8 @@ class EntityController extends Controller
                 $status = $entity->edugain ? 'edugain' : 'no_edugain';
                 $color = $entity->edugain ? 'green' : 'red';
 
-                if ($entity->edugain) {
+                // TODO  add and delete from EDUGAIN
+/*                if ($entity->edugain) {
                     Bus::chain([
                         new GitAddToEdugain($entity, Auth::user()),
                         function () use ($entity) {
@@ -453,7 +454,7 @@ class EntityController extends Controller
                             Notification::send($admins, new EntityEdugainStatusChanged($entity));
                         },
                     ])->dispatch();
-                }
+                }*/
 
                 return redirect()
                     ->back()
@@ -509,14 +510,15 @@ class EntityController extends Controller
                 $entity->category()->associate($category);
                 $entity->save();
 
-                Bus::chain([
+                // TODO work with category
+/*                Bus::chain([
                     new GitDeleteFromCategory($old_category, $entity, Auth::user()),
                     new GitAddToCategory($category, $entity, Auth::user()),
                     function () use ($entity, $category) {
                         $admins = User::activeAdmins()->select('id', 'email')->get();
                         Notification::send($admins, new IdpCategoryChanged($entity, $category));
                     },
-                ])->dispatch();
+                ])->dispatch();*/
 
                 if (! $entity->wasChanged()) {
                     return redirect()
