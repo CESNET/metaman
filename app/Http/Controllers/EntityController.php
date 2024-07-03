@@ -139,7 +139,6 @@ class EntityController extends Controller
                         'requested_by' => Auth::id(),
                     ]);
 
-                    $this->updateEntityXml(Entity::where('id', $entity['id'])->first());
                     return $entity;
                 });
 
