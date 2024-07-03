@@ -2,7 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Facades\EntityFacade;
 use App\Models\Entity;
+use App\Models\Membership;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -29,7 +31,15 @@ class FolderAddEntity implements ShouldQueue
      */
     public function handle(): void
     {
-        dump("hello word");
+        // TODO add aproveChecker to this query
+        $federationMembershipId = Membership::select('federation_id')
+            ->where('entity_id',$this->entity->id)
+            ->get();
+
+        foreach ($federationMembershipId as $fedId )
+        {
+            EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
+        }
     }
 
     /**
