@@ -255,20 +255,23 @@ class EntityController extends Controller
                     case '0':
 
                         $xml_file = $this->deleteTags($updated_entity['metadata']);
-                        $entity->update([
-                            'name_en' => $updated_entity['name_en'],
-                            'name_cs' => $updated_entity['name_cs'],
-                            'description_en' => $updated_entity['description_en'],
-                            'description_cs' => $updated_entity['description_cs'],
-                            'cocov1' => $updated_entity['cocov1'],
-                            'sirtfi' => $updated_entity['sirtfi'],
-                            'metadata' => $updated_entity['metadata'],
-                            'xml_file' => $xml_file,
-                        ]);
 
-                        if ($entity->type->value === 'idp') {
-                            $entity->update(['rs' => $updated_entity['rs']]);
-                        }
+                        DB::transaction(function () use ($entity, $updated_entity, $xml_file) {
+                            $entity->update([
+                                'name_en' => $updated_entity['name_en'],
+                                'name_cs' => $updated_entity['name_cs'],
+                                'description_en' => $updated_entity['description_en'],
+                                'description_cs' => $updated_entity['description_cs'],
+                                'cocov1' => $updated_entity['cocov1'],
+                                'sirtfi' => $updated_entity['sirtfi'],
+                                'metadata' => $updated_entity['metadata'],
+                                'xml_file' => $xml_file,
+                            ]);
+
+                            if ($entity->type->value === 'idp') {
+                                $entity->update(['rs' => $updated_entity['rs']]);
+                            }
+                        });
 
                         if (! $entity->wasChanged()) {
                             return redirect()
@@ -276,6 +279,7 @@ class EntityController extends Controller
                                 ->with('status', __('entities.not_changed'));
                         }
 
+                        //TODO updateChain
 /*                        Bus::chain([
                             new GitUpdateEntity($entity, Auth::user()),
                             function () use ($entity) {
