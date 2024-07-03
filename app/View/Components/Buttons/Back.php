@@ -11,7 +11,6 @@ class Back extends Component
      *
      * @return void
      */
-
     public function __construct()
     {
     }

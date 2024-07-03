@@ -18,7 +18,7 @@ class CreateCategoriesTable extends Migration
             $table->string('name', 32)->unique();
             $table->string('description');
             $table->string('tagfile', 36)->unique();
-            $table->string('xml_value',255)->unique()->nullable();
+            $table->string('xml_value', 255)->unique()->nullable();
             $table->timestamps();
         });
     }

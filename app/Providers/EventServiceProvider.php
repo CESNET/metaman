@@ -25,10 +25,9 @@ class EventServiceProvider extends ServiceProvider
         FederationApprove::class => [
             CreateFederationFolder::class,
         ],
-        CreateEntity::class =>[
+        CreateEntity::class => [
             SendCreatedEntityToSaveJob::class,
         ],
-
 
     ];
 

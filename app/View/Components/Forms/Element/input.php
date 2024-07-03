@@ -11,12 +11,13 @@ class input extends Component
     /**
      * Create a new component instance.
      */
-
     public $err;
+
     public function __construct($err)
     {
         $this->err = $err;
     }
+
     /**
      * Get the view / contents that represent the component.
      */

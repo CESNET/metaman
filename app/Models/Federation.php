@@ -53,7 +53,7 @@ class Federation extends Model
         // FIXME: add federations if the user is its operator!
     }
 
-    public function scopeSearch($query, string $search = null)
+    public function scopeSearch($query, ?string $search = null)
     {
         $query
             ->where('name', 'like', "%$search%")
@@ -65,5 +65,4 @@ class Federation extends Model
     protected $dispatchesEvents = [
         'updated' => FederationApprove::class,
     ];
-
 }

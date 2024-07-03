@@ -82,7 +82,7 @@ class Entity extends Model
         }
     }
 
-    public function scopeSearch($query, string $search = null)
+    public function scopeSearch($query, ?string $search = null)
     {
         $query
             ->where('entityid', 'like', "%$search%")
@@ -95,5 +95,4 @@ class Entity extends Model
     protected $dispatchesEvents = [
         'created' => CreateEntity::class,
     ];
-
 }

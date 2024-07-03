@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 class EntityManagementController extends Controller
 {
-    use ValidatorTrait, GitTrait;
+    use GitTrait, ValidatorTrait;
 
     public function __construct()
     {

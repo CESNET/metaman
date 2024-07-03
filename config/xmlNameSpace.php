@@ -1,6 +1,5 @@
 <?php
 
-
 return [
     'md' => 'urn:oasis:names:tc:SAML:2.0:metadata',
     'ds' => 'http://www.w3.org/2000/09/xmldsig#',
@@ -12,6 +11,6 @@ return [
     'mdattr' => 'urn:oasis:names:tc:SAML:metadata:attribute',
     'saml' => 'urn:oasis:names:tc:SAML:2.0:assertion',
     'remd' => 'http://refeds.org/metadata',
-    'mdrpi'=> 'urn:oasis:names:tc:SAML:metadata:rpi',
+    'mdrpi' => 'urn:oasis:names:tc:SAML:metadata:rpi',
 
 ];

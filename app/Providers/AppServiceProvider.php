@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Services\EntityService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\ServiceProvider;

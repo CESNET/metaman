@@ -23,32 +23,24 @@ class ValidateMetaConsole extends Command
      */
     protected $description = 'Command description';
 
-
-    use ValidatorTrait,FixEntityTrait;
+    use FixEntityTrait,ValidatorTrait;
 
     /**
      * Execute the console command.
      */
-
     private function doc()
     {
-        foreach (Entity::select()->get() as $entity)
-        {
+        foreach (Entity::select()->get() as $entity) {
             $ent = Entity::where('id', $entity->id)->select()->first();
 
-
             // $res = json_decode($this->validateMetadata($ent->metadata),true);
-            $res = json_decode($this->validateMetadata($ent->xml_file,true),true);
+            $res = json_decode($this->validateMetadata($ent->xml_file, true), true);
             $res['ent_id'] = $ent->id;
             $errorArray = $res['errorArray'];
 
-
-            if($res['code']==1)
-            {
+            if ($res['code'] == 1) {
                 dump($res);
-            }
-            else
-            {
+            } else {
                 dump($res['ent_id']);
             }
         }
@@ -56,38 +48,34 @@ class ValidateMetaConsole extends Command
 
     private function meta()
     {
-        foreach (Entity::select()->get() as $entity)
-        {
+        foreach (Entity::select()->get() as $entity) {
 
             $ent = Entity::where('id', $entity->id)->select()->first();
 
             $curr = 345;
 
-            if($ent->id < $curr)
+            if ($ent->id < $curr) {
                 continue;
-            if($ent->id > $curr)
+            }
+            if ($ent->id > $curr) {
                 break;
+            }
 
-
-            $res = json_decode($this->validateMetadata($ent->metadata),true);
+            $res = json_decode($this->validateMetadata($ent->metadata), true);
             $res['ent_id'] = $ent->id;
 
-
             dump($res);
-            if( $res['code']==1)
-            {
+            if ($res['code'] == 1) {
 
             }
         }
     }
 
-
     public function handle()
     {
 
-       // $this->fixEntities();
+        // $this->fixEntities();
         $this->doc();
-
 
     }
 }

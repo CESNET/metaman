@@ -229,7 +229,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'EntityFacade' => App\Facades\EntityFacade::class
+        'EntityFacade' => App\Facades\EntityFacade::class,
     ],
 
 ];

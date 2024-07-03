@@ -4,8 +4,6 @@ namespace App\Listeners;
 
 use App\Events\CreateEntity;
 use App\Jobs\FolderAddEntity;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 
 class SendCreatedEntityToSaveJob

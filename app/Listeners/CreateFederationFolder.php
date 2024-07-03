@@ -4,8 +4,6 @@ namespace App\Listeners;
 
 use App\Events\FederationApprove;
 use App\Traits\FederationTrait;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Storage;
 
 class CreateFederationFolder
@@ -27,9 +25,8 @@ class CreateFederationFolder
     {
 
         $federation = $event->federation;
-        if($federation->approved)
-        {
-            if(!Storage::disk('metadata')->exists($federation->name)){
+        if ($federation->approved) {
+            if (! Storage::disk('metadata')->exists($federation->name)) {
                 $this->createFederationFolder($federation->name);
             }
         }

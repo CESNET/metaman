@@ -2,11 +2,10 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\Old_GitAddFederation;
 use App\Jobs\GitAddMembers;
-use App\Jobs\Old_GitDeleteFederation;
 use App\Jobs\GitDeleteMembers;
 use App\Jobs\GitUpdateFederation;
+use App\Jobs\Old_GitAddFederation;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
@@ -392,9 +391,9 @@ class FederationControllerTest extends TestCase
         $federation->refresh();
         $this->assertEquals($federationName, $federation->name);
 
-/*        Bus::assertDispatched(GitUpdateFederation::class, function ($job) use ($federation) {
-            return $job->federation->is($federation);
-        });*/
+        /*        Bus::assertDispatched(GitUpdateFederation::class, function ($job) use ($federation) {
+                    return $job->federation->is($federation);
+                });*/
     }
 
     /** @test */
@@ -421,9 +420,9 @@ class FederationControllerTest extends TestCase
         $this->assertTrue($federation->trashed());
         $this->assertEquals(route('federations.show', $federation), url()->current());
 
-/*        Bus::assertDispatched(GitDeleteFederation::class, function ($job) use ($federation) {
-            return $job->federation->is($federation);
-        });*/
+        /*        Bus::assertDispatched(GitDeleteFederation::class, function ($job) use ($federation) {
+                    return $job->federation->is($federation);
+                });*/
 
         $this
             ->followingRedirects()
@@ -439,9 +438,9 @@ class FederationControllerTest extends TestCase
 
         // TODO ask about  this because no job no test
 
-/*        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
-            return $job->federation->is($federation);
-        });*/
+        /*        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
+                    return $job->federation->is($federation);
+                });*/
     }
 
     /** @test */
@@ -606,7 +605,7 @@ class FederationControllerTest extends TestCase
 
         $this->assertEquals(route('federations.show', $federation), url()->current());
 
-//        Bus::assertNotDispatched(GitUpdateFederation::class);
+        //        Bus::assertNotDispatched(GitUpdateFederation::class);
     }
 
     /** @test */
@@ -960,9 +959,9 @@ class FederationControllerTest extends TestCase
         $this->assertTrue($federation->trashed());
         $this->assertEquals(route('federations.show', $federation), url()->current());
 
-/*        Bus::assertDispatched(GitDeleteFederation::class, function ($job) use ($federation) {
-            return $job->federation->is($federation);
-        });*/
+        /*        Bus::assertDispatched(GitDeleteFederation::class, function ($job) use ($federation) {
+                    return $job->federation->is($federation);
+                });*/
 
         $this
             ->followingRedirects()
@@ -976,9 +975,9 @@ class FederationControllerTest extends TestCase
         $this->assertFalse($federation->trashed());
         $this->assertEquals(route('federations.show', $federation), url()->current());
 
-/*        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
-            return $job->federation->is($federation);
-        });*/
+        /*        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
+                    return $job->federation->is($federation);
+                });*/
     }
 
     /** @test */
@@ -1210,9 +1209,9 @@ class FederationControllerTest extends TestCase
 
         $this->assertEquals(route('federations.show', $federation), url()->current());
 
-/*        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
-            return $job->federation->is($federation);
-        });*/
+        /*        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
+                    return $job->federation->is($federation);
+                });*/
     }
 
     /** @test */

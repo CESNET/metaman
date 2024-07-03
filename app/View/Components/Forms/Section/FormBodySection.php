@@ -12,23 +12,21 @@ class FormBodySection extends Component
      * Create a new component instance.
      */
     public $name;
+
     public $label;
+
     public $err;
-    public function __construct($name,$label,$err = null)
+
+    public function __construct($name, $label, $err = null)
     {
 
-        if(is_null($err))
-        {
+        if (is_null($err)) {
             $this->err = $label;
-        }
-        else
-        {
+        } else {
             $this->err = $err;
         }
         $this->name = $name;
         $this->label = $label;
-
-
 
     }
 
