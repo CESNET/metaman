@@ -33,11 +33,10 @@ class FolderAddEntity implements ShouldQueue
     {
         // TODO add aproveChecker to this query
         $federationMembershipId = Membership::select('federation_id')
-            ->where('entity_id',$this->entity->id)
+            ->where('entity_id', $this->entity->id)
             ->get();
 
-        foreach ($federationMembershipId as $fedId )
-        {
+        foreach ($federationMembershipId as $fedId) {
             EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
         }
     }
