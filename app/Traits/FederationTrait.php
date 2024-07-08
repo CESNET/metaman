@@ -21,8 +21,8 @@ trait FederationTrait
         $federations = Federation::select('name')->get();
 
         foreach ($federations as $fed) {
-            if (! Storage::disk(config('storageCfg.name'))->exists($fed['name'])) {
-                $this->createFederationFolder($fed['name']);
+            if (! Storage::disk(config('storageCfg.name'))->exists($fed['xml_id'])) {
+                $this->createFederationFolder($fed['xml_id']);
             }
         }
     }
