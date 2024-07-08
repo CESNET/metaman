@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Facades\EntityFacade;
 use App\Models\Entity;
+use App\Models\Federation;
 use App\Models\Membership;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,6 +12,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Mockery\Exception;
 
 class FolderAddEntity implements ShouldQueue
 {
@@ -36,8 +41,31 @@ class FolderAddEntity implements ShouldQueue
             ->where('entity_id', $this->entity->id)
             ->get();
 
+        $diskName = config('storageCfg.name');
+
         foreach ($federationMembershipId as $fedId) {
-            EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
+
+            $federationFolderName = Federation::select('name')
+                ->where('id', $fedId->federation_id)
+                ->first();
+
+
+            if (!Storage::disk($diskName)->exists($federationFolderName->name)) {
+                continue;
+            }
+            $pathToDirectory = Storage::disk($diskName)->path($federationFolderName->name);
+            $lockKey = 'directory-' . md5($pathToDirectory) . '-lock';
+            $lock = Cache::lock($lockKey,120);
+
+            try {
+                EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
+            } catch (Exception $e)
+            {
+                Log::error($e->getMessage());
+            } finally {
+                $lock->release();
+            }
+
         }
     }
 

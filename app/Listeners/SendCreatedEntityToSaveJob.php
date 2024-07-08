@@ -21,7 +21,7 @@ class SendCreatedEntityToSaveJob
      */
     public function handle(CreateEntity $event): void
     {
-        Log::info('Listener triggered for CreateEntity event', ['entity_id' => $event->entity->id]);
+        //Log::info('Listener triggered for CreateEntity event', ['entity_id' => $event->entity->id]);
 
         FolderAddEntity::dispatch($event->entity);
     }
