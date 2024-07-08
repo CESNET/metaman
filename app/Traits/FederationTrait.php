@@ -7,9 +7,13 @@ use Illuminate\Support\Facades\Storage;
 
 trait FederationTrait
 {
+
+
+
     public function createFederationFolder(string $name): void
     {
-        Storage::disk('metadata')->makeDirectory($name);
+
+        Storage::disk(config('storageCfg.name'))->makeDirectory($name);
     }
 
     public function updateFederationFolders(): void
@@ -17,7 +21,7 @@ trait FederationTrait
         $federations = Federation::select('name')->get();
 
         foreach ($federations as $fed) {
-            if (! Storage::disk('metadata')->exists($fed['name'])) {
+            if (! Storage::disk(config('storageCfg.name'))->exists($fed['name'])) {
                 $this->createFederationFolder($fed['name']);
             }
         }

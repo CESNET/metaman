@@ -23,10 +23,11 @@ class CreateFederationFolder
      */
     public function handle(FederationApprove $event): void
     {
+        $diskName = config('storageCfg.name');
 
         $federation = $event->federation;
         if ($federation->approved) {
-            if (! Storage::disk('metadata')->exists($federation->name)) {
+            if (! Storage::disk($diskName)->exists($federation->name)) {
                 $this->createFederationFolder($federation->name);
             }
         }

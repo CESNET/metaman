@@ -31,17 +31,20 @@ class EntityService
      */
     public function saveEntityMetadataToFolder($entity_id, $folderName): void
     {
+        $diskName = config('storageCfg.name');
+
+
         $entity = Entity::find($entity_id);
         if (! $entity) {
             throw new Exception("Entity not found with id $entity_id");
         }
         $fileName = $entity->file;
-        if (! Storage::disk('metadata')->exists($folderName)) {
-            Storage::disk('metadata')->makeDirectory($folderName);
+        if (! Storage::disk($diskName)->exists($folderName)) {
+            Storage::disk($diskName)->makeDirectory($folderName);
         }
         $filePath = $folderName.'/'.$fileName;
         $content = $entity->xml_file;
-        Storage::disk('metadata')->put($filePath, $content);
+        Storage::disk($diskName)->put($filePath, $content);
 
     }
 }
