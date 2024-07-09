@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\FolderAddEntity;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Traits\DumpFromGit\EntitiesHelp\FixEntityTrait;
@@ -76,35 +75,34 @@ class ValidateMetaConsole extends Command
 
     private function runMDA(Federation $federation)
     {
-        $filterArray = explode(", ", $federation->filters);
+        $filterArray = explode(', ', $federation->filters);
 
         $scriptPath = config('storageCfg.mdaScript');
-        $command = "sh " . config('storageCfg.mdaScript');
+        $command = 'sh '.config('storageCfg.mdaScript');
 
         $realScriptPath = realpath($scriptPath);
 
         if ($realScriptPath === false) {
-            throw new Exception("file not exist" . $scriptPath);
+            throw new Exception('file not exist'.$scriptPath);
         }
 
         foreach ($filterArray as $filter) {
-            $file = escapeshellarg($filter) . '.xml';
+            $file = escapeshellarg($filter).'.xml';
             $pipeline = 'main';
-            $command = 'sh ' . escapeshellarg($realScriptPath) . ' ' . $file . ' ' . $pipeline ;
+            $command = 'sh '.escapeshellarg($realScriptPath).' '.$file.' '.$pipeline;
 
-            $res =  shell_exec($command);
+            $res = shell_exec($command);
             dump($res);
         }
     }
 
     public function handle()
     {
-        $federation = Federation::where('id',1)->first();
+        $federation = Federation::where('id', 1)->first();
         $this->runMDA($federation);
 
-
         // $this->fixEntities();
-      //  $this->doc();
+        //  $this->doc();
 
     }
 }

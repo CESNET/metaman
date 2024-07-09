@@ -33,7 +33,6 @@ class EntityService
     {
         $diskName = config('storageCfg.name');
 
-
         $entity = Entity::find($entity_id);
         if (! $entity) {
             throw new Exception("Entity not found with id $entity_id");

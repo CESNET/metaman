@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Storage;
 
 trait FederationTrait
 {
-
-
-
     public function createFederationFolder(string $name): void
     {
 

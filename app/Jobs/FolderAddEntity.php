@@ -33,27 +33,8 @@ class FolderAddEntity implements ShouldQueue
 
     private function runMDA(Federation $federation)
     {
-        $filterArray = explode(", ", $federation->filters);
 
-        $scriptPath = config('storageCfg.mdaScript');
-        $command = "sh " . config('storageCfg.mdaScript');
-
-        $realScriptPath = realpath($scriptPath);
-
-        if ($realScriptPath === false) {
-            throw new Exception("file not exist" . $scriptPath);
-        }
-
-        foreach ($filterArray as $filter) {
-            $file = escapeshellarg($filter) . '.xml';
-            $pipeline = 'main';
-            $command = 'sh ' . escapeshellarg($realScriptPath) . ' ' . $file . ' ' . $pipeline ;
-
-            $res =  shell_exec($command);
-            dump($res);
-        }
     }
-
 
     /**
      * Execute the job.
@@ -69,25 +50,27 @@ class FolderAddEntity implements ShouldQueue
 
         foreach ($federationMembershipId as $fedId) {
 
-
             $federation = Federation::where('id', $fedId->federation_id)->first();
 
-
-            if (!Storage::disk($diskName)->exists($federation->name)) {
+            if (! Storage::disk($diskName)->exists($federation->name)) {
                 continue;
             }
             $pathToDirectory = Storage::disk($diskName)->path($federation->name);
-            $lockKey = 'directory-' . md5($pathToDirectory) . '-lock';
-            $lock = Cache::lock($lockKey,120);
+            $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
+            $lock = Cache::lock($lockKey, 120);
 
-            try {
-                EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
-                $this->runMDA($federation);
-            } catch (Exception $e)
-            {
-                Log::error($e->getMessage());
-            } finally {
-                $lock->release();
+            if ($lock->get()) {
+
+                try {
+                    EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
+                    RunMdaScript::dispatch($federation, $lock->owner());
+                    $this->runMDA($federation);
+                } catch (Exception $e) {
+                    Log::error($e->getMessage());
+                } finally {
+                    $lock->release();
+                }
+
             }
 
         }
