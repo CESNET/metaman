@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Events\CreateEntity;
 use App\Events\FederationApprove;
+use App\Events\UpdateEntity;
 use App\Listeners\CreateFederationFolder;
+use App\Listeners\SendCreatedEntityToSaveJob;
+use App\Listeners\SendUpdatedEntityToSaveJob;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -20,10 +24,16 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        FederationApprove::class =>
-        [
+        FederationApprove::class => [
             CreateFederationFolder::class,
-        ]
+        ],
+        CreateEntity::class => [
+            SendCreatedEntityToSaveJob::class,
+        ],
+        UpdateEntity::class => [
+            SendUpdatedEntityToSaveJob::class,
+        ],
+
     ];
 
     /**

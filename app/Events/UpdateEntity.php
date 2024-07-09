@@ -2,22 +2,22 @@
 
 namespace App\Events;
 
-use App\Models\Federation;
+use App\Models\Entity;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class FederationApprove
+class UpdateEntity
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Federation $federation;
+    public Entity $entity;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Federation $federation)
+    public function __construct(Entity $entity)
     {
-        $this->federation = $federation;
+        $this->entity = $entity;
     }
 }

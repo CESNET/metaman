@@ -11,8 +11,8 @@ class Subhead extends Component
     /**
      * Create a new component instance.
      */
+    public $href;
 
-    public  $href;
     public function __construct($href)
     {
         $this->href = $href;

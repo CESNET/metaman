@@ -14,8 +14,6 @@ class MembershipPolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Membership  $membership
      * @return mixed
      */
     public function update(User $user, Membership $membership)
@@ -32,8 +30,6 @@ class MembershipPolicy
     /**
      * Determine whether the user can delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Membership  $membership
      * @return mixed
      */
     public function delete(User $user, Membership $membership)

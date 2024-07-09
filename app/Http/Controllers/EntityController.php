@@ -51,8 +51,8 @@ use Illuminate\Support\Facades\Storage;
 
 class EntityController extends Controller
 {
-    use ValidatorTrait, GitTrait;
     use DeleteFromEntity,UpdateEntity;
+    use GitTrait, ValidatorTrait;
 
     public function __construct()
     {
@@ -130,7 +130,7 @@ class EntityController extends Controller
                     if ($new_entity['type'] === 'idp') {
                         $new_entity = array_merge($new_entity, ['hfd' => true]);
                     }
-                    $new_entity= array_merge($new_entity, ['xml_file' => $this->deleteTags($new_entity['metadata']) ]);
+                    $new_entity = array_merge($new_entity, ['xml_file' => $this->deleteTags($new_entity['metadata'])]);
 
                     $entity = Entity::create($new_entity);
                     $entity->operators()->attach(Auth::id());
@@ -139,7 +139,6 @@ class EntityController extends Controller
                         'requested_by' => Auth::id(),
                     ]);
 
-                    $this->updateEntityXml(Entity::where('id', $entity['id'])->first());
                     return $entity;
                 });
 
@@ -157,7 +156,6 @@ class EntityController extends Controller
                     ->back()
                     ->with('status', "{$result['error']} {$result['message']}")
                     ->with('color', 'red');
-
                 break;
 
             default:
@@ -171,7 +169,6 @@ class EntityController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Entity  $entity
      * @return \Illuminate\Http\Response
      */
     public function show(Entity $entity)
@@ -198,7 +195,6 @@ class EntityController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Entity  $entity
      * @return \Illuminate\Http\Response
      */
     public function edit(Entity $entity)
@@ -213,8 +209,6 @@ class EntityController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Entity  $entity
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Entity $entity)
@@ -256,19 +250,24 @@ class EntityController extends Controller
                 switch ($result['code']) {
                     case '0':
 
-                        $entity->update([
-                            'name_en' => $updated_entity['name_en'],
-                            'name_cs' => $updated_entity['name_cs'],
-                            'description_en' => $updated_entity['description_en'],
-                            'description_cs' => $updated_entity['description_cs'],
-                            'cocov1' => $updated_entity['cocov1'],
-                            'sirtfi' => $updated_entity['sirtfi'],
-                            'metadata' => $updated_entity['metadata'],
-                        ]);
+                        $xml_file = $this->deleteTags($updated_entity['metadata']);
 
-                        if ($entity->type->value === 'idp') {
-                            $entity->update(['rs' => $updated_entity['rs']]);
-                        }
+                        DB::transaction(function () use ($entity, $updated_entity, $xml_file) {
+                            $entity->update([
+                                'name_en' => $updated_entity['name_en'],
+                                'name_cs' => $updated_entity['name_cs'],
+                                'description_en' => $updated_entity['description_en'],
+                                'description_cs' => $updated_entity['description_cs'],
+                                'cocov1' => $updated_entity['cocov1'],
+                                'sirtfi' => $updated_entity['sirtfi'],
+                                'metadata' => $updated_entity['metadata'],
+                                'xml_file' => $xml_file,
+                            ]);
+
+                            if ($entity->type->value === 'idp') {
+                                $entity->update(['rs' => $updated_entity['rs']]);
+                            }
+                        });
 
                         if (! $entity->wasChanged()) {
                             return redirect()
@@ -276,14 +275,15 @@ class EntityController extends Controller
                                 ->with('status', __('entities.not_changed'));
                         }
 
-                        Bus::chain([
-                            new GitUpdateEntity($entity, Auth::user()),
-                            function () use ($entity) {
-                                $admins = User::activeAdmins()->select('id', 'email')->get();
-                                Notification::send($entity->operators, new EntityUpdated($entity));
-                                Notification::send($admins, new EntityUpdated($entity));
-                            },
-                        ])->dispatch();
+                        //TODO updateChain
+                        /*                        Bus::chain([
+                                                    new GitUpdateEntity($entity, Auth::user()),
+                                                    function () use ($entity) {
+                                                        $admins = User::activeAdmins()->select('id', 'email')->get();
+                                                        Notification::send($entity->operators, new EntityUpdated($entity));
+                                                        Notification::send($admins, new EntityUpdated($entity));
+                                                    },
+                                                ])->dispatch();*/
 
                         return redirect()
                             ->route('entities.show', $entity)
@@ -313,53 +313,56 @@ class EntityController extends Controller
             case 'state':
                 $this->authorize('delete', $entity);
 
+                // TODO  restore
                 if ($entity->trashed()) {
                     $entity->restore();
 
-                    Bus::chain([
-                        new GitAddEntity($entity, Auth::user()),
-                        new GitAddToHfd($entity, Auth::user()),
-                        new GitRestoreToEdugain($entity, Auth::user()),
-                        new GitRestoreToCategory($entity, Auth::user()),
-                        function () use ($entity) {
-                            $admins = User::activeAdmins()->select('id', 'email')->get();
-                            Notification::send($entity->operators, new EntityStateChanged($entity));
-                            Notification::send($admins, new EntityStateChanged($entity));
-                            if ($entity->hfd) {
-                                Notification::send($entity->operators, new EntityAddedToHfd($entity));
-                                Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToHfd($entity));
-                            }
-                        },
-                    ])->dispatch();
+                    /*                    Bus::chain([
+                                            new GitAddEntity($entity, Auth::user()),
+                                            new GitAddToHfd($entity, Auth::user()),
+                                            new GitRestoreToEdugain($entity, Auth::user()),
+                                            new GitRestoreToCategory($entity, Auth::user()),
+                                            function () use ($entity) {
+                                                $admins = User::activeAdmins()->select('id', 'email')->get();
+                                                Notification::send($entity->operators, new EntityStateChanged($entity));
+                                                Notification::send($admins, new EntityStateChanged($entity));
+                                                if ($entity->hfd) {
+                                                    Notification::send($entity->operators, new EntityAddedToHfd($entity));
+                                                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToHfd($entity));
+                                                }
+                                            },
+                                        ])->dispatch();*/
 
-                    foreach ($entity->federations as $federation) {
-                        Bus::chain([
-                            new GitAddMember($federation, $entity, Auth::user()),
-                            function () use ($federation, $entity) {
-                                $admins = User::activeAdmins()->select('id', 'email')->get();
-                                Notification::send($federation->operators, new FederationMemberChanged($federation, $entity, 'added'));
-                                Notification::send($admins, new FederationMemberChanged($federation, $entity, 'added'));
-                            },
-                        ])->dispatch();
-                    }
+                    // TODO here M:N  connection wit federation
+                    /*                    foreach ($entity->federations as $federation) {
+                                            Bus::chain([
+                                                new GitAddMember($federation, $entity, Auth::user()),
+                                                function () use ($federation, $entity) {
+                                                    $admins = User::activeAdmins()->select('id', 'email')->get();
+                                                    Notification::send($federation->operators, new FederationMemberChanged($federation, $entity, 'added'));
+                                                    Notification::send($admins, new FederationMemberChanged($federation, $entity, 'added'));
+                                                },
+                                            ])->dispatch();
+                                        }*/
                 } else {
                     $entity->delete();
 
-                    Bus::chain([
-                        new GitDeleteEntity($entity, Auth::user()),
-                        new GitDeleteFromHfd($entity, Auth::user()),
-                        new GitDeleteFromEdugain($entity, Auth::user()),
-                        new GitDeleteFromCategory($entity->category ?? null, $entity, Auth::user()),
-                        function () use ($entity) {
-                            $admins = User::activeAdmins()->select('id', 'email')->get();
-                            Notification::send($entity->operators, new EntityStateChanged($entity));
-                            Notification::send($admins, new EntityStateChanged($entity));
-                            if ($entity->hfd) {
-                                Notification::send($entity->operators, new EntityDeletedFromHfd($entity));
-                                Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromHfd($entity));
-                            }
-                        },
-                    ])->dispatch();
+                    //TODO delete chain
+                    /*                    Bus::chain([
+                                            new GitDeleteEntity($entity, Auth::user()),
+                                            new GitDeleteFromHfd($entity, Auth::user()),
+                                            new GitDeleteFromEdugain($entity, Auth::user()),
+                                            new GitDeleteFromCategory($entity->category ?? null, $entity, Auth::user()),
+                                            function () use ($entity) {
+                                                $admins = User::activeAdmins()->select('id', 'email')->get();
+                                                Notification::send($entity->operators, new EntityStateChanged($entity));
+                                                Notification::send($admins, new EntityStateChanged($entity));
+                                                if ($entity->hfd) {
+                                                    Notification::send($entity->operators, new EntityDeletedFromHfd($entity));
+                                                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromHfd($entity));
+                                                }
+                                            },
+                                        ])->dispatch();*/
                 }
 
                 $state = $entity->trashed() ? 'deleted' : 'restored';
@@ -431,25 +434,26 @@ class EntityController extends Controller
                 $status = $entity->edugain ? 'edugain' : 'no_edugain';
                 $color = $entity->edugain ? 'green' : 'red';
 
-                if ($entity->edugain) {
-                    Bus::chain([
-                        new GitAddToEdugain($entity, Auth::user()),
-                        function () use ($entity) {
-                            $admins = User::activeAdmins()->select('id', 'email')->get();
-                            Notification::send($entity->operators, new EntityEdugainStatusChanged($entity));
-                            Notification::send($admins, new EntityEdugainStatusChanged($entity));
-                        },
-                    ])->dispatch();
-                } else {
-                    Bus::chain([
-                        new GitDeleteFromEdugain($entity, Auth::user()),
-                        function () use ($entity) {
-                            $admins = User::activeAdmins()->select('id', 'email')->get();
-                            Notification::send($entity->operators, new EntityEdugainStatusChanged($entity));
-                            Notification::send($admins, new EntityEdugainStatusChanged($entity));
-                        },
-                    ])->dispatch();
-                }
+                // TODO  add and delete from EDUGAIN
+                /*                if ($entity->edugain) {
+                                    Bus::chain([
+                                        new GitAddToEdugain($entity, Auth::user()),
+                                        function () use ($entity) {
+                                            $admins = User::activeAdmins()->select('id', 'email')->get();
+                                            Notification::send($entity->operators, new EntityEdugainStatusChanged($entity));
+                                            Notification::send($admins, new EntityEdugainStatusChanged($entity));
+                                        },
+                                    ])->dispatch();
+                                } else {
+                                    Bus::chain([
+                                        new GitDeleteFromEdugain($entity, Auth::user()),
+                                        function () use ($entity) {
+                                            $admins = User::activeAdmins()->select('id', 'email')->get();
+                                            Notification::send($entity->operators, new EntityEdugainStatusChanged($entity));
+                                            Notification::send($admins, new EntityEdugainStatusChanged($entity));
+                                        },
+                                    ])->dispatch();
+                                }*/
 
                 return redirect()
                     ->back()
@@ -505,14 +509,15 @@ class EntityController extends Controller
                 $entity->category()->associate($category);
                 $entity->save();
 
-                Bus::chain([
-                    new GitDeleteFromCategory($old_category, $entity, Auth::user()),
-                    new GitAddToCategory($category, $entity, Auth::user()),
-                    function () use ($entity, $category) {
-                        $admins = User::activeAdmins()->select('id', 'email')->get();
-                        Notification::send($admins, new IdpCategoryChanged($entity, $category));
-                    },
-                ])->dispatch();
+                // TODO work with category
+                /*                Bus::chain([
+                                    new GitDeleteFromCategory($old_category, $entity, Auth::user()),
+                                    new GitAddToCategory($category, $entity, Auth::user()),
+                                    function () use ($entity, $category) {
+                                        $admins = User::activeAdmins()->select('id', 'email')->get();
+                                        Notification::send($admins, new IdpCategoryChanged($entity, $category));
+                                    },
+                                ])->dispatch();*/
 
                 if (! $entity->wasChanged()) {
                     return redirect()
@@ -566,7 +571,6 @@ class EntityController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Entity  $entity
      * @return \Illuminate\Http\Response
      */
     public function destroy(Entity $entity)
@@ -579,7 +583,7 @@ class EntityController extends Controller
         if (! app()->environment('testing')) {
             if ($entity->type->value === 'idp' && ! $entity->hfd) {
                 $eduidczOrganization = EduidczOrganization::whereEntityIDofIdP($entity->entityid)->first();
-                if (!is_null($eduidczOrganization)) {
+                if (! is_null($eduidczOrganization)) {
                     $eduidczOrganization->delete();
                 }
             }

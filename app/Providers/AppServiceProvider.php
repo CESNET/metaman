@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
-use App\Services\EntityService;
+use App\Jobs\RunMdaScript;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,5 +33,14 @@ class AppServiceProvider extends ServiceProvider
             // Mail::alwaysTo('foo@example.org');
             Model::preventLazyLoading();
         }
+
+        RateLimiter::for('mda-run-limit', function (RunMdaScript $job) {
+            $diskName = config('storageCfg.name');
+            $pathToDirectory = Storage::disk($diskName)->path($job->federation->name);
+            $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
+
+            return Limit::perMinute(1)->by($lockKey);
+        });
+
     }
 }

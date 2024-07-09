@@ -16,7 +16,7 @@ use Throwable;
 
 class GitDeleteCategory implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, GitTrait;
+    use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.

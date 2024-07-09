@@ -62,7 +62,7 @@ class User extends Authenticatable
             ->where('active', true);
     }
 
-    public function scopeSearch($query, string $search = null)
+    public function scopeSearch($query, ?string $search = null)
     {
         $query
             ->where('name', 'like', "%$search%")

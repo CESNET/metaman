@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-
 use App\Facades\EntityFacade;
 use App\Models\Membership;
 use App\Models\User;
@@ -14,17 +13,16 @@ use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
 use App\Traits\EdugainTrait;
 use App\Traits\FederationTrait;
 use App\Traits\GitTrait;
+use App\Traits\ValidatorTrait;
 use Exception;
 use Illuminate\Console\Command;
-use App\Traits\ValidatorTrait;
-
 
 class DumpFromGit extends Command
 {
-    use GitTrait, ValidatorTrait;
-    use CreateFederationTrait,CreateEntitiesTrait,CreateCategoriesAndGroupsTrait;
-    use UpdateEntity,FederationTrait,FixEntityTrait;
+    use CreateCategoriesAndGroupsTrait,CreateEntitiesTrait,CreateFederationTrait;
     use EdugainTrait;
+    use FederationTrait,FixEntityTrait,UpdateEntity;
+    use GitTrait, ValidatorTrait;
 
     /**
      * The name and signature of the console command.
@@ -43,23 +41,23 @@ class DumpFromGit extends Command
     private function createMetadataFiles(): void
     {
         $this->updateFederationFolders();
-        $membership = Membership::select('entity_id','federation_id')->whereApproved(1)->get();
+        $membership = Membership::select('entity_id', 'federation_id')->whereApproved(1)->get();
         foreach ($membership as $member) {
             EntityFacade::saveMetadataToFederationFolder($member->entity_id, $member->federation_id);
         }
     }
 
-
     /**
      * Execute the console command.
+     *
      * @throws Exception no amin
      */
     public function handle()
     {
         $firstAdminId = User::where('admin', 1)->first()->id;
-        if(empty($firstAdminId))
+        if (empty($firstAdminId)) {
             throw new Exception('firstAdminId is null');
-
+        }
 
         $this->initializeGit();
         $this->createFederations();
@@ -71,7 +69,6 @@ class DumpFromGit extends Command
         $this->fixEntities();
         $this->createMetadataFiles();
         $this->makeEdu2Edugain();
-
 
     }
 }

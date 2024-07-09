@@ -1,26 +1,18 @@
 <?php
+
 namespace App\Traits\DumpFromGit;
 
-use App\Models\Category;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Traits\DumpFromGit\EntitiesHelp\DeleteFromEntity;
 use App\Traits\ValidatorTrait;
-use DOMNodeList;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-trait CreateEntitiesTrait{
-
-
-
-    use ValidatorTrait;
+trait CreateEntitiesTrait
+{
     use DeleteFromEntity;
-
-
-
-
+    use ValidatorTrait;
 
     public function createEntities(int $adminId): void
     {
@@ -34,12 +26,12 @@ trait CreateEntitiesTrait{
             }
 
             if (preg_match('/\.tag$/', $file)) {
-                if (preg_match('/^' . config('git.edugain_tag') . '$/', $file)) {
+                if (preg_match('/^'.config('git.edugain_tag').'$/', $file)) {
                     continue;
                 }
 
                 $federation = Federation::whereTagfile($file)->first();
-                if (!($federation === null && Storage::exists(preg_replace('/\.tag/', '.cfg', $file)))) {
+                if (! ($federation === null && Storage::exists(preg_replace('/\.tag/', '.cfg', $file)))) {
                     $tagfiles[] = $file;
                 }
             }
@@ -77,6 +69,7 @@ trait CreateEntitiesTrait{
                 if (preg_match_all($pattern, $content)) {
                     if (strcmp($tagfile, config('git.edugain_tag')) === 0) {
                         $unknown[$xmlfile]['edugain'] = 1;
+
                         continue;
                     }
 
@@ -92,7 +85,7 @@ trait CreateEntitiesTrait{
                 $entity->approved = true;
                 $entity->update();
                 foreach ($ent['federations'] as $fed) {
-                    if (!empty($fed)) {
+                    if (! empty($fed)) {
                         $entity->federations()->attach($fed, [
                             'requested_by' => $adminId,
                             'approved_by' => $adminId,

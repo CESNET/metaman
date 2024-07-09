@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Traits\DumpFromGit;
 
 use App\Models\Federation;
@@ -11,7 +12,7 @@ trait CreateFederationTrait
     {
         $cfgfiles = [];
         foreach (Storage::files() as $file) {
-            if (preg_match('/^' . config('git.edugain_cfg') . '$/', $file)) {
+            if (preg_match('/^'.config('git.edugain_cfg').'$/', $file)) {
                 continue;
             }
 
@@ -38,22 +39,20 @@ trait CreateFederationTrait
             $unknown[$cfgfile]['xml_name'] = $xml_name[1];
         }
 
-
         foreach ($unknown as $fed) {
 
             $filtersArray = explode(', ', $fed['filters']);
-            $additionalFilters = sizeof($filtersArray)>1;
-
+            $additionalFilters = count($filtersArray) > 1;
 
             DB::transaction(function () use ($additionalFilters, $fed) {
                 $federation = Federation::create([
                     'name' => $fed['xml_id'],
                     'description' => $fed['xml_id'],
-                    'tagfile' => preg_replace('/\.cfg$/', '.tag', $fed["cfgfile"]),
-                    'cfgfile' => $fed["cfgfile"],
-                    'xml_id' => $fed["xml_id"],
-                    'xml_name' => $fed["xml_name"],
-                    'filters' => $fed["filters"],
+                    'tagfile' => preg_replace('/\.cfg$/', '.tag', $fed['cfgfile']),
+                    'cfgfile' => $fed['cfgfile'],
+                    'xml_id' => $fed['xml_id'],
+                    'xml_name' => $fed['xml_name'],
+                    'filters' => $fed['filters'],
                     'additional_filters' => $additionalFilters,
                     'explanation' => 'Imported from Git repository.',
                 ]);
@@ -63,5 +62,4 @@ trait CreateFederationTrait
             });
         }
     }
-
 }

@@ -13,7 +13,7 @@ class Category extends Model
         'name',
         'description',
         'tagfile',
-        'xml_value'
+        'xml_value',
     ];
 
     public function entities()
@@ -21,7 +21,7 @@ class Category extends Model
         return $this->hasMany('App\Models\Entity');
     }
 
-    public function scopeSearch($query, string $search = null)
+    public function scopeSearch($query, ?string $search = null)
     {
         $query
             ->where('name', 'like', "%$search%")

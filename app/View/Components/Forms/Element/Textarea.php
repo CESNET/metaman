@@ -12,15 +12,14 @@ class Textarea extends Component
      * Create a new component instance.
      */
     public $content;
+
     public $err;
-    public function __construct($err,$content = null)
+
+    public function __construct($err, $content = null)
     {
-        if(is_null($content))
-        {
+        if (is_null($content)) {
             $this->content = $err;
-        }
-        else
-        {
+        } else {
             $this->content = $content;
         }
         $this->err = $err;

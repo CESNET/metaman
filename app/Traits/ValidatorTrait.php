@@ -14,23 +14,19 @@ trait ValidatorTrait
 
     public array $errorsArray = [];
 
-    private  $context;
-
-
+    private $context;
 
     // //////////////////////////////////////////////////
     // Helper functions
     // //////////////////////////////////////////////////
-    private function  initContext()
+    private function initContext()
     {
-        $this->context = stream_context_create(array(
-            'http' => array(
-                'timeout' => 5   // Timeout in seconds
-            )
-        ));
+        $this->context = stream_context_create([
+            'http' => [
+                'timeout' => 5,   // Timeout in seconds
+            ],
+        ]);
     }
-
-
 
     public function getMetadata(Request $request): string
     {
@@ -63,7 +59,6 @@ trait ValidatorTrait
     public function createDOM(string $metadata): object
     {
         libxml_use_internal_errors(true);
-
 
         $dom = new \DOMDocument();
         $dom->formatOutput = true;
@@ -103,7 +98,7 @@ trait ValidatorTrait
         $xpath->registerNameSpace('mdattr', 'urn:oasis:names:tc:SAML:metadata:attribute');
         $xpath->registerNameSpace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion');
         $xpath->registerNameSpace('remd', 'http://refeds.org/metadata');
-        $xpath->registerNamespace('mdrpi','urn:oasis:names:tc:SAML:metadata:rpi');
+        $xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
 
         return $xpath;
     }
@@ -368,13 +363,12 @@ trait ValidatorTrait
         }
     }
 
-
     public function checkURLaddress(object $element): string
     {
 
         $this->initContext();
         foreach ($element as $e) {
-            @$file = file_get_contents(trim($e->nodeValue),0,$this->context);
+            @$file = file_get_contents(trim($e->nodeValue), 0, $this->context);
             if (@$http_response_header === null) {
                 return $e->nodeValue.' from '.$e->parentNode->nodeName.'/'.$e->nodeName.'[@xml:lang="'.$e->getAttribute('xml:lang').'"] could not be read, check www.ssllabs.com for possible SSL errors. ';
             } elseif (preg_match('/403|404|500/', $http_response_header[0])) {
@@ -386,10 +380,6 @@ trait ValidatorTrait
             }
         }
     }
-
-
-
-
 
     public function checkUIInfo(object $xpath): void
     {
@@ -439,8 +429,6 @@ trait ValidatorTrait
             $this->errorsArray['InformationURLEN'] = 'InformationURL[@xml:lang="en"] missing';
         }
 
-
-
         if ($this->isIDP($xpath)) {
             if ($Logo->length < 1) {
                 $this->error .= $SSODescriptor.'/UIInfo/Logo missing. ';
@@ -448,14 +436,14 @@ trait ValidatorTrait
             } else {
                 $this->initContext();
                 foreach ($Logo as $logo) {
-                    @$file = file_get_contents($logo->nodeValue,0,$this->context);
-                    if (!$file) {
+                    @$file = file_get_contents($logo->nodeValue, 0, $this->context);
+                    if (! $file) {
                         $this->error .= $SSODescriptor.'/UIInfo/Logo '.$logo->nodeValue.' could not be read. ';
                         $this->errorsArray['Logo'] = 'Logo '.$logo->nodeValue.' could not be read';
                     } else {
 
                         $headers = get_headers($logo->nodeValue, true);
-                        if(! 'image/svg+xml'===$headers['Content-Type']) {
+                        if (! 'image/svg+xml' === $headers['Content-Type']) {
 
                             if (exif_imagetype($logo->nodeValue)) {
 
@@ -475,16 +463,11 @@ trait ValidatorTrait
                                     $this->errorsArray['Logo'] = 'Logo '.$logo->nodeValue.' could not be read';
                                 }
 
-                            }
-                            else
-                            {
+                            } else {
                                 $this->errorsArray['Logo'] = 'Logo '.$logo->nodeValue.'  is not an image.';
                             }
 
                         }
-
-
-
 
                     }
                 }
@@ -767,7 +750,7 @@ trait ValidatorTrait
 
                     if ($PrivacyStatementURL_EN->length === 0) {
                         $this->error .= 'UIInfo/PrivacyStatementURL[@xml:lang="en"] missing. ';
-                        $this->errorsArray['PrivacyStatementURLEN']= 'UIInfo/PrivacyStatementURL[@xml:lang="en"]';
+                        $this->errorsArray['PrivacyStatementURLEN'] = 'UIInfo/PrivacyStatementURL[@xml:lang="en"]';
                     }
                 }
             }
@@ -838,15 +821,15 @@ trait ValidatorTrait
         }
     }
 
-    private function  setValueToDefault() : void
+    private function setValueToDefault(): void
     {
         $this->errorsArray = [];
-        $this->message='';
-        $this->error='';
-        $this->code=0;
+        $this->message = '';
+        $this->error = '';
+        $this->code = 0;
     }
 
-    public function validateMetadata(string $metadata,bool $withRestore = false): string
+    public function validateMetadata(string $metadata, bool $withRestore = false): string
     {
 
         $this->setValueToDefault();
@@ -871,16 +854,13 @@ trait ValidatorTrait
 
             $this->generateResult();
         }
-        if(!$withRestore)
-        {
+        if (! $withRestore) {
             return json_encode([
                 'code' => $this->code,
                 'message' => $this->message,
                 'error' => $this->error,
             ], JSON_FORCE_OBJECT);
-        }
-        else
-        {
+        } else {
             return json_encode([
                 'code' => $this->code,
                 'message' => $this->message,
@@ -888,8 +868,6 @@ trait ValidatorTrait
                 'errorArray' => $this->errorsArray,
             ], JSON_FORCE_OBJECT);
         }
-
-
 
     }
 }

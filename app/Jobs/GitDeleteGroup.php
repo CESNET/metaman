@@ -16,7 +16,7 @@ use Throwable;
 
 class GitDeleteGroup implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, GitTrait;
+    use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.

@@ -67,11 +67,8 @@ class FederationController extends Controller
     {
         $this->authorize('create', Federation::class);
 
-
         $validated = $request->validated();
         $id = generateFederationID($validated['name']);
-
-
 
         $federation = DB::transaction(function () use ($validated, $id) {
             $federation = Federation::create(array_merge($validated, [
@@ -95,7 +92,6 @@ class FederationController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Federation  $federation
      * @return \Illuminate\Http\Response
      */
     public function show(Federation $federation)
@@ -110,7 +106,6 @@ class FederationController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Federation  $federation
      * @return \Illuminate\Http\Response
      */
     public function edit(Federation $federation)
@@ -126,7 +121,6 @@ class FederationController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Federation  $federation
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateFederation $request, Federation $federation)
@@ -164,20 +158,18 @@ class FederationController extends Controller
 
             case 'update':
 
-
                 $this->authorize('update', $federation);
 
                 $validated = $request->validated();
 
                 $id = $federation->name;
-                if(isset($validated['name']))
-                {
+                if (isset($validated['name'])) {
                     $id = generateFederationID($validated['name']);
                 }
                 $additionalFilters = $request->input('sp_and_ip_feed', 0);
                 $filters = $id;
 
-                if($additionalFilters){
+                if ($additionalFilters) {
                     $filters .= ', '.$id.'+idp';
                     $filters .= ', '.$id.'+sp';
                 }
@@ -191,7 +183,7 @@ class FederationController extends Controller
                         ->route('federations.show', $federation);
                 }
 
-              //  GitUpdateFederation::dispatch($federation, Auth::user());
+                //  GitUpdateFederation::dispatch($federation, Auth::user());
                 Notification::send($federation->operators, new FederationUpdated($federation));
                 Notification::send(User::activeAdmins()->select('id', 'email')->get(), new FederationUpdated($federation));
 
@@ -209,13 +201,12 @@ class FederationController extends Controller
                 $state = $federation->trashed() ? 'deleted' : 'restored';
                 $color = $federation->trashed() ? 'red' : 'green';
 
+                /*                if ($federation->trashed()) {
+                                    GitDeleteFederation::dispatch($federation, Auth::user());
+                                } else {
 
-/*                if ($federation->trashed()) {
-                    GitDeleteFederation::dispatch($federation, Auth::user());
-                } else {
-
-                    GitAddFederation::dispatch($federation, 'state', Auth::user());
-                }*/
+                                    GitAddFederation::dispatch($federation, 'state', Auth::user());
+                                }*/
 
                 Notification::send($federation->operators, new FederationStateChanged($federation));
                 Notification::send(User::activeAdmins()->select('id', 'email')->get(), new FederationStateChanged($federation));
@@ -333,7 +324,6 @@ class FederationController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Federation  $federation
      * @return \Illuminate\Http\Response
      */
     public function destroy(Federation $federation)

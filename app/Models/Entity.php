@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\EntityType;
+use App\Events\CreateEntity;
+use App\Events\UpdateEntity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -81,7 +83,7 @@ class Entity extends Model
         }
     }
 
-    public function scopeSearch($query, string $search = null)
+    public function scopeSearch($query, ?string $search = null)
     {
         $query
             ->where('entityid', 'like', "%$search%")
@@ -90,4 +92,10 @@ class Entity extends Model
             ->orWhere('description_en', 'like', "%$search%")
             ->orWhere('description_cs', 'like', "%$search%");
     }
+
+    protected $dispatchesEvents = [
+        'created' => CreateEntity::class,
+        'updated' => UpdateEntity::class,
+
+    ];
 }

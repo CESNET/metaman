@@ -20,7 +20,7 @@ class Group extends Model
         return $this->belongsToMany('App\Models\Entity');
     }
 
-    public function scopeSearch($query, string $search = null)
+    public function scopeSearch($query, ?string $search = null)
     {
         $query
             ->where('name', 'like', "%$search%")

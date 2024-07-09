@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Traits\DumpFromGit;
+
 use App\Models\Category;
 use App\Models\Entity;
 use App\Models\Group;
@@ -41,26 +43,23 @@ trait CreateCategoriesAndGroupsTrait
                 $unknown[] = $tagfile;
             }
         }
-        $names =[];
+        $names = [];
         $descriptions = [];
         $categories_conf = config('categories');
         foreach ($unknown as $item) {
             $names[$item] = preg_replace('/\.tag/', '', $item);
             $descriptions[$item] = preg_replace('/\.tag/', '', $item);
 
-            if(!empty( $categories_conf[$names[$item]] ))
-            {
+            if (! empty($categories_conf[$names[$item]])) {
                 DB::transaction(function () use ($categories_conf, $item, $names, $descriptions) {
                     Category::create([
                         'name' => $names[$item],
                         'description' => $descriptions[$item],
                         'tagfile' => $item,
-                        'xml_value'=> $categories_conf[$names[$item]]
+                        'xml_value' => $categories_conf[$names[$item]],
                     ]);
                 });
-            }
-            else
-            {
+            } else {
                 DB::transaction(function () use ($item, $names, $descriptions) {
                     Group::create([
                         'name' => $names[$item],
@@ -71,7 +70,6 @@ trait CreateCategoriesAndGroupsTrait
             }
         }
     }
-
 
     private function updateCategories(): void
     {
@@ -105,7 +103,7 @@ trait CreateCategoriesAndGroupsTrait
         }
     }
 
-    public function  updateGroupsAndCategories(): void
+    public function updateGroupsAndCategories(): void
     {
         $this->updateGroups();
         $this->updateCategories();
