@@ -15,7 +15,7 @@ trait FederationTrait
 
     public function updateFederationFolders(): void
     {
-        $federations = Federation::select('name')->get();
+        $federations = Federation::all();
 
         foreach ($federations as $fed) {
             if (! Storage::disk(config('storageCfg.name'))->exists($fed['xml_id'])) {

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Facades\EntityFacade;
+use App\Models\Entity;
 use App\Models\Membership;
 use App\Models\User;
 use App\Traits\DumpFromGit\CreateCategoriesAndGroupsTrait;
@@ -16,6 +17,7 @@ use App\Traits\GitTrait;
 use App\Traits\ValidatorTrait;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 
 class DumpFromGit extends Command
 {
@@ -59,16 +61,21 @@ class DumpFromGit extends Command
             throw new Exception('firstAdminId is null');
         }
 
-        $this->initializeGit();
-        $this->createFederations();
-        $this->createEntities($firstAdminId);
-        $this->createCategoriesAndGroups();
-        $this->updateGroupsAndCategories();
-        $this->updateEntitiesXml();
-        $this->updateFederationFolders();
-        $this->fixEntities();
-        $this->createMetadataFiles();
-        $this->makeEdu2Edugain();
+       Entity::withoutEvents( function () use ($firstAdminId) {
+           $this->initializeGit();
+           $this->createFederations();
+           $this->createEntities($firstAdminId);
+           $this->createCategoriesAndGroups();
+           $this->updateGroupsAndCategories();
+           $this->updateEntitiesXml();
+           $this->updateFederationFolders();
+           $this->fixEntities();
+           $this->createMetadataFiles();
+           $this->makeEdu2Edugain();
+
+       });
+
+
 
     }
 }
