@@ -2,7 +2,6 @@
 
 return [
     'name' => 'metadata',
-    'mdaConfigFolder' => '/home/artem/Desktop/cesnet/metadata/testdata/mda/config',
-    'mdaScript' => '/home/artem/Desktop/cesnet/metadata/testdata/mda/hello.sh',
-    /* 'mdaScript' => '/home/artem/Desktop/cesnet/metadata/testdata/mda/mda.sh',*/
+    'mdaConfigFolder' => env('MDA_CONFIG_FOLDER'),
+    'mdaScript' => env('MDA_SCRIPT'),
 ];
