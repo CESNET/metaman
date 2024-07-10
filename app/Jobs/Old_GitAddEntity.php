@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Mail\ExceptionOccured;
-use App\Models\Membership;
+use App\Models\Entity;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitAddMembership implements ShouldQueue
+class Old_GitAddEntity implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -26,7 +26,7 @@ class GitAddMembership implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public Membership $membership,
+        public Entity $entity,
         public User $user
     ) {
     }
@@ -40,17 +40,14 @@ class GitAddMembership implements ShouldQueue
     {
         $git = $this->initializeGit();
 
-        Storage::append($this->membership->federation->tagfile, $this->membership->entity->entityid);
-        $this->trimWhiteSpaces($this->membership->federation->tagfile);
+        Storage::put($this->entity->file, $this->entity->metadata);
 
         if ($git->hasChanges()) {
-            $git->addFile($this->membership->federation->tagfile);
+            $git->addFile($this->entity->file);
 
             $git->commit(
-                $this->committer().": {$this->membership->federation->tagfile} (update)\n\n"
-                    ."Requested by: {$this->membership->requester->name} ({$this->membership->requester->uniqueid})\n"
-                    .wordwrap("Explanation: {$this->membership->explanation}", 72)."\n\n"
-                    ."Approved by: {$this->user->name} ({$this->user->uniqueid})\n"
+                $this->committer().": {$this->fqdn($this->entity->entityid)} (add)\n\n"
+                    ."Added by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
             $git->push();

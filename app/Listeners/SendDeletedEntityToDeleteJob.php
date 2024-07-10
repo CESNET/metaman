@@ -5,8 +5,6 @@ namespace App\Listeners;
 use App\Events\DeleteEntity;
 use App\Facades\EntityFacade;
 use App\Jobs\FolderDeleteEntity;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 
 class SendDeletedEntityToDeleteJob
@@ -33,9 +31,6 @@ class SendDeletedEntityToDeleteJob
             EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
         }
 
-
-
-
-      //  FolderDeleteEntity::dispatch($event->entity);
+        //  FolderDeleteEntity::dispatch($event->entity);
     }
 }

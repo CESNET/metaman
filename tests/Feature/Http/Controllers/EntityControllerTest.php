@@ -2,9 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\GitAddEntity;
-use App\Jobs\GitDeleteEntity;
-use App\Jobs\GitUpdateEntity;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\Membership;

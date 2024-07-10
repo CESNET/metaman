@@ -37,7 +37,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         DeleteEntity::class => [
             SendDeletedEntityToDeleteJob::class,
-        ]
+        ],
 
     ];
 

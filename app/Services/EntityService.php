@@ -51,21 +51,17 @@ class EntityService
     public function deleteEntityMetadataFromFolder($fileName, $folderName): void
     {
         $diskName = config('storageCfg.name');
-        $pathToFile = $folderName . '/' . $fileName;
+        $pathToFile = $folderName.'/'.$fileName;
 
         if (Storage::disk($diskName)->exists($pathToFile)) {
             try {
                 Storage::disk($diskName)->delete($pathToFile);
             } catch (Exception $e) {
-                Log::error("Failed to delete file: {$pathToFile}. Error: " . $e->getMessage());
+                Log::error("Failed to delete file: {$pathToFile}. Error: ".$e->getMessage());
             }
         } else {
             Log::warning("File does not exist: {$pathToFile}");
         }
 
-
-
     }
-
-
 }

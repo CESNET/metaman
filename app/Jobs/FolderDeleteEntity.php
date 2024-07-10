@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Facades\EntityFacade;
 use App\Models\Entity;
-use App\Models\Federation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -56,11 +55,7 @@ class FolderDeleteEntity implements ShouldQueue
                 }
             }
 
-
-
-
         }
-
 
     }
 }

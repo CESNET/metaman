@@ -3,20 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEntity;
-use App\Jobs\GitAddEntity;
-use App\Jobs\GitAddMember;
 use App\Jobs\GitAddToCategory;
 use App\Jobs\GitAddToEdugain;
 use App\Jobs\GitAddToHfd;
 use App\Jobs\GitAddToRs;
-use App\Jobs\GitDeleteEntity;
 use App\Jobs\GitDeleteFromCategory;
 use App\Jobs\GitDeleteFromEdugain;
 use App\Jobs\GitDeleteFromHfd;
 use App\Jobs\GitDeleteFromRs;
 use App\Jobs\GitRestoreToCategory;
 use App\Jobs\GitRestoreToEdugain;
-use App\Jobs\GitUpdateEntity;
 use App\Ldap\CesnetOrganization;
 use App\Ldap\EduidczOrganization;
 use App\Mail\NewIdentityProvider;

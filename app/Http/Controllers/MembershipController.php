@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\GitAddEntity;
-use App\Jobs\GitAddMembership;
 use App\Jobs\GitAddToHfd;
 use App\Models\Membership;
 use App\Models\User;
@@ -41,20 +39,21 @@ class MembershipController extends Controller
             $membership->update();
         });
 
-        Bus::chain([
-            new GitAddEntity($membership->entity, Auth::user()),
-            new GitAddToHfd($membership->entity, Auth::user()),
-            new GitAddMembership($membership, Auth::user()),
-            function () use ($membership) {
-                $admins = User::activeAdmins()->select('id', 'email')->get();
-                Notification::send($membership->entity->operators, new MembershipAccepted($membership));
-                Notification::send($admins, new MembershipAccepted($membership));
-                if ($membership->entity->hfd) {
-                    Notification::send($membership->entity->operators, new EntityAddedToHfd($membership->entity));
-                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToHfd($membership->entity));
-                }
-            },
-        ])->dispatch();
+        // TODO chain of update membership chain
+        /*        Bus::chain([
+                    new Old_GitAddEntity($membership->entity, Auth::user()),
+                    new GitAddToHfd($membership->entity, Auth::user()),
+                    new GitAddMembership($membership, Auth::user()),
+                    function () use ($membership) {
+                        $admins = User::activeAdmins()->select('id', 'email')->get();
+                        Notification::send($membership->entity->operators, new MembershipAccepted($membership));
+                        Notification::send($admins, new MembershipAccepted($membership));
+                        if ($membership->entity->hfd) {
+                            Notification::send($membership->entity->operators, new EntityAddedToHfd($membership->entity));
+                            Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToHfd($membership->entity));
+                        }
+                    },
+                ])->dispatch();*/
 
         return redirect()
             ->back()

@@ -3,12 +3,11 @@
 namespace App\Jobs;
 
 use App\Mail\ExceptionOccured;
-use App\Models\Federation;
+use App\Models\Membership;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -17,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitAddMembers implements ShouldQueue
+class Old_GitAddMembership implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -27,8 +26,7 @@ class GitAddMembers implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public Federation $federation,
-        public Collection $entities,
+        public Membership $membership,
         public User $user
     ) {
     }
@@ -42,18 +40,17 @@ class GitAddMembers implements ShouldQueue
     {
         $git = $this->initializeGit();
 
-        foreach ($this->entities as $entity) {
-            Storage::append($this->federation->tagfile, $entity->entityid);
-        }
-
-        $this->trimWhiteSpaces($this->federation->tagfile);
+        Storage::append($this->membership->federation->tagfile, $this->membership->entity->entityid);
+        $this->trimWhiteSpaces($this->membership->federation->tagfile);
 
         if ($git->hasChanges()) {
-            $git->addFile($this->federation->tagfile);
+            $git->addFile($this->membership->federation->tagfile);
 
             $git->commit(
-                $this->committer().": {$this->federation->tagfile} (update)\n\n"
-                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
+                $this->committer().": {$this->membership->federation->tagfile} (update)\n\n"
+                    ."Requested by: {$this->membership->requester->name} ({$this->membership->requester->uniqueid})\n"
+                    .wordwrap("Explanation: {$this->membership->explanation}", 72)."\n\n"
+                    ."Approved by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
             $git->push();

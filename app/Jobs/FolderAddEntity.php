@@ -31,7 +31,6 @@ class FolderAddEntity implements ShouldQueue
         $this->entity = $entity;
     }
 
-
     /**
      * Execute the job.
      */

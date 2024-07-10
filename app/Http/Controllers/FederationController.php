@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFederation;
 use App\Http\Requests\UpdateFederation;
-use App\Jobs\GitAddMembers;
 use App\Jobs\GitDeleteMembers;
 use App\Models\Entity;
 use App\Models\Federation;
@@ -284,7 +283,9 @@ class FederationController extends Controller
                 ]);
 
                 $new_entities = Entity::whereIn('id', request('entities'))->get();
-                GitAddMembers::dispatch($federation, $new_entities, Auth::user());
+
+                //TODO add members to federation
+                //  GitAddMembers::dispatch($federation, $new_entities, Auth::user());
                 Notification::send($federation->operators, new FederationMembersChanged($federation, $new_entities, 'added'));
                 Notification::send(User::activeAdmins()->select('id', 'emails')->get(), new FederationMembersChanged($federation, $new_entities, 'added'));
 

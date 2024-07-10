@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\ExceptionOccured;
 use App\Models\Entity;
+use App\Models\Federation;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitUpdateEntity implements ShouldQueue
+class Old_GitAddMember implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -26,6 +27,7 @@ class GitUpdateEntity implements ShouldQueue
      * @return void
      */
     public function __construct(
+        public Federation $federation,
         public Entity $entity,
         public User $user
     ) {
@@ -40,14 +42,15 @@ class GitUpdateEntity implements ShouldQueue
     {
         $git = $this->initializeGit();
 
-        Storage::put($this->entity->file, $this->entity->metadata);
+        Storage::append($this->federation->tagfile, $this->entity->entityid);
+        $this->trimWhiteSpaces($this->federation->tagfile);
 
         if ($git->hasChanges()) {
-            $git->addFile($this->entity->file);
+            $git->addFile($this->federation->tagfile);
 
             $git->commit(
-                $this->committer().": {$this->fqdn($this->entity->entityid)} (update)\n\n"
-                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})"
+                $this->committer().": {$this->federation->tagfile} (update)\n\n"
+                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
             $git->push();

@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Mail\ExceptionOccured;
 use App\Models\Entity;
-use App\Models\Federation;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
@@ -17,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitAddMember implements ShouldQueue
+class Old_GitDeleteEntity implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -27,7 +26,6 @@ class GitAddMember implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public Federation $federation,
         public Entity $entity,
         public User $user
     ) {
@@ -42,15 +40,23 @@ class GitAddMember implements ShouldQueue
     {
         $git = $this->initializeGit();
 
-        Storage::append($this->federation->tagfile, $this->entity->entityid);
-        $this->trimWhiteSpaces($this->federation->tagfile);
+        $git->removeFile($this->entity->file);
+
+        foreach ($this->entity->federations as $federation) {
+            $tagfile = Storage::get($federation->tagfile);
+            $tagfile = preg_replace('#'.$this->entity->entityid.'#', '', $tagfile);
+            Storage::put($federation->tagfile, $tagfile);
+            $this->trimWhiteSpaces($federation->tagfile);
+
+            if ($git->hasChanges()) {
+                $git->addFile($federation->tagfile);
+            }
+        }
 
         if ($git->hasChanges()) {
-            $git->addFile($this->federation->tagfile);
-
             $git->commit(
-                $this->committer().": {$this->federation->tagfile} (update)\n\n"
-                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
+                $this->committer().": {$this->fqdn($this->entity->entityid)} (delete)\n\n"
+                    ."Deleted by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
             $git->push();
