@@ -25,6 +25,8 @@ jobs:
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: Run pint
+        run: vendor/bin/pint --test
       - name: Generate key
         run: php artisan key:generate
       - name: Run translations check
