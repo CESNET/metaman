@@ -5,19 +5,17 @@ namespace App\Jobs;
 use App\Facades\EntityFacade;
 use App\Models\Entity;
 use App\Models\Federation;
-use App\Models\Membership;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
-class FolderAddEntity implements ShouldQueue
+class FolderDeleteEntity implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -31,32 +29,24 @@ class FolderAddEntity implements ShouldQueue
         $this->entity = $entity;
     }
 
-
     /**
      * Execute the job.
      */
     public function handle(): void
     {
-        $federationMembershipId = Membership::select('federation_id')
-            ->where('entity_id', $this->entity->id)
-            ->get();
-
+        $entity = $this->entity;
+        $federations = $entity->federations;
         $diskName = config('storageCfg.name');
-
-        foreach ($federationMembershipId as $fedId) {
-
-            $federation = Federation::where('id', $fedId->federation_id)->first();
-
+        foreach ($federations as $federation) {
             if (! Storage::disk($diskName)->exists($federation->name)) {
                 continue;
             }
             $pathToDirectory = Storage::disk($diskName)->path($federation->name);
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
             $lock = Cache::lock($lockKey, 120);
-
             try {
                 $lock->block(120);
-                EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
+                EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
                 RunMdaScript::dispatch($federation, $lock->owner());
             } catch (Exception $e) {
                 Log::error($e->getMessage());
@@ -66,16 +56,11 @@ class FolderAddEntity implements ShouldQueue
                 }
             }
 
-        }
-    }
 
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping($this->entity->id))->dontRelease()];
+
+
+        }
+
+
     }
 }

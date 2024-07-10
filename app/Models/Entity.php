@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\EntityType;
 use App\Events\CreateEntity;
+use App\Events\DeleteEntity;
 use App\Events\UpdateEntity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -96,6 +97,7 @@ class Entity extends Model
     protected $dispatchesEvents = [
         'created' => CreateEntity::class,
         'updated' => UpdateEntity::class,
+        'deleted' => DeleteEntity::class,
 
     ];
 }

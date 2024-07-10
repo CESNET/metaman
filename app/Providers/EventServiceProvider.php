@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Events\CreateEntity;
+use App\Events\DeleteEntity;
 use App\Events\FederationApprove;
 use App\Events\UpdateEntity;
 use App\Listeners\CreateFederationFolder;
 use App\Listeners\SendCreatedEntityToSaveJob;
+use App\Listeners\SendDeletedEntityToDeleteJob;
 use App\Listeners\SendUpdatedEntityToSaveJob;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -33,6 +35,9 @@ class EventServiceProvider extends ServiceProvider
         UpdateEntity::class => [
             SendUpdatedEntityToSaveJob::class,
         ],
+        DeleteEntity::class => [
+            SendDeletedEntityToDeleteJob::class,
+        ]
 
     ];
 

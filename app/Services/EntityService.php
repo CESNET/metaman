@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Entity;
 use App\Models\Federation;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class EntityService
@@ -46,4 +47,25 @@ class EntityService
         Storage::disk($diskName)->put($filePath, $content);
 
     }
+
+    public function deleteEntityMetadataFromFolder($fileName, $folderName): void
+    {
+        $diskName = config('storageCfg.name');
+        $pathToFile = $folderName . '/' . $fileName;
+
+        if (Storage::disk($diskName)->exists($pathToFile)) {
+            try {
+                Storage::disk($diskName)->delete($pathToFile);
+            } catch (Exception $e) {
+                Log::error("Failed to delete file: {$pathToFile}. Error: " . $e->getMessage());
+            }
+        } else {
+            Log::warning("File does not exist: {$pathToFile}");
+        }
+
+
+
+    }
+
+
 }
