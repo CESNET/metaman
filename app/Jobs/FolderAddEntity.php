@@ -59,18 +59,17 @@ class FolderAddEntity implements ShouldQueue
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
             $lock = Cache::lock($lockKey, 120);
 
-            if ($lock->get()) {
-
-                try {
-                    EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
-                    RunMdaScript::dispatch($federation, $lock->owner());
-                    $this->runMDA($federation);
-                } catch (Exception $e) {
-                    Log::error($e->getMessage());
-                } finally {
+            try {
+                $lock->block(120);
+                EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
+                RunMdaScript::dispatch($federation, $lock->owner());
+                $this->runMDA($federation);
+            } catch (Exception $e) {
+                Log::error($e->getMessage());
+            } finally {
+                if ($lock->isOwnedByCurrentProcess()) {
                     $lock->release();
                 }
-
             }
 
         }

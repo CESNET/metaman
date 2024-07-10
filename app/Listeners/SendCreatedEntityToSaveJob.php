@@ -4,7 +4,6 @@ namespace App\Listeners;
 
 use App\Events\CreateEntity;
 use App\Jobs\FolderAddEntity;
-use Illuminate\Support\Facades\Log;
 
 class SendCreatedEntityToSaveJob
 {
@@ -22,7 +21,7 @@ class SendCreatedEntityToSaveJob
     public function handle(CreateEntity $event): void
     {
 
-        if($event->entity->approved == 1){
+        if ($event->entity->approved == 1) {
             FolderAddEntity::dispatch($event->entity);
         }
     }

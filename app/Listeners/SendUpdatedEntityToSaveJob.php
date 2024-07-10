@@ -4,7 +4,6 @@ namespace App\Listeners;
 
 use App\Events\UpdateEntity;
 use App\Jobs\FolderAddEntity;
-use Illuminate\Support\Facades\Log;
 
 class SendUpdatedEntityToSaveJob
 {
