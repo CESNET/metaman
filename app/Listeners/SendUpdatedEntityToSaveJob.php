@@ -21,10 +21,12 @@ class SendUpdatedEntityToSaveJob
      */
     public function handle(UpdateEntity $event): void
     {
-        //   Log::info('Listener triggered for UpdateEntity event', ['entity_id' => $event->entity->id]);
+
         $ent = $event->entity;
 
-        if ($ent->wasChanged('xml_file')) {
+        if ($ent->wasChanged('xml_file') ||
+            ($ent->wasChanged('approved') && $ent->approved == 1)
+        ) {
             FolderAddEntity::dispatch($event->entity);
         }
     }

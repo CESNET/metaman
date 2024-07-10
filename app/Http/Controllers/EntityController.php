@@ -275,7 +275,7 @@ class EntityController extends Controller
                                 ->with('status', __('entities.not_changed'));
                         }
 
-                        //TODO updateChain
+                        // Make update with job
                         /*                        Bus::chain([
                                                     new GitUpdateEntity($entity, Auth::user()),
                                                     function () use ($entity) {
