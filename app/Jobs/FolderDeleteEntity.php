@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Facades\EntityFacade;
 use App\Models\Entity;
+use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -17,6 +18,11 @@ use Mockery\Exception;
 class FolderDeleteEntity implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * trait with failure  function
+     */
+    use HandlesJobsFailuresTrait;
 
     public Entity $entity;
 
@@ -33,6 +39,7 @@ class FolderDeleteEntity implements ShouldQueue
      */
     public function handle(): void
     {
+
         $entity = $this->entity;
         $federations = $entity->federations;
         $diskName = config('storageCfg.name');

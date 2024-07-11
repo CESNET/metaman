@@ -22,15 +22,6 @@ class SendDeletedEntityToDeleteJob
      */
     public function handle(DeleteEntity $event): void
     {
-        $entity = $event->entity;
-        $federations = $entity->federations;
-        $diskName = config('storageCfg.name');
-
-        foreach ($federations as $federation) {
-            Log::info("file -> $entity->file folder -> $federation->xml_id");
-            EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
-        }
-
-        //  FolderDeleteEntity::dispatch($event->entity);
+          FolderDeleteEntity::dispatch($event->entity);
     }
 }

@@ -3,9 +3,11 @@
 namespace App\Jobs;
 
 use App\Facades\EntityFacade;
+use App\Mail\ExceptionOccured;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\Membership;
+use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,12 +16,20 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
+use Throwable;
 
 class FolderAddEntity implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * trait with failure  function
+     */
+    use HandlesJobsFailuresTrait;
+
 
     public Entity $entity;
 
@@ -77,4 +87,5 @@ class FolderAddEntity implements ShouldQueue
     {
         return [(new WithoutOverlapping($this->entity->id))->dontRelease()];
     }
+
 }
