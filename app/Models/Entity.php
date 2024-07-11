@@ -98,6 +98,7 @@ class Entity extends Model
         'created' => CreateEntity::class,
         'updated' => UpdateEntity::class,
         'deleted' => DeleteEntity::class,
+        'restored' => CreateEntity::class,
 
     ];
 }

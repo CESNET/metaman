@@ -313,6 +313,7 @@ class EntityController extends Controller
                 if ($entity->trashed()) {
                     $entity->restore();
 
+                    //TODO restore chain
                     /*                    Bus::chain([
                                             new GitAddEntity($entity, Auth::user()),
                                             new GitAddToHfd($entity, Auth::user()),
