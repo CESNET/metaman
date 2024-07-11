@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Jobs\FolderDeleteEntity;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\Membership;
@@ -9,6 +10,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class EntityControllerTest extends TestCase
@@ -1410,6 +1412,9 @@ class EntityControllerTest extends TestCase
     /** @test */
     public function an_admin_can_purge_an_existing_entity()
     {
+
+        Queue::fake();
+
         $admin = User::factory()->create(['admin' => true]);
         $entity = Entity::factory()->create([
             'deleted_at' => now(),
@@ -1421,11 +1426,14 @@ class EntityControllerTest extends TestCase
             ->actingAs($admin)
             ->delete(route('entities.destroy', $entity))
             ->assertSeeText(__('entities.destroyed', ['name' => $name]));
+
+        Queue::assertPushed(FolderDeleteEntity::class);
     }
 
     /** @test */
     public function an_admin_can_reject_a_new_entity_request()
     {
+        Queue::fake();
         $admin = User::factory()->create(['admin' => true]);
         $federation = Federation::factory()->create();
         $entity = Entity::factory()->create(['approved' => false]);
@@ -1440,6 +1448,8 @@ class EntityControllerTest extends TestCase
             ->actingAs($admin)
             ->delete(route('memberships.destroy', $membership))
             ->assertSeeText(__('federations.membership_rejected', ['entity' => $entity->name_en]));
+
+        Queue::assertPushed(FolderDeleteEntity::class);
     }
 
     /** @test */
