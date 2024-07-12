@@ -34,13 +34,13 @@ class AppServiceProvider extends ServiceProvider
             Model::preventLazyLoading();
         }
 
-        RateLimiter::for('mda-run-limit', function (RunMdaScript $job) {
+/*        RateLimiter::for('mda-run-limit', function (RunMdaScript $job) {
             $diskName = config('storageCfg.name');
             $pathToDirectory = Storage::disk($diskName)->path($job->federation->name);
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
 
             return Limit::perMinute(1)->by($lockKey);
-        });
+        });*/
 
     }
 }

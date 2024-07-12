@@ -7,6 +7,10 @@ use App\Mail\ExceptionOccured;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\Membership;
+use App\Notifications\EntityStateChanged;
+use App\Notifications\EntityUpdated;
+use App\Services\EntityService;
+use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -66,6 +70,14 @@ class FolderAddEntity implements ShouldQueue
             try {
                 $lock->block(120);
                 EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
+
+
+/*                if ($this->entity->wasRecentlyCreated) {
+                    NotificationService::sendEntityNotification($this->entity,EntityUpdated::class);
+                } elseif ($this->entity->wasChanged('deleted_at') && is_null($this->entity->deleted_at)) {
+                    NotificationService::sendEntityNotification($this->entity,EntityStateChanged::class);
+                }*/
+
                 RunMdaScript::dispatch($federation, $lock->owner());
             } catch (Exception $e) {
                 Log::error($e->getMessage());

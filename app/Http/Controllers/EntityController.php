@@ -6,7 +6,6 @@ use App\Http\Requests\StoreEntity;
 use App\Jobs\GitAddToCategory;
 use App\Jobs\GitAddToEdugain;
 use App\Jobs\GitAddToHfd;
-use App\Jobs\GitAddToRs;
 use App\Jobs\GitDeleteFromCategory;
 use App\Jobs\GitDeleteFromEdugain;
 use App\Jobs\GitDeleteFromHfd;
@@ -271,7 +270,7 @@ class EntityController extends Controller
                                 ->with('status', __('entities.not_changed'));
                         }
 
-                        // Make update with job
+                        // TODO notification
                         /*                        Bus::chain([
                                                     new GitUpdateEntity($entity, Auth::user()),
                                                     function () use ($entity) {
@@ -474,7 +473,8 @@ class EntityController extends Controller
                 $status = $entity->rs ? 'rs' : 'no_rs';
                 $color = $entity->rs ? 'green' : 'red';
 
-                if ($entity->rs) {
+                // TODO notification
+/*                if ($entity->rs) {
                     GitAddToRs::dispatch($entity, Auth::user());
                     Notification::send($entity->operators, new EntityAddedToRs($entity));
                     Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToRs($entity));
@@ -482,7 +482,7 @@ class EntityController extends Controller
                     GitDeleteFromRs::dispatch($entity, Auth::user());
                     Notification::send($entity->operators, new EntityDeletedFromRs($entity));
                     Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromRs($entity));
-                }
+                }*/
 
                 return redirect()
                     ->back()
@@ -542,7 +542,8 @@ class EntityController extends Controller
                 $status = $entity->hfd ? 'hfd' : 'no_hfd';
                 $color = $entity->hfd ? 'red' : 'green';
 
-                if ($entity->hfd) {
+                //TODO change HfD status
+/*                if ($entity->hfd) {
                     GitAddToHfd::dispatch($entity, Auth::user());
                     Notification::send($entity->operators, new EntityAddedToHfd($entity));
                     Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToHfd($entity));
@@ -551,7 +552,7 @@ class EntityController extends Controller
                     Mail::to(config('mail.ra.address'))->send(new NewIdentityProvider($entity));
                     Notification::send($entity->operators, new EntityDeletedFromHfd($entity));
                     Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromHfd($entity));
-                }
+                }*/
 
                 return redirect()
                     ->route('entities.show', $entity)
