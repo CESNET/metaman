@@ -57,7 +57,7 @@ class EduGainDeleteEntity implements ShouldQueue
 
             //TODO write custom function to run special MDA script (ask about this)
 
-            // RunMdaScript::dispatch($federation, $lock->owner());
+            EduGainRunMdaScript::dispatch($lock->owner());
         } catch (Exception $e) {
             Log::error($e->getMessage());
         } finally {

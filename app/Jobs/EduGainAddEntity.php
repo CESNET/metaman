@@ -54,8 +54,8 @@ class EduGainAddEntity implements ShouldQueue
             EntityFacade::saveEntityMetadataToFolder($this->entity->id,$folderName);
 
             //TODO write custom function to run special MDA script (ask about this)
+            EduGainRunMdaScript::dispatch($lock->owner());
 
-           // RunMdaScript::dispatch($federation, $lock->owner());
         } catch (Exception $e) {
             Log::error($e->getMessage());
         } finally {
