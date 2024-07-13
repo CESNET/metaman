@@ -3,9 +3,9 @@
 namespace App\Listeners;
 
 use App\Events\DeleteEntity;
-use App\Facades\EntityFacade;
+use App\Jobs\EduGainDeleteEntity;
 use App\Jobs\FolderDeleteEntity;
-use Illuminate\Support\Facades\Log;
+
 
 class SendDeletedEntityToDeleteJob
 {
@@ -22,6 +22,12 @@ class SendDeletedEntityToDeleteJob
      */
     public function handle(DeleteEntity $event): void
     {
-          FolderDeleteEntity::dispatch($event->entity);
+        FolderDeleteEntity::dispatch($event->entity);
+
+        if($event->entity->edugain == 1){
+            EduGainDeleteEntity::dispatch($event->entity);
+        }
+
+
     }
 }

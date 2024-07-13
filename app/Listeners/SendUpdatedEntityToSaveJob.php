@@ -3,6 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\UpdateEntity;
+use App\Jobs\EduGainAddEntity;
+use App\Jobs\EduGainDeleteEntity;
 use App\Jobs\FolderAddEntity;
 use App\Models\User;
 use App\Notifications\EntityUpdated;
@@ -27,17 +29,26 @@ class SendUpdatedEntityToSaveJob
 
         $entity = $event->entity;
 
-
-
         if ($entity->wasChanged('xml_file') ||
             ($entity->wasChanged('approved') && $entity->approved == 1)
         )
         {
             FolderAddEntity::dispatch($event->entity);
         }
-        elseif ($entity->approved == 1)
+        elseif ($entity->approved == 1 && !$entity->wasChanged('edugain'))
         {
             NotificationService::sendEntityNotification($entity,EntityUpdated::class);
         }
+        if($entity->wasChanged('edugain'))
+        {
+            if($entity->edugain == 1) {
+                EduGainAddEntity::dispatch($entity);
+            } else {
+                EduGainDeleteEntity::dispatch($entity);
+            }
+        }
+
+
+
     }
 }

@@ -4,9 +4,6 @@ namespace App\Jobs;
 
 use App\Facades\EntityFacade;
 use App\Models\Entity;
-use App\Notifications\EntityStateChanged;
-use App\Notifications\EntityUpdated;
-use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -18,10 +15,15 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class EduGainAddEntity implements ShouldQueue
+class EduGainDeleteEntity implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * trait with failure  function
+     */
     use HandlesJobsFailuresTrait;
+
     public Entity $entity;
 
     /**
@@ -51,11 +53,11 @@ class EduGainAddEntity implements ShouldQueue
         $lock = Cache::lock($lockKey, 61);
         try {
             $lock->block(61);
-            EntityFacade::saveEntityMetadataToFolder($this->entity->id,$folderName);
+            EntityFacade::deleteEntityMetadataFromFolder($this->entity->file,$folderName);
 
             //TODO write custom function to run special MDA script (ask about this)
 
-           // RunMdaScript::dispatch($federation, $lock->owner());
+            // RunMdaScript::dispatch($federation, $lock->owner());
         } catch (Exception $e) {
             Log::error($e->getMessage());
         } finally {
@@ -63,8 +65,5 @@ class EduGainAddEntity implements ShouldQueue
                 $lock->release();
             }
         }
-
-
-
     }
 }
