@@ -53,7 +53,7 @@ class FolderDeleteEntity implements ShouldQueue
             }
             $pathToDirectory = Storage::disk($diskName)->path($federation->name);
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
-            $lock = Cache::lock($lockKey, 120);
+            $lock = Cache::lock($lockKey, 61);
             try {
                 $lock->block(120);
                 EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);

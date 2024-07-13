@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimited;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -74,6 +75,14 @@ class RunMdaScript implements ShouldQueue
      */
     public function middleware(): array
     {
-        return [new RateLimited('mda-run-limit')];
+        $diskName = config('storageCfg.name');
+        $pathToDirectory = Storage::disk($diskName)->path($this->federation->name);
+        $lockKey = 'directory-' . md5($pathToDirectory) . '-lock';
+
+        return [
+            new RateLimited('mda-run-limit'),
+            (new WithoutOverlapping($lockKey))->dontRelease()
+        ];
+
     }
 }

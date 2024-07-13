@@ -65,18 +65,18 @@ class FolderAddEntity implements ShouldQueue
             }
             $pathToDirectory = Storage::disk($diskName)->path($federation->name);
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
-            $lock = Cache::lock($lockKey, 120);
+            $lock = Cache::lock($lockKey, 61);
 
             try {
                 $lock->block(120);
                 EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
 
 
-/*                if ($this->entity->wasRecentlyCreated) {
+                if ($this->entity->wasRecentlyCreated) {
                     NotificationService::sendEntityNotification($this->entity,EntityUpdated::class);
                 } elseif ($this->entity->wasChanged('deleted_at') && is_null($this->entity->deleted_at)) {
                     NotificationService::sendEntityNotification($this->entity,EntityStateChanged::class);
-                }*/
+                }
 
                 RunMdaScript::dispatch($federation, $lock->owner());
             } catch (Exception $e) {
