@@ -44,7 +44,7 @@ class RunMdaScript implements ShouldQueue
 
         $filterArray = explode(', ', $this->federation->filters);
         $scriptPath = config('storageCfg.mdaScript');
-        $command = 'sh '.config('storageCfg.mdaScript');
+
 
         $realScriptPath = realpath($scriptPath);
 

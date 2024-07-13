@@ -68,7 +68,7 @@ class FolderAddEntity implements ShouldQueue
             $lock = Cache::lock($lockKey, 61);
 
             try {
-                $lock->block(120);
+                $lock->block(61);
                 EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
 
 
