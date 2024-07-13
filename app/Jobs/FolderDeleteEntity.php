@@ -6,7 +6,6 @@ use App\Facades\EntityFacade;
 use App\Models\Entity;
 use App\Notifications\EntityDeletedFromHfd;
 use App\Notifications\EntityStateChanged;
-use App\Services\EntityService;
 use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
@@ -58,11 +57,10 @@ class FolderDeleteEntity implements ShouldQueue
                 $lock->block(61);
                 EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
 
-                NotificationService::sendEntityNotification($entity,EntityStateChanged::class);
+                NotificationService::sendEntityNotification($entity, EntityStateChanged::class);
                 if ($entity->hfd) {
-                    NotificationService::sendEntityNotification($entity,EntityDeletedFromHfd::class);
+                    NotificationService::sendEntityNotification($entity, EntityDeletedFromHfd::class);
                 }
-
 
                 RunMdaScript::dispatch($federation, $lock->owner());
             } catch (Exception $e) {

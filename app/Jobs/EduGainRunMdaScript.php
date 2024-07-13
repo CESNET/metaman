@@ -54,8 +54,5 @@ class EduGainRunMdaScript implements ShouldQueue
 
         }
 
-
-
-
     }
 }

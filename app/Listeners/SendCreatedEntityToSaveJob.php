@@ -25,7 +25,7 @@ class SendCreatedEntityToSaveJob
         if ($event->entity->approved == 1) {
             FolderAddEntity::dispatch($event->entity);
 
-            if($event->entity->edugain == 1){
+            if ($event->entity->edugain == 1) {
                 EduGainAddEntity::dispatch($event->entity);
             }
 

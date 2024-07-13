@@ -6,7 +6,6 @@ use App\Events\DeleteEntity;
 use App\Jobs\EduGainDeleteEntity;
 use App\Jobs\FolderDeleteEntity;
 
-
 class SendDeletedEntityToDeleteJob
 {
     /**
@@ -24,10 +23,9 @@ class SendDeletedEntityToDeleteJob
     {
         FolderDeleteEntity::dispatch($event->entity);
 
-        if($event->entity->edugain == 1){
+        if ($event->entity->edugain == 1) {
             EduGainDeleteEntity::dispatch($event->entity);
         }
-
 
     }
 }

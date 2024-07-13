@@ -3,13 +3,11 @@
 namespace App\Jobs;
 
 use App\Facades\EntityFacade;
-use App\Mail\ExceptionOccured;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\Membership;
 use App\Notifications\EntityStateChanged;
 use App\Notifications\EntityUpdated;
-use App\Services\EntityService;
 use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
@@ -20,10 +18,8 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
-use Throwable;
 
 class FolderAddEntity implements ShouldQueue
 {
@@ -33,7 +29,6 @@ class FolderAddEntity implements ShouldQueue
      * trait with failure  function
      */
     use HandlesJobsFailuresTrait;
-
 
     public Entity $entity;
 
@@ -71,11 +66,10 @@ class FolderAddEntity implements ShouldQueue
                 $lock->block(61);
                 EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
 
-
                 if ($this->entity->wasRecentlyCreated) {
-                    NotificationService::sendEntityNotification($this->entity,EntityUpdated::class);
+                    NotificationService::sendEntityNotification($this->entity, EntityUpdated::class);
                 } elseif ($this->entity->wasChanged('deleted_at') && is_null($this->entity->deleted_at)) {
-                    NotificationService::sendEntityNotification($this->entity,EntityStateChanged::class);
+                    NotificationService::sendEntityNotification($this->entity, EntityStateChanged::class);
                 }
 
                 RunMdaScript::dispatch($federation, $lock->owner());
@@ -99,5 +93,4 @@ class FolderAddEntity implements ShouldQueue
     {
         return [(new WithoutOverlapping($this->entity->id))->dontRelease()];
     }
-
 }

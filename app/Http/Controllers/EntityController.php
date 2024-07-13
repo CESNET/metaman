@@ -474,15 +474,15 @@ class EntityController extends Controller
                 $color = $entity->rs ? 'green' : 'red';
 
                 // TODO notification
-/*                if ($entity->rs) {
-                    GitAddToRs::dispatch($entity, Auth::user());
-                    Notification::send($entity->operators, new EntityAddedToRs($entity));
-                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToRs($entity));
-                } else {
-                    GitDeleteFromRs::dispatch($entity, Auth::user());
-                    Notification::send($entity->operators, new EntityDeletedFromRs($entity));
-                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromRs($entity));
-                }*/
+                /*                if ($entity->rs) {
+                                    GitAddToRs::dispatch($entity, Auth::user());
+                                    Notification::send($entity->operators, new EntityAddedToRs($entity));
+                                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToRs($entity));
+                                } else {
+                                    GitDeleteFromRs::dispatch($entity, Auth::user());
+                                    Notification::send($entity->operators, new EntityDeletedFromRs($entity));
+                                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromRs($entity));
+                                }*/
 
                 return redirect()
                     ->back()
@@ -543,16 +543,16 @@ class EntityController extends Controller
                 $color = $entity->hfd ? 'red' : 'green';
 
                 //TODO change HfD status
-/*                if ($entity->hfd) {
-                    GitAddToHfd::dispatch($entity, Auth::user());
-                    Notification::send($entity->operators, new EntityAddedToHfd($entity));
-                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToHfd($entity));
-                } else {
-                    GitDeleteFromHfd::dispatch($entity, Auth::user());
-                    Mail::to(config('mail.ra.address'))->send(new NewIdentityProvider($entity));
-                    Notification::send($entity->operators, new EntityDeletedFromHfd($entity));
-                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromHfd($entity));
-                }*/
+                /*                if ($entity->hfd) {
+                                    GitAddToHfd::dispatch($entity, Auth::user());
+                                    Notification::send($entity->operators, new EntityAddedToHfd($entity));
+                                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToHfd($entity));
+                                } else {
+                                    GitDeleteFromHfd::dispatch($entity, Auth::user());
+                                    Mail::to(config('mail.ra.address'))->send(new NewIdentityProvider($entity));
+                                    Notification::send($entity->operators, new EntityDeletedFromHfd($entity));
+                                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromHfd($entity));
+                                }*/
 
                 return redirect()
                     ->route('entities.show', $entity)

@@ -4,9 +4,6 @@ namespace App\Jobs;
 
 use App\Facades\EntityFacade;
 use App\Models\Entity;
-use App\Notifications\EntityStateChanged;
-use App\Notifications\EntityUpdated;
-use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -22,6 +19,7 @@ class EduGainAddEntity implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HandlesJobsFailuresTrait;
+
     public Entity $entity;
 
     /**
@@ -41,7 +39,7 @@ class EduGainAddEntity implements ShouldQueue
         $folderName = config('storageCfg.edu2edugain');
         try {
             if (! Storage::disk($diskName)->exists($folderName)) {
-                throw  new Exception("No $folderName in $diskName");
+                throw new Exception("No $folderName in $diskName");
             }
         } catch (Exception $e) {
             $this->fail($e);
@@ -51,7 +49,7 @@ class EduGainAddEntity implements ShouldQueue
         $lock = Cache::lock($lockKey, 61);
         try {
             $lock->block(61);
-            EntityFacade::saveEntityMetadataToFolder($this->entity->id,$folderName);
+            EntityFacade::saveEntityMetadataToFolder($this->entity->id, $folderName);
 
             //TODO write custom function to run special MDA script (ask about this)
             EduGainRunMdaScript::dispatch($lock->owner());
@@ -63,8 +61,6 @@ class EduGainAddEntity implements ShouldQueue
                 $lock->release();
             }
         }
-
-
 
     }
 }

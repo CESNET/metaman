@@ -33,13 +33,13 @@ class AppServiceProvider extends ServiceProvider
             // Mail::alwaysTo('foo@example.org');
             Model::preventLazyLoading();
         }
-//TODO comment this for testing part
-/*        RateLimiter::for('mda-run-limit', function (RunMdaScript $job) {
-            $diskName = config('storageCfg.name');
-            $pathToDirectory = Storage::disk($diskName)->path($job->federation->name);
-            $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
-            return Limit::perMinute(1)->by($lockKey);
-        });*/
+        //TODO comment this for testing part
+        /*        RateLimiter::for('mda-run-limit', function (RunMdaScript $job) {
+                    $diskName = config('storageCfg.name');
+                    $pathToDirectory = Storage::disk($diskName)->path($job->federation->name);
+                    $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
+                    return Limit::perMinute(1)->by($lockKey);
+                });*/
 
     }
 }

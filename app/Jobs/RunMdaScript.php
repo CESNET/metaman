@@ -45,7 +45,6 @@ class RunMdaScript implements ShouldQueue
         $filterArray = explode(', ', $this->federation->filters);
         $scriptPath = config('storageCfg.mdaScript');
 
-
         $realScriptPath = realpath($scriptPath);
 
         try {
@@ -77,11 +76,11 @@ class RunMdaScript implements ShouldQueue
     {
         $diskName = config('storageCfg.name');
         $pathToDirectory = Storage::disk($diskName)->path($this->federation->name);
-        $lockKey = 'directory-' . md5($pathToDirectory) . '-lock';
+        $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
 
         return [
             new RateLimited('mda-run-limit'),
-            (new WithoutOverlapping($lockKey))->dontRelease()
+            (new WithoutOverlapping($lockKey))->dontRelease(),
         ];
 
     }

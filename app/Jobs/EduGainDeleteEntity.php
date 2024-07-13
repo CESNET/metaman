@@ -43,7 +43,7 @@ class EduGainDeleteEntity implements ShouldQueue
         $folderName = config('storageCfg.edu2edugain');
         try {
             if (! Storage::disk($diskName)->exists($folderName)) {
-                throw  new Exception("No $folderName in $diskName");
+                throw new Exception("No $folderName in $diskName");
             }
         } catch (Exception $e) {
             $this->fail($e);
@@ -53,7 +53,7 @@ class EduGainDeleteEntity implements ShouldQueue
         $lock = Cache::lock($lockKey, 61);
         try {
             $lock->block(61);
-            EntityFacade::deleteEntityMetadataFromFolder($this->entity->file,$folderName);
+            EntityFacade::deleteEntityMetadataFromFolder($this->entity->file, $folderName);
 
             //TODO write custom function to run special MDA script (ask about this)
 
