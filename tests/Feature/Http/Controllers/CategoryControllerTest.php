@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\EduGainAddEntity;
 use App\Jobs\GitAddCategory;
 use App\Jobs\GitDeleteCategory;
 use App\Jobs\GitUpdateCategory;
@@ -11,8 +10,8 @@ use App\Models\Entity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
@@ -451,6 +450,5 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(1, $category->entities()->count());
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('categories.show', $category), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
     }
 }

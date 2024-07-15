@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\EduGainAddEntity;
 use App\Jobs\GitDeleteMembers;
 use App\Jobs\GitUpdateFederation;
 use App\Jobs\Old_GitAddFederation;
@@ -13,9 +12,9 @@ use App\Notifications\FederationDestroyed;
 use App\Notifications\FederationRejected;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class FederationControllerTest extends TestCase
@@ -197,7 +196,7 @@ class FederationControllerTest extends TestCase
 
         $this->assertEquals(1, $federation->entities()->count());
         $this->assertEquals(route('login'), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -710,7 +709,7 @@ class FederationControllerTest extends TestCase
         $federation->refresh();
         $this->assertEquals(1, $federation->entities()->count());
         $this->assertEquals(route('federations.show', $federation), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */

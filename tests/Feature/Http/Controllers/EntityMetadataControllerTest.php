@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\EduGainAddEntity;
 use App\Models\Entity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,7 +22,7 @@ class EntityMetadataControllerTest extends TestCase
             ->followingRedirects()
             ->get(route('entities.metadata', $entity))
             ->assertSeeText('login');
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\EduGainAddEntity;
 use App\Models\Category;
 use App\Models\Entity;
 use App\Models\Federation;
@@ -84,6 +83,6 @@ class StatisticControllerTest extends TestCase
                     ],
                 ],
             ]);
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 }

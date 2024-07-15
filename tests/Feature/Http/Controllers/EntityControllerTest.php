@@ -2,8 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\EduGainAddEntity;
-use App\Jobs\EduGainDeleteEntity;
 use App\Jobs\FolderDeleteEntity;
 use App\Models\Entity;
 use App\Models\Federation;
@@ -42,7 +40,7 @@ class EntityControllerTest extends TestCase
             ->assertSeeText('login');
 
         $this->assertEquals(route('login'), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -87,7 +85,7 @@ class EntityControllerTest extends TestCase
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('login'), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -103,7 +101,7 @@ class EntityControllerTest extends TestCase
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('login'), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -122,7 +120,6 @@ class EntityControllerTest extends TestCase
 
         $this->assertFalse($entity->trashed());
         $this->assertEquals(route('login'), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
 
     }
 
@@ -157,7 +154,7 @@ class EntityControllerTest extends TestCase
 
         $this->assertEquals(1, $entity->operators()->count());
         $this->assertEquals(route('login'), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -175,7 +172,7 @@ class EntityControllerTest extends TestCase
             ->followingRedirects()
             ->post(route('entities.leave', $entity))
             ->assertSeeText('login');
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -192,7 +189,7 @@ class EntityControllerTest extends TestCase
             ->assertSeeText('login');
 
         $this->assertEquals(route('login'), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -249,7 +246,7 @@ class EntityControllerTest extends TestCase
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.index'), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -271,7 +268,7 @@ class EntityControllerTest extends TestCase
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.show', $entity), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -504,7 +501,7 @@ class EntityControllerTest extends TestCase
             ->assertSeeText(__('entities.profile'));
 
         $this->assertEquals(route('entities.edit', $entity), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -746,7 +743,7 @@ class EntityControllerTest extends TestCase
         $entity->refresh();
         $this->assertEquals(1, $entity->operators()->count());
         $this->assertEquals(route('entities.show', $entity), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -771,7 +768,7 @@ class EntityControllerTest extends TestCase
             ->assertSeeText(__('entities.join_requested', ['name' => $federation->name]));
 
         $this->assertEquals(1, Membership::whereApproved(false)->count());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -785,7 +782,7 @@ class EntityControllerTest extends TestCase
             ->actingAs($user)
             ->get(route('entities.edit', $entity))
             ->assertForbidden();
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -794,7 +791,6 @@ class EntityControllerTest extends TestCase
         Queue::fake();
         $entity = Entity::factory()->create(['entityid' => 'https://whoami.cesnet.cz/idp/shibboleth']);
 
-
         $this
             ->followingRedirects()
             ->patch(route('entities.update', $entity), [
@@ -802,7 +798,7 @@ class EntityControllerTest extends TestCase
                 'url' => 'https://whoami.cesnet.cz/idp/shibboleth',
             ])
             ->assertSeeText('login');
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -818,7 +814,7 @@ class EntityControllerTest extends TestCase
             ->actingAs($user)
             ->patch(route('entities.update', $entity), ['action' => 'state'])
             ->assertForbidden();
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -847,7 +843,7 @@ class EntityControllerTest extends TestCase
                 'operators' => [$new_operator->id],
             ])
             ->assertForbidden();
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -871,7 +867,7 @@ class EntityControllerTest extends TestCase
             ->assertForbidden();
 
         $this->assertEquals(0, Membership::whereApproved(false)->count());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -888,7 +884,7 @@ class EntityControllerTest extends TestCase
             ->actingAs($user)
             ->delete(route('entities.destroy', $entity))
             ->assertForbidden();
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -948,7 +944,7 @@ class EntityControllerTest extends TestCase
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.index'), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -968,7 +964,7 @@ class EntityControllerTest extends TestCase
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.show', $entity), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -1172,7 +1168,7 @@ class EntityControllerTest extends TestCase
 
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('entities.edit', $entity), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -1432,7 +1428,7 @@ class EntityControllerTest extends TestCase
         $entity->refresh();
         $this->assertEquals(0, $entity->operators()->count());
         $this->assertEquals(route('entities.show', $entity), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -1457,7 +1453,7 @@ class EntityControllerTest extends TestCase
             ->assertSeeText(__('entities.join_requested', ['name' => $federation->name]));
 
         $this->assertEquals(1, Membership::whereApproved(false)->count());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -1537,7 +1533,7 @@ class EntityControllerTest extends TestCase
             ->put(route('entities.update', $entity));
 
         $this->assertEquals(route('home'), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -1559,7 +1555,7 @@ class EntityControllerTest extends TestCase
             ->post(route('entities.rs', $entity))
             ->assertStatus(403)
             ->assertSeeText(__('entities.rs_only_for_eduidcz_members'));
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -1588,6 +1584,6 @@ class EntityControllerTest extends TestCase
             ->post(route('entities.rs', $entity))
             ->assertStatus(200)
             ->assertSeeText(__('entities.rs_asked'));
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 }

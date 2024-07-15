@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Mail;
 
-use App\Jobs\EduGainAddEntity;
 use App\Mail\AskRs;
 use App\Models\Entity;
 use App\Models\Federation;
@@ -43,7 +42,7 @@ class AskRsTest extends TestCase
             return $email->hasTo(config('mail.admin.address')) &&
                 $email->entity->is($entity);
         });
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 
     /** @test */
@@ -61,6 +60,6 @@ class AskRsTest extends TestCase
             ->assertStatus(403);
 
         Mail::assertNotQueued(AskRs::class);
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 }

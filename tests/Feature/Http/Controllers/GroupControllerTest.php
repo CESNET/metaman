@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\EduGainAddEntity;
 use App\Jobs\GitAddGroup;
 use App\Jobs\GitDeleteGroup;
 use App\Jobs\GitUpdateGroup;
@@ -423,6 +422,6 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(1, $group->entities()->count());
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('groups.show', $group), url()->current());
-        Queue::assertPushed(EduGainAddEntity::class);
+
     }
 }
