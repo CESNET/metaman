@@ -21,11 +21,17 @@ class SendDeletedEntityToDeleteJob
      */
     public function handle(DeleteEntity $event): void
     {
-        FolderDeleteEntity::dispatch($event->entity);
+        $entity = $event->entity;
 
-        if ($event->entity->edugain == 1) {
-            EduGainDeleteEntity::dispatch($event->entity);
+        if(!$entity->isForceDeleting())
+        {
+            FolderDeleteEntity::dispatch($event->entity);
+
+            if ($event->entity->edugain == 1) {
+                EduGainDeleteEntity::dispatch($event->entity);
+            }
         }
+
 
     }
 }

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Facades\EntityFacade;
 use App\Models\Entity;
+use App\Traits\EdugainTrait;
 use App\Traits\HandlesJobsFailuresTrait;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -22,7 +23,7 @@ class EduGainDeleteEntity implements ShouldQueue
     /**
      * trait with failure  function
      */
-    use HandlesJobsFailuresTrait;
+    use HandlesJobsFailuresTrait,EdugainTrait;
 
     public Entity $entity;
 
@@ -41,6 +42,11 @@ class EduGainDeleteEntity implements ShouldQueue
     {
         $diskName = config('storageCfg.name');
         $folderName = config('storageCfg.edu2edugain');
+
+        if (! Storage::disk($diskName)->exists($folderName)) {
+           $this->makeEdu2Edugain();
+        }
+
         try {
             if (! Storage::disk($diskName)->exists($folderName)) {
                 throw new Exception("No $folderName in $diskName");
@@ -55,7 +61,6 @@ class EduGainDeleteEntity implements ShouldQueue
             $lock->block(61);
             EntityFacade::deleteEntityMetadataFromFolder($this->entity->file, $folderName);
 
-            //TODO write custom function to run special MDA script (ask about this)
 
             EduGainRunMdaScript::dispatch($lock->owner());
         } catch (Exception $e) {
