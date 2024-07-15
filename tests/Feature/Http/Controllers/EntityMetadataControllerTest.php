@@ -2,9 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Jobs\EduGainAddEntity;
 use App\Models\Entity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class EntityMetadataControllerTest extends TestCase
@@ -14,12 +16,14 @@ class EntityMetadataControllerTest extends TestCase
     /** @test */
     public function anonymouse_user_is_redirected_to_login(): void
     {
+        Queue::fake();
         $entity = Entity::factory()->create();
 
         $this
             ->followingRedirects()
             ->get(route('entities.metadata', $entity))
             ->assertSeeText('login');
+        Queue::assertPushed(EduGainAddEntity::class);
     }
 
     /** @test */

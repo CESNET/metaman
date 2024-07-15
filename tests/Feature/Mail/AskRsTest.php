@@ -2,12 +2,14 @@
 
 namespace Tests\Feature\Mail;
 
+use App\Jobs\EduGainAddEntity;
 use App\Mail\AskRs;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class AskRsTest extends TestCase
@@ -18,6 +20,7 @@ class AskRsTest extends TestCase
     public function email_is_queued_for_rs_federation_only()
     {
         Mail::fake();
+        Queue::fake();
 
         $user = User::factory()->create();
         $entity = Entity::factory()->create(['type' => 'sp']);
@@ -40,13 +43,14 @@ class AskRsTest extends TestCase
             return $email->hasTo(config('mail.admin.address')) &&
                 $email->entity->is($entity);
         });
+        Queue::assertPushed(EduGainAddEntity::class);
     }
 
     /** @test */
     public function email_isnt_queued_for_non_rs_federation()
     {
         Mail::fake();
-
+        Queue::fake();
         $user = User::factory()->create();
         $entity = Entity::factory()->create(['type' => 'sp']);
         $user->entities()->attach($entity);
@@ -57,5 +61,6 @@ class AskRsTest extends TestCase
             ->assertStatus(403);
 
         Mail::assertNotQueued(AskRs::class);
+        Queue::assertPushed(EduGainAddEntity::class);
     }
 }

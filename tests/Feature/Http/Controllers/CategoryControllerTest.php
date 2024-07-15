@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Jobs\EduGainAddEntity;
 use App\Jobs\GitAddCategory;
 use App\Jobs\GitDeleteCategory;
 use App\Jobs\GitUpdateCategory;
@@ -10,6 +11,7 @@ use App\Models\Entity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
 
@@ -430,6 +432,7 @@ class CategoryControllerTest extends TestCase
     /** @test */
     public function an_admin_cannot_delete_an_existing_category_with_members()
     {
+        Queue::fake();
         $admin = User::factory()->create(['admin' => true]);
         $category = Category::factory()->create();
         $category->entities()->save(Entity::factory()->create());
@@ -448,5 +451,6 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(1, $category->entities()->count());
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('categories.show', $category), url()->current());
+        Queue::assertPushed(EduGainAddEntity::class);
     }
 }

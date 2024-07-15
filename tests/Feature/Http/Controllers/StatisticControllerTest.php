@@ -2,11 +2,13 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Jobs\EduGainAddEntity;
 use App\Models\Category;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class StatisticControllerTest extends TestCase
@@ -16,6 +18,7 @@ class StatisticControllerTest extends TestCase
     /** @test */
     public function it_produces_statistics(): void
     {
+        Queue::fake();
         User::factory(2)->create();
         Federation::factory(10)->hasAttached(
             Entity::factory()->count(10),
@@ -81,5 +84,6 @@ class StatisticControllerTest extends TestCase
                     ],
                 ],
             ]);
+        Queue::assertPushed(EduGainAddEntity::class);
     }
 }

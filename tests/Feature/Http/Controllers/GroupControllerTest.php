@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Jobs\EduGainAddEntity;
 use App\Jobs\GitAddGroup;
 use App\Jobs\GitDeleteGroup;
 use App\Jobs\GitUpdateGroup;
@@ -11,6 +12,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class GroupControllerTest extends TestCase
@@ -402,6 +404,7 @@ class GroupControllerTest extends TestCase
     /** @test */
     public function an_admin_cannot_delete_an_existing_group_with_members()
     {
+        Queue::fake();
         $admin = User::factory()->create(['admin' => true]);
         $group = Group::factory()->create();
         $group->entities()->save(Entity::factory()->create());
@@ -420,5 +423,6 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(1, $group->entities()->count());
         $this->assertEquals(1, Entity::count());
         $this->assertEquals(route('groups.show', $group), url()->current());
+        Queue::assertPushed(EduGainAddEntity::class);
     }
 }

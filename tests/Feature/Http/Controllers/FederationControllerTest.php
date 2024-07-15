@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Jobs\EduGainAddEntity;
 use App\Jobs\GitDeleteMembers;
 use App\Jobs\GitUpdateFederation;
 use App\Jobs\Old_GitAddFederation;
@@ -12,6 +13,7 @@ use App\Notifications\FederationDestroyed;
 use App\Notifications\FederationRejected;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -160,6 +162,7 @@ class FederationControllerTest extends TestCase
     /** @test */
     public function an_anonymouse_user_cannot_change_an_existing_federations_entities()
     {
+        Queue::fake();
         $federation = Federation::factory()->create();
         $user = User::factory()->create();
         $entity = Entity::factory()->create();
@@ -194,6 +197,7 @@ class FederationControllerTest extends TestCase
 
         $this->assertEquals(1, $federation->entities()->count());
         $this->assertEquals(route('login'), url()->current());
+        Queue::assertPushed(EduGainAddEntity::class);
     }
 
     /** @test */
@@ -667,6 +671,7 @@ class FederationControllerTest extends TestCase
     /** @test */
     public function a_user_without_operator_permission_cannot_change_an_existing_federations_entities()
     {
+        Queue::fake();
         $federation = Federation::factory()->create();
         $user = User::factory()->create();
         $entity = Entity::factory()->create();
@@ -705,6 +710,7 @@ class FederationControllerTest extends TestCase
         $federation->refresh();
         $this->assertEquals(1, $federation->entities()->count());
         $this->assertEquals(route('federations.show', $federation), url()->current());
+        Queue::assertPushed(EduGainAddEntity::class);
     }
 
     /** @test */
