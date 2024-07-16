@@ -23,7 +23,7 @@ class EduGainDeleteEntity implements ShouldQueue
     /**
      * trait with failure  function
      */
-    use HandlesJobsFailuresTrait,EdugainTrait;
+    use EdugainTrait,HandlesJobsFailuresTrait;
 
     public Entity $entity;
 
@@ -44,7 +44,7 @@ class EduGainDeleteEntity implements ShouldQueue
         $folderName = config('storageCfg.edu2edugain');
 
         if (! Storage::disk($diskName)->exists($folderName)) {
-           $this->makeEdu2Edugain();
+            $this->makeEdu2Edugain();
         }
 
         try {
@@ -60,7 +60,6 @@ class EduGainDeleteEntity implements ShouldQueue
         try {
             $lock->block(61);
             EntityFacade::deleteEntityMetadataFromFolder($this->entity->file, $folderName);
-
 
             EduGainRunMdaScript::dispatch($lock->owner());
         } catch (Exception $e) {

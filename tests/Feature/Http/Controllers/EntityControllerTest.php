@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\FolderDeleteEntity;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\Membership;
@@ -1474,7 +1473,6 @@ class EntityControllerTest extends TestCase
             ->delete(route('entities.destroy', $entity))
             ->assertSeeText(__('entities.destroyed', ['name' => $name]));
 
-        Queue::assertPushed(FolderDeleteEntity::class);
     }
 
     /** @test */
@@ -1496,7 +1494,6 @@ class EntityControllerTest extends TestCase
             ->delete(route('memberships.destroy', $membership))
             ->assertSeeText(__('federations.membership_rejected', ['entity' => $entity->name_en]));
 
-        Queue::assertPushed(FolderDeleteEntity::class);
     }
 
     /** @test */

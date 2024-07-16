@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Storage;
 class EduGainAddEntity implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    use HandlesJobsFailuresTrait,EdugainTrait;
+    use EdugainTrait,HandlesJobsFailuresTrait;
 
     public Entity $entity;
 
