@@ -6,6 +6,10 @@ use App\Events\UpdateEntity;
 use App\Jobs\EduGainAddEntity;
 use App\Jobs\EduGainDeleteEntity;
 use App\Jobs\FolderAddEntity;
+use App\Notifications\EntityAddedToHfd;
+use App\Notifications\EntityAddedToRs;
+use App\Notifications\EntityDeletedFromHfd;
+use App\Notifications\EntityDeletedFromRs;
 use App\Notifications\EntityUpdated;
 use App\Services\NotificationService;
 
@@ -32,7 +36,7 @@ class SendUpdatedEntityToSaveJob
         ) {
             FolderAddEntity::dispatch($event->entity);
         } elseif ($entity->approved == 1 && ! $entity->wasChanged('edugain')) {
-            NotificationService::sendEntityNotification($entity, EntityUpdated::class);
+            NotificationService::sendUpdateNotification($entity);
         }
         if ($entity->wasChanged('edugain')) {
             if ($entity->edugain == 1) {

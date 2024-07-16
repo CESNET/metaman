@@ -4,6 +4,8 @@ namespace App\Jobs;
 
 use App\Facades\EntityFacade;
 use App\Models\Entity;
+use App\Notifications\EntityEdugainStatusChanged;
+use App\Services\NotificationService;
 use App\Traits\EdugainTrait;
 use App\Traits\HandlesJobsFailuresTrait;
 use Exception;
@@ -56,6 +58,7 @@ class EduGainAddEntity implements ShouldQueue
             $lock->block(61);
             EntityFacade::saveEntityMetadataToFolder($this->entity->id, $folderName);
 
+            NotificationService::sendEntityNotification($this->entity, new EntityEdugainStatusChanged($this->entity));
             EduGainRunMdaScript::dispatch($lock->owner());
 
         } catch (Exception $e) {

@@ -4,6 +4,8 @@ namespace App\Jobs;
 
 use App\Facades\EntityFacade;
 use App\Models\Entity;
+use App\Notifications\EntityEdugainStatusChanged;
+use App\Services\NotificationService;
 use App\Traits\EdugainTrait;
 use App\Traits\HandlesJobsFailuresTrait;
 use Exception;
@@ -60,7 +62,7 @@ class EduGainDeleteEntity implements ShouldQueue
         try {
             $lock->block(61);
             EntityFacade::deleteEntityMetadataFromFolder($this->entity->file, $folderName);
-
+            NotificationService::sendEntityNotification($this->entity, new EntityEdugainStatusChanged($this->entity));
             EduGainRunMdaScript::dispatch($lock->owner());
         } catch (Exception $e) {
             Log::error($e->getMessage());
