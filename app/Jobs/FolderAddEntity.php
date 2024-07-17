@@ -47,7 +47,9 @@ class FolderAddEntity implements ShouldQueue
     {
         $federationMembershipId = Membership::select('federation_id')
             ->where('entity_id', $this->entity->id)
+            ->where('approved', 1)
             ->get();
+
 
         $diskName = config('storageCfg.name');
 

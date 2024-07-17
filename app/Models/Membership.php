@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\AddMembership;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class Membership extends Pivot
@@ -31,4 +32,11 @@ class Membership extends Pivot
     {
         return $this->belongsTo('App\Models\User', 'approved_by');
     }
+
+    protected $dispatchesEvents = [
+        'updated' => AddMembership::class,
+      //  'deleted' => DeleteEntity::class,
+
+    ];
+
 }
