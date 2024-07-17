@@ -15,6 +15,10 @@ class NotificationService
 {
     public static function sendEntityNotification(Entity $entity, $notification): void
     {
+        if ($notification == null) {
+            return;
+        }
+
         $admins = User::activeAdmins()->select('id', 'email')->get();
 
         $operators = $entity->operators->pluck('id')->toArray();
@@ -29,39 +33,42 @@ class NotificationService
 
     private static function sendRsNotification(Entity $entity): bool
     {
-        if($entity->wasChanged('rs')) {
+        if ($entity->wasChanged('rs')) {
 
-            if($entity->rs == 1) {
-                self::sendEntityNotification($entity,EntityAddedToRs::class);
+            if ($entity->rs == 1) {
+                self::sendEntityNotification($entity, EntityAddedToRs::class);
             } else {
-                self::sendEntityNotification($entity,EntityDeletedFromRs::class);
+                self::sendEntityNotification($entity, EntityDeletedFromRs::class);
             }
+
             return true;
         }
+
         return false;
     }
-    private static  function sendHfDNotification(Entity $entity): bool
+
+    private static function sendHfDNotification(Entity $entity): bool
     {
         if ($entity->wasChanged('hfd')) {
 
-                if($entity->hfd) {
-                    self::sendEntityNotification($entity,EntityAddedToHfd::class);
-                } else {
-                    self::sendEntityNotification($entity,EntityDeletedFromHfd::class);
-                }
-                return true;
+            if ($entity->hfd) {
+                self::sendEntityNotification($entity, EntityAddedToHfd::class);
+            } else {
+                self::sendEntityNotification($entity, EntityDeletedFromHfd::class);
             }
+
+            return true;
+        }
+
         return false;
     }
 
-
-    public static  function sendUpdateNotification(Entity $entity): void
+    public static function sendUpdateNotification(Entity $entity): void
     {
 
-        if(  !self::sendRsNotification($entity) && !self::sendHfDNotification($entity)){
-            self::sendEntityNotification($entity,EntityUpdated::class);
+        if (! self::sendRsNotification($entity) && ! self::sendHfDNotification($entity)) {
+            self::sendEntityNotification($entity, EntityUpdated::class);
         }
 
     }
-
 }

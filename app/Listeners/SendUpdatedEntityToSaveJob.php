@@ -6,11 +6,6 @@ use App\Events\UpdateEntity;
 use App\Jobs\EduGainAddEntity;
 use App\Jobs\EduGainDeleteEntity;
 use App\Jobs\FolderAddEntity;
-use App\Notifications\EntityAddedToHfd;
-use App\Notifications\EntityAddedToRs;
-use App\Notifications\EntityDeletedFromHfd;
-use App\Notifications\EntityDeletedFromRs;
-use App\Notifications\EntityUpdated;
 use App\Services\NotificationService;
 
 class SendUpdatedEntityToSaveJob

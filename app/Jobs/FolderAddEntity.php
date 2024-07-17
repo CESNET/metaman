@@ -68,12 +68,10 @@ class FolderAddEntity implements ShouldQueue
 
                 if ($this->entity->wasChanged('deleted_at') && is_null($this->entity->deleted_at)) {
                     NotificationService::sendEntityNotification($this->entity, EntityStateChanged::class);
-                } else
-                {
-                    if($this->entity->wasChanged('approved') && $this->entity->approved == 1) {
-                        NotificationService::sendEntityNotification($this->entity,);
-                    }
-                    else {
+                } else {
+                    if ($this->entity->wasChanged('approved') && $this->entity->approved == 1) {
+                        NotificationService::sendEntityNotification($this->entity, EntityStateChanged::class);
+                    } else {
                         NotificationService::sendEntityNotification($this->entity, EntityUpdated::class);
                     }
                 }
