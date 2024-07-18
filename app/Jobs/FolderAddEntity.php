@@ -17,7 +17,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
@@ -50,7 +49,6 @@ class FolderAddEntity implements ShouldQueue
             ->where('approved', 1)
             ->get();
 
-
         $diskName = config('storageCfg.name');
 
         foreach ($federationMembershipId as $fedId) {
@@ -80,7 +78,7 @@ class FolderAddEntity implements ShouldQueue
 
                 RunMdaScript::dispatch($federation, $lock->owner());
             } catch (Exception $e) {
-                Log::error($e->getMessage());
+                $this->fail($e);
             } finally {
                 if ($lock->isOwnedByCurrentProcess()) {
                     $lock->release();

@@ -7,6 +7,7 @@ use App\Jobs\EduGainAddEntity;
 use App\Jobs\EduGainDeleteEntity;
 use App\Jobs\FolderAddEntity;
 use App\Services\NotificationService;
+use Illuminate\Support\Facades\Log;
 
 class SendUpdatedEntityToSaveJob
 {
@@ -26,11 +27,11 @@ class SendUpdatedEntityToSaveJob
 
         $entity = $event->entity;
 
-        if ($entity->wasChanged('xml_file') ||
-            ($entity->wasChanged('approved') && $entity->approved == 1)
+        if ($entity->wasChanged('xml_file')
         ) {
             FolderAddEntity::dispatch($event->entity);
         } elseif ($entity->approved == 1 && ! $entity->wasChanged('edugain')) {
+            Log::info('update some  entity in SendUpdatedEntityToSaveJob');
             NotificationService::sendUpdateNotification($entity);
         }
         if ($entity->wasChanged('edugain')) {
