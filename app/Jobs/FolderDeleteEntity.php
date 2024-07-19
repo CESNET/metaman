@@ -57,7 +57,7 @@ class FolderDeleteEntity implements ShouldQueue
                 $lock->block(61);
                 EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
 
-                NotificationService::sendEntityNotification($entity, EntityStateChanged::class);
+                NotificationService::sendEntityNotification($entity, new EntityStateChanged($entity));
                 if ($entity->hfd) {
                     NotificationService::sendEntityNotification($entity, EntityDeletedFromHfd::class);
                 }

@@ -30,9 +30,12 @@ class SendUpdatedEntityToSaveJob
         if ($entity->wasChanged('xml_file')
         ) {
             FolderAddEntity::dispatch($event->entity);
-        } elseif ($entity->approved == 1 && ! $entity->wasChanged('edugain')) {
-            Log::info('update some  entity in SendUpdatedEntityToSaveJob');
-            NotificationService::sendUpdateNotification($entity);
+        } elseif ($entity->approved == 1 && !$entity->wasChanged('approved') ){
+
+            if(!$entity->wasChanged('edugain')){
+                NotificationService::sendUpdateNotification($entity);
+            }
+
         }
         if ($entity->wasChanged('edugain')) {
             if ($entity->edugain == 1) {
