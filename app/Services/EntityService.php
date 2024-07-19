@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Entity;
 use App\Models\Federation;
 use Exception;
+use http\Exception\InvalidArgumentException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -57,10 +58,10 @@ class EntityService
             try {
                 Storage::disk($diskName)->delete($pathToFile);
             } catch (Exception $e) {
-                Log::error("Failed to delete file: {$pathToFile}. Error: ".$e->getMessage());
+               throw new InvalidArgumentException("Unable to delete file $pathToFile");
             }
         } else {
-            Log::warning("File does not exist: {$pathToFile}");
+            throw new InvalidArgumentException("Unable to delete file $pathToFile");
         }
 
     }

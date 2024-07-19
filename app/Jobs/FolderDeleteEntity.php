@@ -21,6 +21,7 @@ use Mockery\Exception;
 class FolderDeleteEntity implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use HandlesJobsFailuresTrait;
 
     /**
      * trait with failure  function
@@ -64,7 +65,7 @@ class FolderDeleteEntity implements ShouldQueue
 
                 RunMdaScript::dispatch($federation, $lock->owner());
             } catch (Exception $e) {
-                Log::error($e->getMessage());
+               $this->fail($e);
             } finally {
                 if ($lock->isOwnedByCurrentProcess()) {
                     $lock->release();

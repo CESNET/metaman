@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,6 +16,7 @@ use Mockery\Exception;
 class EduGainRunMdaScript implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use HandlesJobsFailuresTrait;
 
     public string $owner;
 
@@ -48,7 +50,7 @@ class EduGainRunMdaScript implements ShouldQueue
             dump($res);
 
         } catch (Exception $e) {
-            Log::error($e->getMessage());
+            $this->fail($e);
         } finally {
             Cache::restoreLock($lockKey, $this->owner)->release();
 
