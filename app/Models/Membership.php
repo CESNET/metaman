@@ -35,7 +35,5 @@ class Membership extends Pivot
 
     protected $dispatchesEvents = [
         'updated' => AddMembership::class,
-        //  'deleted' => DeleteEntity::class,
-
     ];
 }
