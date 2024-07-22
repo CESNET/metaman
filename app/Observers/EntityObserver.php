@@ -8,8 +8,9 @@ use App\Jobs\FolderAddEntity;
 use App\Jobs\FolderDeleteEntity;
 use App\Models\Entity;
 use App\Services\NotificationService;
+use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
-class EntityObserver
+class EntityObserver implements ShouldHandleEventsAfterCommit
 {
     /**
      * Handle the Entity "created" event.
@@ -29,7 +30,7 @@ class EntityObserver
             FolderAddEntity::dispatch($entity);
         } elseif ($entity->approved == 1 && !$entity->wasChanged('approved') ){
 
-            if(!$entity->wasChanged('edugain')){
+            if(!$entity->wasChanged('edugain') && !$entity->wasChanged('deleted_at')){
                 NotificationService::sendUpdateNotification($entity);
             }
 
