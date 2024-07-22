@@ -67,12 +67,12 @@ class FolderAddEntity implements ShouldQueue
                 EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
 
                 if ($this->entity->wasChanged('deleted_at') && is_null($this->entity->deleted_at)) {
-                    NotificationService::sendEntityNotification($this->entity, EntityStateChanged::class);
+                    NotificationService::sendEntityNotification($this->entity, new EntityStateChanged($this->entity));
                 } else {
                     if ($this->entity->wasChanged('approved') && $this->entity->approved == 1) {
-                        NotificationService::sendEntityNotification($this->entity, EntityStateChanged::class);
+                        NotificationService::sendEntityNotification($this->entity, new EntityStateChanged($this->entity));
                     } else {
-                        NotificationService::sendEntityNotification($this->entity, EntityUpdated::class);
+                        NotificationService::sendEntityNotification($this->entity, new EntityUpdated($this->entity));
                     }
                 }
 

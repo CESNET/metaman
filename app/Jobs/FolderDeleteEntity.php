@@ -60,7 +60,7 @@ class FolderDeleteEntity implements ShouldQueue
 
                 NotificationService::sendEntityNotification($entity, new EntityStateChanged($entity));
                 if ($entity->hfd) {
-                    NotificationService::sendEntityNotification($entity, EntityDeletedFromHfd::class);
+                    NotificationService::sendUpdateNotification($entity);
                 }
 
                 RunMdaScript::dispatch($federation, $lock->owner());

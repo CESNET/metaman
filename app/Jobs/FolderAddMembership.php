@@ -6,6 +6,10 @@ use App\Facades\EntityFacade;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\Membership;
+use App\Notifications\EntityAddedToHfd;
+use App\Notifications\EntityStateChanged;
+use App\Notifications\MembershipAccepted;
+use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -51,6 +55,14 @@ class FolderAddMembership implements ShouldQueue
         try {
             $lock->block(61);
             EntityFacade::saveMetadataToFederationFolder($entity->id, $federation->id);
+
+            NotificationService::sendEntityNotification($entity, new MembershipAccepted($this->membership));
+
+/*            if($this->membership->entity->hfd) {
+                NotificationService::sendEntityNotification($entity, new EntityAddedToHfd($this->membership->entity));
+            }*/
+
+
             RunMdaScript::dispatch($federation, $lock->owner());
         } catch (Exception $e) {
             $this->fail($e);

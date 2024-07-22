@@ -312,7 +312,7 @@ class EntityController extends Controller
                 if ($entity->trashed()) {
                     $entity->restore();
 
-                    //TODO restore chain
+                    //TODO restore chain (functional)
                     /*                    Bus::chain([
                                             new GitAddEntity($entity, Auth::user()),
                                             new GitAddToHfd($entity, Auth::user()),
@@ -343,7 +343,7 @@ class EntityController extends Controller
                 } else {
                     $entity->delete();
 
-                    //TODO delete chain
+                    //TODO delete chain (functional)
                     /*                    Bus::chain([
                                             new GitDeleteEntity($entity, Auth::user()),
                                             new GitDeleteFromHfd($entity, Auth::user()),
@@ -430,7 +430,7 @@ class EntityController extends Controller
                 $status = $entity->edugain ? 'edugain' : 'no_edugain';
                 $color = $entity->edugain ? 'green' : 'red';
 
-                // TODO  add and delete from EDUGAIN
+                // TODO  add and delete from EDUGAIN (functional)
                 /*                if ($entity->edugain) {
                                     Bus::chain([
                                         new GitAddToEdugain($entity, Auth::user()),
@@ -473,7 +473,7 @@ class EntityController extends Controller
                 $status = $entity->rs ? 'rs' : 'no_rs';
                 $color = $entity->rs ? 'green' : 'red';
 
-                // TODO notification
+                // TODO notification (not ready ask about this)
                 /*                if ($entity->rs) {
                                     GitAddToRs::dispatch($entity, Auth::user());
                                     Notification::send($entity->operators, new EntityAddedToRs($entity));
@@ -506,7 +506,7 @@ class EntityController extends Controller
                 $entity->category()->associate($category);
                 $entity->save();
 
-                // TODO work with category
+                // TODO work with category (not  ready)
                 /*                Bus::chain([
                                     new GitDeleteFromCategory($old_category, $entity, Auth::user()),
                                     new GitAddToCategory($category, $entity, Auth::user()),
@@ -542,7 +542,7 @@ class EntityController extends Controller
                 $status = $entity->hfd ? 'hfd' : 'no_hfd';
                 $color = $entity->hfd ? 'red' : 'green';
 
-                //TODO change HfD status
+                //TODO change HfD status (not working)
                 /*                if ($entity->hfd) {
                                     GitAddToHfd::dispatch($entity, Auth::user());
                                     Notification::send($entity->operators, new EntityAddedToHfd($entity));

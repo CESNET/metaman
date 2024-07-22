@@ -27,8 +27,8 @@ class NotificationService
             return ! in_array($admin->id, $operators);
         });
 
-        Notification::sendNow($entity->operators, new $notification($entity));
-        Notification::sendNow($filteredAdmins, new $notification($entity));
+        Notification::sendNow($entity->operators, $notification);
+        Notification::sendNow($filteredAdmins, $notification);
     }
 
     private static function sendRsNotification(Entity $entity): bool
@@ -36,9 +36,9 @@ class NotificationService
         if ($entity->wasChanged('rs')) {
 
             if ($entity->rs == 1) {
-                self::sendEntityNotification($entity, EntityAddedToRs::class);
+                self::sendEntityNotification($entity, new EntityAddedToRs($entity));
             } else {
-                self::sendEntityNotification($entity, EntityDeletedFromRs::class);
+                self::sendEntityNotification($entity, new EntityDeletedFromRs($entity));
             }
 
             return true;
@@ -52,9 +52,9 @@ class NotificationService
         if ($entity->wasChanged('hfd')) {
 
             if ($entity->hfd) {
-                self::sendEntityNotification($entity, EntityAddedToHfd::class);
+                self::sendEntityNotification($entity, new EntityAddedToHfd($entity));
             } else {
-                self::sendEntityNotification($entity, EntityDeletedFromHfd::class);
+                self::sendEntityNotification($entity, new EntityDeletedFromHfd($entity));
             }
 
             return true;
@@ -67,7 +67,7 @@ class NotificationService
     {
 
         if (! self::sendRsNotification($entity) && ! self::sendHfDNotification($entity)) {
-            self::sendEntityNotification($entity, EntityUpdated::class);
+            self::sendEntityNotification($entity, new EntityUpdated($entity));
         }
 
     }

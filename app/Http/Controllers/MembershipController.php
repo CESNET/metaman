@@ -39,7 +39,7 @@ class MembershipController extends Controller
             $membership->update();
         });
 
-        // TODO chain of update membership chain
+        // TODO chain of update membership chain (functional)
         /*        Bus::chain([
                     new Old_GitAddEntity($membership->entity, Auth::user()),
                     new GitAddToHfd($membership->entity, Auth::user()),
