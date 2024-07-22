@@ -3,15 +3,11 @@
 namespace App\Providers;
 
 use App\Events\AddMembership;
-use App\Events\CreateEntity;
-use App\Events\DeleteEntity;
 use App\Events\FederationApprove;
-use App\Events\UpdateEntity;
 use App\Listeners\CreateFederationFolder;
-use App\Listeners\SendCreatedEntityToSaveJob;
-use App\Listeners\SendDeletedEntityToDeleteJob;
 use App\Listeners\SendNewMemberToSaveJob;
-use App\Listeners\SendUpdatedEntityToSaveJob;
+use App\Models\Entity;
+use App\Observers\EntityObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -31,15 +27,6 @@ class EventServiceProvider extends ServiceProvider
         FederationApprove::class => [
             CreateFederationFolder::class,
         ],
-        CreateEntity::class => [
-            SendCreatedEntityToSaveJob::class,
-        ],
-        UpdateEntity::class => [
-            SendUpdatedEntityToSaveJob::class,
-        ],
-        DeleteEntity::class => [
-            SendDeletedEntityToDeleteJob::class,
-        ],
         AddMembership::class => [
             SendNewMemberToSaveJob::class,
         ],
@@ -53,6 +40,6 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Entity::observe(EntityObserver::class);
     }
 }

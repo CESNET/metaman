@@ -94,11 +94,4 @@ class Entity extends Model
             ->orWhere('description_cs', 'like', "%$search%");
     }
 
-    protected $dispatchesEvents = [
-        'created' => CreateEntity::class,
-        'updated' => UpdateEntity::class,
-        'deleted' => DeleteEntity::class,
-        'restored' => CreateEntity::class,
-
-    ];
 }

@@ -270,7 +270,7 @@ class EntityController extends Controller
                                 ->with('status', __('entities.not_changed'));
                         }
 
-                        // TODO notification
+                        // TODO entityUpdated (functional)
                         /*                        Bus::chain([
                                                     new GitUpdateEntity($entity, Auth::user()),
                                                     function () use ($entity) {
