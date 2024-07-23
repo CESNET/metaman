@@ -8,6 +8,7 @@ use App\Models\Federation;
 use App\Models\Membership;
 use App\Notifications\EntityDeletedFromHfd;
 use App\Notifications\EntityStateChanged;
+use App\Notifications\MembershipRejected;
 use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
@@ -57,6 +58,9 @@ class FolderDeleteMembership implements ShouldQueue
         try {
             $lock->block(61);
             EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
+
+
+            NotificationService::sendEntityNotification($entity,new MembershipRejected($entity->entityid,$federation->name));
 
             RunMdaScript::dispatch($federation, $lock->owner());
         } catch (Exception $e) {

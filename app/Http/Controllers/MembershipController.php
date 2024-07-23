@@ -83,9 +83,9 @@ class MembershipController extends Controller
 
         $membership->delete();
 
-        $admins = User::activeAdmins()->select('id', 'email')->get();
+/*        $admins = User::activeAdmins()->select('id', 'email')->get();
         Notification::send($operators, new MembershipRejected($entity, $federation));
-        Notification::send($admins, new MembershipRejected($entity, $federation));
+        Notification::send($admins, new MembershipRejected($entity, $federation));*/
 
         return redirect()
             ->back()
