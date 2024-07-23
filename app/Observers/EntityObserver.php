@@ -28,9 +28,9 @@ class EntityObserver implements ShouldHandleEventsAfterCommit
         if ($entity->wasChanged('xml_file')
         ) {
             FolderAddEntity::dispatch($entity);
-        } elseif ($entity->approved == 1 && !$entity->wasChanged('approved') ){
+        } elseif ($entity->approved == 1 && ! $entity->wasChanged('approved')) {
 
-            if(!$entity->wasChanged('edugain') && !$entity->wasChanged('deleted_at')){
+            if (! $entity->wasChanged('edugain') && ! $entity->wasChanged('deleted_at')) {
                 NotificationService::sendUpdateNotification($entity);
             }
 

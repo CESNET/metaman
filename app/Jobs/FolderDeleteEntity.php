@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Facades\EntityFacade;
 use App\Models\Entity;
-use App\Notifications\EntityDeletedFromHfd;
 use App\Notifications\EntityStateChanged;
 use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
@@ -14,7 +13,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
@@ -65,7 +63,7 @@ class FolderDeleteEntity implements ShouldQueue
 
                 RunMdaScript::dispatch($federation, $lock->owner());
             } catch (Exception $e) {
-               $this->fail($e);
+                $this->fail($e);
             } finally {
                 if ($lock->isOwnedByCurrentProcess()) {
                     $lock->release();

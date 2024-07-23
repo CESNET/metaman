@@ -7,7 +7,6 @@ use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\Membership;
 use App\Notifications\EntityAddedToHfd;
-use App\Notifications\EntityStateChanged;
 use App\Notifications\MembershipAccepted;
 use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
@@ -58,10 +57,9 @@ class FolderAddMembership implements ShouldQueue
 
             NotificationService::sendEntityNotification($entity, new MembershipAccepted($this->membership));
 
-/*            if($this->membership->entity->hfd) {
-                NotificationService::sendEntityNotification($entity, new EntityAddedToHfd($this->membership->entity));
-            }*/
-
+            /*            if($this->membership->entity->hfd) {
+                            NotificationService::sendEntityNotification($entity, new EntityAddedToHfd($this->membership->entity));
+                        }*/
 
             RunMdaScript::dispatch($federation, $lock->owner());
         } catch (Exception $e) {

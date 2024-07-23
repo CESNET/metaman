@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\JoinFederation;
 use App\Jobs\FolderDeleteMembership;
-use App\Jobs\Old_GitDeleteFromFederation;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
@@ -82,7 +81,7 @@ class EntityFederationController extends Controller
         foreach (request('federations') as $f) {
             $federation = Federation::find($f);
 
-            FolderDeleteMembership::dispatch($entity,$federation);
+            FolderDeleteMembership::dispatch($entity, $federation);
             //GitDeleteFromFederation::dispatch($entity, $federation, Auth::user());
             Notification::send($entity->operators, new EntityDeletedFromFederation($entity, $federation));
             Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromFederation($entity, $federation));

@@ -3,9 +3,6 @@
 namespace App\Models;
 
 use App\Enums\EntityType;
-use App\Events\CreateEntity;
-use App\Events\DeleteEntity;
-use App\Events\UpdateEntity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -93,5 +90,4 @@ class Entity extends Model
             ->orWhere('description_en', 'like', "%$search%")
             ->orWhere('description_cs', 'like', "%$search%");
     }
-
 }

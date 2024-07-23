@@ -5,9 +5,6 @@ namespace App\Jobs;
 use App\Facades\EntityFacade;
 use App\Models\Entity;
 use App\Models\Federation;
-use App\Models\Membership;
-use App\Notifications\EntityDeletedFromHfd;
-use App\Notifications\EntityStateChanged;
 use App\Notifications\MembershipRejected;
 use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
@@ -26,9 +23,9 @@ class FolderDeleteMembership implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HandlesJobsFailuresTrait;
 
-    public Federation  $federation;
-    public Entity $entity;
+    public Federation $federation;
 
+    public Entity $entity;
 
     /**
      * Create a new job instance.
@@ -59,8 +56,7 @@ class FolderDeleteMembership implements ShouldQueue
             $lock->block(61);
             EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
 
-
-            NotificationService::sendEntityNotification($entity,new MembershipRejected($entity->entityid,$federation->name));
+            NotificationService::sendEntityNotification($entity, new MembershipRejected($entity->entityid, $federation->name));
 
             RunMdaScript::dispatch($federation, $lock->owner());
         } catch (Exception $e) {
