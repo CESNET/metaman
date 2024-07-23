@@ -51,6 +51,7 @@ class FolderDeleteMembership implements ShouldQueue
         }
         $pathToFile = $federation->name.'/'.$entity->file;
         if(! Storage::disk($diskName)->exists($pathToFile)) {
+            NotificationService::sendEntityNotification($entity, new MembershipRejected($entity->entityid, $federation->name));
             return;
         }
 
@@ -62,7 +63,6 @@ class FolderDeleteMembership implements ShouldQueue
             $lock->block(61);
             EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
 
-            NotificationService::sendEntityNotification($entity, new MembershipRejected($entity->entityid, $federation->name));
 
             RunMdaScript::dispatch($federation, $lock->owner());
         } catch (Exception $e) {
