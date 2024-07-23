@@ -5,7 +5,6 @@ namespace App\Observers;
 use App\Jobs\FolderAddMembership;
 use App\Jobs\FolderDeleteMembership;
 use App\Models\Membership;
-use Illuminate\Support\Facades\Log;
 
 class MembershipObserver
 {
@@ -35,7 +34,6 @@ class MembershipObserver
         $entity = $membership->entity;
         $federation = $membership->federation;
         FolderDeleteMembership::dispatch($entity, $federation);
-
 
     }
 

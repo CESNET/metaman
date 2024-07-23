@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
-use function PHPUnit\Framework\isNull;
 
 class FolderDeleteMembership implements ShouldQueue
 {
@@ -50,8 +49,9 @@ class FolderDeleteMembership implements ShouldQueue
             $this->fail();
         }
         $pathToFile = $federation->name.'/'.$entity->file;
-        if(! Storage::disk($diskName)->exists($pathToFile)) {
+        if (! Storage::disk($diskName)->exists($pathToFile)) {
             NotificationService::sendModelNotification($entity, new MembershipRejected($entity->entityid, $federation->name));
+
             return;
         }
 
@@ -62,7 +62,6 @@ class FolderDeleteMembership implements ShouldQueue
         try {
             $lock->block(61);
             EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
-
 
             RunMdaScript::dispatch($federation, $lock->owner());
         } catch (Exception $e) {

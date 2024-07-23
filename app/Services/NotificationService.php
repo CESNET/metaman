@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Entity;
-use App\Models\Federation;
 use App\Models\User;
 use App\Notifications\EntityAddedToHfd;
 use App\Notifications\EntityAddedToRs;
@@ -11,6 +10,7 @@ use App\Notifications\EntityDeletedFromHfd;
 use App\Notifications\EntityDeletedFromRs;
 use App\Notifications\EntityUpdated;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Notification;
 use InvalidArgumentException;
 
@@ -18,25 +18,33 @@ class NotificationService
 {
     public static function sendModelNotification(Model $model, $notification): void
     {
+        if (! method_exists($model, 'operators')) {
+            throw new InvalidArgumentException('The given model does not have an operators relationship.');
+        }
+
+        $operators = $model->operators;
+
+        self::sendOperatorNotification($operators, $notification);
+    }
+
+    public static function sendOperatorNotification(Collection $operators, $notification): void
+    {
         if ($notification == null) {
             return;
         }
 
-        if (!method_exists($model, 'operators')) {
-            throw new InvalidArgumentException('The given model does not have an operators relationship.');
-        }
-
         $admins = User::activeAdmins()->select('id', 'email')->get();
-        $operators = $model->operators->pluck('id')->toArray();
 
-        $filteredAdmins = $admins->filter(function ($admin) use ($operators) {
-            return !in_array($admin->id, $operators);
+        $operatorIds = $operators->pluck('id');
+
+        $filteredAdmins = $admins->filter(function ($admin) use ($operatorIds) {
+            return ! $operatorIds->contains($admin->id);
         });
 
-        Notification::sendNow($model->operators, $notification);
+        Notification::sendNow($operators, $notification);
+
         Notification::sendNow($filteredAdmins, $notification);
     }
-
 
     private static function sendRsNotification(Entity $entity): bool
     {
