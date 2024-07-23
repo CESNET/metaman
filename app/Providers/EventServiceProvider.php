@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use App\Events\AddMembership;
 use App\Events\FederationApprove;
 use App\Listeners\CreateFederationFolder;
-use App\Listeners\SendNewMemberToSaveJob;
 use App\Models\Entity;
+use App\Models\Membership;
 use App\Observers\EntityObserver;
+use App\Observers\MembershipObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -27,9 +27,6 @@ class EventServiceProvider extends ServiceProvider
         FederationApprove::class => [
             CreateFederationFolder::class,
         ],
-        AddMembership::class => [
-            SendNewMemberToSaveJob::class,
-        ],
 
     ];
 
@@ -41,5 +38,6 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         Entity::observe(EntityObserver::class);
+        Membership::observe(MembershipObserver::class);
     }
 }

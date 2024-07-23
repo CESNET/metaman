@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
+use function PHPUnit\Framework\isNull;
 
 class FolderDeleteMembership implements ShouldQueue
 {
@@ -48,6 +49,11 @@ class FolderDeleteMembership implements ShouldQueue
         if (! Storage::disk($diskName)->exists($federation->name)) {
             $this->fail();
         }
+        $pathToFile = $federation->name.'/'.$entity->file;
+        if(! Storage::disk($diskName)->exists($pathToFile)) {
+            return;
+        }
+
         $pathToDirectory = Storage::disk($diskName)->path($federation->name);
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
         $lock = Cache::lock($lockKey, 61);
