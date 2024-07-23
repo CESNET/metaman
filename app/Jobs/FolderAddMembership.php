@@ -55,7 +55,7 @@ class FolderAddMembership implements ShouldQueue
             $lock->block(61);
             EntityFacade::saveMetadataToFederationFolder($entity->id, $federation->id);
 
-            NotificationService::sendEntityNotification($entity, new MembershipAccepted($this->membership));
+            NotificationService::sendModelNotification($entity, new MembershipAccepted($this->membership));
 
             /*            if($this->membership->entity->hfd) {
                             NotificationService::sendEntityNotification($entity, new EntityAddedToHfd($this->membership->entity));

@@ -58,7 +58,7 @@ class EduGainAddEntity implements ShouldQueue
             $lock->block(61);
             EntityFacade::saveEntityMetadataToFolder($this->entity->id, $folderName);
 
-            NotificationService::sendEntityNotification($this->entity, new EntityEdugainStatusChanged($this->entity));
+            NotificationService::sendModelNotification($this->entity, new EntityEdugainStatusChanged($this->entity));
             EduGainRunMdaScript::dispatch($lock->owner());
 
         } catch (Exception $e) {

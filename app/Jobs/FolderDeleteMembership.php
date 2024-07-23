@@ -51,7 +51,7 @@ class FolderDeleteMembership implements ShouldQueue
         }
         $pathToFile = $federation->name.'/'.$entity->file;
         if(! Storage::disk($diskName)->exists($pathToFile)) {
-            NotificationService::sendEntityNotification($entity, new MembershipRejected($entity->entityid, $federation->name));
+            NotificationService::sendModelNotification($entity, new MembershipRejected($entity->entityid, $federation->name));
             return;
         }
 
