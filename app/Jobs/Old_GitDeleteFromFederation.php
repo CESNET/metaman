@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\ExceptionOccured;
 use App\Models\Entity;
+use App\Models\Federation;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitAddToRs implements ShouldQueue
+class Old_GitDeleteFromFederation implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -27,6 +28,7 @@ class GitAddToRs implements ShouldQueue
      */
     public function __construct(
         public Entity $entity,
+        public Federation $federation,
         public User $user
     ) {
     }
@@ -38,23 +40,23 @@ class GitAddToRs implements ShouldQueue
      */
     public function handle()
     {
-        if ($this->entity->rs) {
-            $git = $this->initializeGit();
+        $git = $this->initializeGit();
 
-            $tagfile = config('git.ec_rs');
-            Storage::append($tagfile, $this->entity->entityid);
-            $this->trimWhiteSpaces($tagfile);
+        $tagfile = $this->federation->tagfile;
+        $content = Storage::get($tagfile);
+        $content = preg_replace('#'.$this->entity->entityid.'#', '', $content);
+        Storage::put($tagfile, $content);
+        $this->trimWhiteSpaces($tagfile);
 
-            if ($git->hasChanges()) {
-                $git->addFile($tagfile);
+        if ($git->hasChanges()) {
+            $git->addFile($tagfile);
 
-                $git->commit(
-                    $this->committer().": $tagfile (update)\n\n"
-                        ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
-                );
+            $git->commit(
+                $this->committer().": $tagfile (update)\n\n"
+                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
+            );
 
-                $git->push();
-            }
+            $git->push();
         }
     }
 

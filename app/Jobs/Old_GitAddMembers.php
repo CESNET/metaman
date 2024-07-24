@@ -3,11 +3,12 @@
 namespace App\Jobs;
 
 use App\Mail\ExceptionOccured;
-use App\Models\Entity;
+use App\Models\Federation;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitDeleteEntity implements ShouldQueue
+class Old_GitAddMembers implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -26,7 +27,8 @@ class GitDeleteEntity implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public Entity $entity,
+        public Federation $federation,
+        public Collection $entities,
         public User $user
     ) {
     }
@@ -40,23 +42,18 @@ class GitDeleteEntity implements ShouldQueue
     {
         $git = $this->initializeGit();
 
-        $git->removeFile($this->entity->file);
-
-        foreach ($this->entity->federations as $federation) {
-            $tagfile = Storage::get($federation->tagfile);
-            $tagfile = preg_replace('#'.$this->entity->entityid.'#', '', $tagfile);
-            Storage::put($federation->tagfile, $tagfile);
-            $this->trimWhiteSpaces($federation->tagfile);
-
-            if ($git->hasChanges()) {
-                $git->addFile($federation->tagfile);
-            }
+        foreach ($this->entities as $entity) {
+            Storage::append($this->federation->tagfile, $entity->entityid);
         }
 
+        $this->trimWhiteSpaces($this->federation->tagfile);
+
         if ($git->hasChanges()) {
+            $git->addFile($this->federation->tagfile);
+
             $git->commit(
-                $this->committer().": {$this->fqdn($this->entity->entityid)} (delete)\n\n"
-                    ."Deleted by: {$this->user->name} ({$this->user->uniqueid})\n"
+                $this->committer().": {$this->federation->tagfile} (update)\n\n"
+                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
             $git->push();

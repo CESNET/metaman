@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
@@ -430,6 +431,7 @@ class CategoryControllerTest extends TestCase
     /** @test */
     public function an_admin_cannot_delete_an_existing_category_with_members()
     {
+        Queue::fake();
         $admin = User::factory()->create(['admin' => true]);
         $category = Category::factory()->create();
         $category->entities()->save(Entity::factory()->create());

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFederation;
 use App\Http\Requests\UpdateFederation;
-use App\Jobs\GitAddMembers;
 use App\Jobs\GitDeleteMembers;
 use App\Models\Entity;
 use App\Models\Federation;
@@ -18,6 +17,7 @@ use App\Notifications\FederationRequested;
 use App\Notifications\FederationStateChanged;
 use App\Notifications\FederationUpdated;
 use App\Notifications\YourFederationRightsChanged;
+use App\Services\NotificationService;
 use App\Traits\GitTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -83,7 +83,7 @@ class FederationController extends Controller
         });
 
         $admins = User::activeAdmins()->select('id', 'email')->get();
-        Notification::send($admins, new FederationRequested($federation));
+        Notification::sendNow($admins, new FederationRequested($federation));
 
         return redirect('federations')
             ->with('status', __('federations.requested', ['name' => $federation->name]));
@@ -130,12 +130,8 @@ class FederationController extends Controller
                 $this->authorize('update', $federation);
 
                 $name = $federation->name;
-                $operators = $federation->operators;
-                $admins = User::activeAdmins()->select('id', 'email')->get();
+                NotificationService::sendModelNotification($federation, new FederationRejected($name));
                 $federation->forceDelete();
-
-                Notification::send($operators, new FederationRejected($name));
-                Notification::send($admins, new FederationRejected($name));
 
                 return redirect('federations')
                     ->with('status', __('federations.rejected', ['name' => $name]));
@@ -147,10 +143,9 @@ class FederationController extends Controller
 
                 $federation->approved = true;
                 $federation->update();
+                NotificationService::sendModelNotification($federation, new FederationApproved($federation));
 
                 //GitAddFederation::dispatch($federation, 'approve', Auth::user());
-                Notification::send($federation->operators, new FederationApproved($federation));
-                Notification::send(User::activeAdmins()->select('id', 'email')->get(), new FederationApproved($federation));
 
                 return redirect()
                     ->route('federations.show', $federation)
@@ -182,10 +177,8 @@ class FederationController extends Controller
                     return redirect()
                         ->route('federations.show', $federation);
                 }
-
+                NotificationService::sendModelNotification($federation, new FederationUpdated($federation));
                 //  GitUpdateFederation::dispatch($federation, Auth::user());
-                Notification::send($federation->operators, new FederationUpdated($federation));
-                Notification::send(User::activeAdmins()->select('id', 'email')->get(), new FederationUpdated($federation));
 
                 return redirect()
                     ->route('federations.show', $federation)
@@ -201,15 +194,14 @@ class FederationController extends Controller
                 $state = $federation->trashed() ? 'deleted' : 'restored';
                 $color = $federation->trashed() ? 'red' : 'green';
 
+                NotificationService::sendModelNotification($federation, new FederationStateChanged($federation));
+
                 /*                if ($federation->trashed()) {
                                     GitDeleteFederation::dispatch($federation, Auth::user());
                                 } else {
 
                                     GitAddFederation::dispatch($federation, 'state', Auth::user());
                                 }*/
-
-                Notification::send($federation->operators, new FederationStateChanged($federation));
-                Notification::send(User::activeAdmins()->select('id', 'email')->get(), new FederationStateChanged($federation));
 
                 return redirect()
                     ->route('federations.show', $federation)
@@ -232,9 +224,8 @@ class FederationController extends Controller
                 $federation->operators()->attach(request('operators'));
 
                 $admins = User::activeAdmins()->select('id', 'email')->get();
-                Notification::send($new_operators, new YourFederationRightsChanged($federation, 'added'));
-                Notification::send($old_operators, new FederationOperatorsChanged($federation, $new_operators, 'added'));
-                Notification::send($admins, new FederationOperatorsChanged($federation, $new_operators, 'added'));
+                Notification::sendNow($new_operators, new YourFederationRightsChanged($federation, 'added'));
+                NotificationService::sendOperatorNotification($old_operators, new FederationOperatorsChanged($federation, $new_operators, 'added'));
 
                 return redirect()
                     ->route('federations.operators', $federation)
@@ -256,9 +247,8 @@ class FederationController extends Controller
                 $new_operators = $federation->operators;
 
                 $admins = User::activeAdmins()->select('id', 'email')->get();
-                Notification::send($old_operators, new YourFederationRightsChanged($federation, 'deleted'));
-                Notification::send($new_operators, new FederationOperatorsChanged($federation, $old_operators, 'deleted'));
-                Notification::send($admins, new FederationOperatorsChanged($federation, $old_operators, 'deleted'));
+                Notification::sendNow($old_operators, new YourFederationRightsChanged($federation, 'deleted'));
+                NotificationService::sendOperatorNotification($new_operators, new FederationOperatorsChanged($federation, $old_operators, 'added'));
 
                 return redirect()
                     ->route('federations.operators', $federation)
@@ -284,9 +274,10 @@ class FederationController extends Controller
                 ]);
 
                 $new_entities = Entity::whereIn('id', request('entities'))->get();
-                GitAddMembers::dispatch($federation, $new_entities, Auth::user());
-                Notification::send($federation->operators, new FederationMembersChanged($federation, $new_entities, 'added'));
-                Notification::send(User::activeAdmins()->select('id', 'emails')->get(), new FederationMembersChanged($federation, $new_entities, 'added'));
+                NotificationService::sendModelNotification($federation, new FederationMembersChanged($federation, $new_entities, 'added'));
+
+                //TODO add members to federation
+                //  GitAddMembers::dispatch($federation, $new_entities, Auth::user());
 
                 return redirect()
                     ->route('federations.entities', $federation)
@@ -306,9 +297,8 @@ class FederationController extends Controller
                 $federation->entities()->detach(request('entities'));
 
                 $old_entities = Entity::whereIn('id', request('entities'))->get();
-                GitDeleteMembers::dispatch($federation, $old_entities, Auth::user());
-                Notification::send($federation->operators, new FederationMembersChanged($federation, $old_entities, 'deleted'));
-                Notification::send(User::activeAdmins()->select('id', 'emails')->get(), new FederationMembersChanged($federation, $old_entities, 'deleted'));
+                //                GitDeleteMembers::dispatch($federation, $old_entities, Auth::user());
+                NotificationService::sendModelNotification($federation, new FederationMembersChanged($federation, $old_entities, 'deleted'));
 
                 return redirect()
                     ->route('federations.entities', $federation)
