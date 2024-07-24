@@ -20,6 +20,7 @@ services:
             XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
         volumes:
             - '.:/var/www/html'
+            - '/home/artem/Desktop/cesnet/metadata/testdata/mda:/home/artem/Desktop/cesnet/metadata/testdata/mda'
         networks:
             - sail
         depends_on:
