@@ -32,6 +32,7 @@ use App\Notifications\EntityUpdated;
 use App\Notifications\FederationMemberChanged;
 use App\Notifications\IdpCategoryChanged;
 use App\Notifications\YourEntityRightsChanged;
+use App\Services\NotificationService;
 use App\Traits\DumpFromGit\EntitiesHelp\DeleteFromEntity;
 use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
 use App\Traits\GitTrait;
@@ -387,9 +388,11 @@ class EntityController extends Controller
                 $entity->operators()->attach(request('operators'));
 
                 $admins = User::activeAdmins()->select('id', 'email')->get();
-                Notification::send($new_operators, new YourEntityRightsChanged($entity, 'added'));
-                Notification::send($old_operators, new EntityOperatorsChanged($entity, $new_operators, 'added'));
-                Notification::send($admins, new EntityOperatorsChanged($entity, $new_operators, 'added'));
+                Notification::sendNow($new_operators, new YourEntityRightsChanged($entity, 'added'));
+                NotificationService::sendOperatorNotification($old_operators, new EntityOperatorsChanged($entity, $new_operators, 'added'));
+
+/*                Notification::send($old_operators, new EntityOperatorsChanged($entity, $new_operators, 'added'));
+                Notification::send($admins, new EntityOperatorsChanged($entity, $new_operators, 'added'));*/
 
                 return redirect()
                     ->route('entities.show', $entity)
@@ -411,9 +414,10 @@ class EntityController extends Controller
                 $new_operators = $entity->operators;
 
                 $admins = User::activeAdmins()->select('id', 'email')->get();
-                Notification::send($old_operators, new YourEntityRightsChanged($entity, 'deleted'));
-                Notification::send($new_operators, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));
-                Notification::send($admins, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));
+                Notification::sendNow($old_operators, new YourEntityRightsChanged($entity, 'deleted'));
+                NotificationService::sendOperatorNotification($old_operators, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));
+/*                Notification::send($new_operators, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));
+                Notification::send($admins, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));*/
 
                 return redirect()
                     ->route('entities.show', $entity)
