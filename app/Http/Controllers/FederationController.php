@@ -130,8 +130,8 @@ class FederationController extends Controller
                 $this->authorize('update', $federation);
 
                 $name = $federation->name;
-                $federation->forceDelete();
                 NotificationService::sendModelNotification($federation, new FederationRejected($name));
+                $federation->forceDelete();
 
                 return redirect('federations')
                     ->with('status', __('federations.rejected', ['name' => $name]));
@@ -227,8 +227,6 @@ class FederationController extends Controller
                 Notification::sendNow($new_operators, new YourFederationRightsChanged($federation, 'added'));
                 NotificationService::sendOperatorNotification($old_operators, new FederationOperatorsChanged($federation, $new_operators, 'added'));
 
-
-
                 return redirect()
                     ->route('federations.operators', $federation)
                     ->with('status', __('federations.operators_added'));
@@ -251,7 +249,6 @@ class FederationController extends Controller
                 $admins = User::activeAdmins()->select('id', 'email')->get();
                 Notification::sendNow($old_operators, new YourFederationRightsChanged($federation, 'deleted'));
                 NotificationService::sendOperatorNotification($new_operators, new FederationOperatorsChanged($federation, $old_operators, 'added'));
-
 
                 return redirect()
                     ->route('federations.operators', $federation)
@@ -281,7 +278,6 @@ class FederationController extends Controller
 
                 //TODO add members to federation
                 //  GitAddMembers::dispatch($federation, $new_entities, Auth::user());
-
 
                 return redirect()
                     ->route('federations.entities', $federation)
