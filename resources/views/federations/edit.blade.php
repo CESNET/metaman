@@ -35,42 +35,48 @@
 
     </x-forms.section.form-body-section>
 
-    <x-forms.section.form-body-section
-        name="federations.xml_id"
-        label="xml_id"
-    >
-        <x-forms.element.input err="xml_id">
-            type="text" name="xml_id" id="xml_id" maxlength="32"
-            placeholder="{{ __('federations.name_placeholder') }}"
-            value="{{ $federation->xml_id }}" required
-        </x-forms.element.input>
 
-    </x-forms.section.form-body-section>
+    @can('do-everything')
+        <x-forms.section.form-body-section
+            name="federations.xml_id"
+            label="xml_id"
+        >
+            <x-forms.element.input err="xml_id">
+                type="text" name="xml_id" id="xml_id" maxlength="32"
+                placeholder="{{ __('federations.name_placeholder') }}"
+                value="{{ $federation->xml_id }}" required
+            </x-forms.element.input>
 
-    <x-forms.section.form-body-section
-        name="federations.xml_name"
-        label="xml_name"
-    >
-        <x-forms.element.input err="xml_name">
-            type="text" name="xml_name" id="xml_name" maxlength="255"
-            placeholder="{{ __('federations.description_placeholder') }}"
-            value="{{ $federation->xml_name }}" required
-        </x-forms.element.input>
+        </x-forms.section.form-body-section>
 
-    </x-forms.section.form-body-section>
+        <x-forms.section.form-body-section
+            name="federations.xml_name"
+            label="xml_name"
+        >
+            <x-forms.element.input err="xml_name">
+                type="text" name="xml_name" id="xml_name" maxlength="255"
+                placeholder="{{ __('federations.description_placeholder') }}"
+                value="{{ $federation->xml_name }}" required
+            </x-forms.element.input>
 
-    <x-forms.section.form-body-section
-        name="common.add_sp_idp"
-        label="add_sp_and_idp_section"
-    >
-        <label for="use_sp">
+        </x-forms.section.form-body-section>
 
-            <input type="checkbox" name="sp_and_ip_feed" id="sp_and_ip_feed" value="1"  {{ $federation->additional_filters == 1 ? 'checked' : '' }}>
-            <span class="{{ $federation->additional_filters == 1 ? 'checked-label' : 'unchecked-label' }}">
+        <x-forms.section.form-body-section
+            name="common.add_sp_idp"
+            label="add_sp_and_idp_section"
+        >
+            <label for="use_sp">
+
+                <input type="checkbox" name="sp_and_ip_feed" id="sp_and_ip_feed" value="1"  {{ $federation->additional_filters == 1 ? 'checked' : '' }}>
+                <span class="{{ $federation->additional_filters == 1 ? 'checked-label' : 'unchecked-label' }}">
                 {{ __('federations.add_sp_and_idp') }}
             </span>
 
-        </label>
-    </x-forms.section.form-body-section>
+            </label>
+        </x-forms.section.form-body-section>
+
+    @endcan
+
+
 
 @endsection

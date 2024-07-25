@@ -363,9 +363,7 @@ class FederationControllerTest extends TestCase
             ->get(route('federations.edit', $federation))
             ->assertSeeText(__('federations.edit', ['name' => $federation->name]))
             ->assertSee($federation->name)
-            ->assertSee($federation->description)
-            ->assertSee($federation->xml_id)
-            ->assertSee($federation->xml_name);
+            ->assertSee($federation->description);
 
         $this->assertEquals(1, Federation::count());
         $this->assertEquals(route('federations.edit', $federation), url()->current());
