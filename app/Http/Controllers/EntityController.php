@@ -428,8 +428,12 @@ class EntityController extends Controller
             case 'edugain':
                 $this->authorize('update', $entity);
 
-                $entity->edugain = $entity->edugain ? false : true;
-                $entity->update();
+                $entity = DB::transaction(function () use ($entity) {
+                    $entity->edugain = $entity->edugain ? false : true;
+                    $entity->update();
+
+                    return $entity;
+                });
 
                 $status = $entity->edugain ? 'edugain' : 'no_edugain';
                 $color = $entity->edugain ? 'green' : 'red';
@@ -471,8 +475,12 @@ class EntityController extends Controller
                         ->with('status', __('categories.rs_controlled_for_sps_only'));
                 }
 
-                $entity->rs = $entity->rs ? false : true;
-                $entity->update();
+                $entity = DB::transaction(function () use ($entity) {
+                    $entity->rs = $entity->rs ? false : true;
+                    $entity->update();
+
+                    return $entity;
+                });
 
                 $status = $entity->rs ? 'rs' : 'no_rs';
                 $color = $entity->rs ? 'green' : 'red';
@@ -540,8 +548,12 @@ class EntityController extends Controller
                         ->with('status', __('categories.hfd_controlled_for_idps_only'));
                 }
 
-                $entity->hfd = $entity->hfd ? false : true;
-                $entity->update();
+                $entity = DB::transaction(function () use ($entity) {
+                    $entity->hfd = $entity->hfd ? false : true;
+                    $entity->update();
+
+                    return $entity;
+                });
 
                 $status = $entity->hfd ? 'hfd' : 'no_hfd';
                 $color = $entity->hfd ? 'red' : 'green';
@@ -594,7 +606,7 @@ class EntityController extends Controller
         $entity->forceDelete();
 
         $admins = User::activeAdmins()->select('id', 'email')->get();
-        Notification::send($admins, new EntityDestroyed($name));
+        Notification::sendNow($admins, new EntityDestroyed($name));
 
         return redirect('entities')
             ->with('status', __('entities.destroyed', ['name' => $name]));
