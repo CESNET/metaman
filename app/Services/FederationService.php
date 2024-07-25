@@ -23,4 +23,10 @@ class FederationService
             }
         }
     }
+
+    public static function DeleteFederationFolder(string $name): void
+    {
+        $diskName = config('storageCfg.name');
+        Storage::disk($diskName)->deleteDirectory($name);
+    }
 }

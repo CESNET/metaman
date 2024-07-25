@@ -19,7 +19,6 @@ use Mockery\Exception;
 class FolderDeleteEntity implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    use HandlesJobsFailuresTrait;
 
     /**
      * trait with failure  function

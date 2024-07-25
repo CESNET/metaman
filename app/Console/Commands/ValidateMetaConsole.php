@@ -98,8 +98,8 @@ class ValidateMetaConsole extends Command
 
     public function handle()
     {
-        $federation = Federation::where('id', 1)->first();
-        $this->runMDA($federation);
+        /*        $federation = Federation::where('id', 1)->first();
+                $this->runMDA($federation);*/
 
         // $this->fixEntities();
         //  $this->doc();
