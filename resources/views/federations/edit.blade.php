@@ -49,17 +49,6 @@
 
         </x-forms.section.form-body-section>
 
-        <x-forms.section.form-body-section
-            name="federations.xml_name"
-            label="xml_name"
-        >
-            <x-forms.element.input err="xml_name">
-                type="text" name="xml_name" id="xml_name" maxlength="255"
-                placeholder="{{ __('federations.description_placeholder') }}"
-                value="{{ $federation->xml_name }}" required
-            </x-forms.element.input>
-
-        </x-forms.section.form-body-section>
 
         <x-forms.section.form-body-section
             name="common.add_sp_idp"
