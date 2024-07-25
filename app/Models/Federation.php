@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Events\FederationApprove;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -61,8 +60,4 @@ class Federation extends Model
             ->orWhere('xml_id', 'like', "%$search%")
             ->orWhere('xml_name', 'like', "%$search%");
     }
-
-    protected $dispatchesEvents = [
-        'updated' => FederationApprove::class,
-    ];
 }

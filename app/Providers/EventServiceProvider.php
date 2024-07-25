@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use App\Events\FederationApprove;
-use App\Listeners\CreateFederationFolder;
 use App\Models\Entity;
+use App\Models\Federation;
 use App\Models\Membership;
 use App\Observers\EntityObserver;
+use App\Observers\FederationObserver;
 use App\Observers\MembershipObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -24,9 +24,6 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        FederationApprove::class => [
-            CreateFederationFolder::class,
-        ],
 
     ];
 
@@ -39,5 +36,6 @@ class EventServiceProvider extends ServiceProvider
     {
         Entity::observe(EntityObserver::class);
         Membership::observe(MembershipObserver::class);
+        Federation::observe(FederationObserver::class);
     }
 }
