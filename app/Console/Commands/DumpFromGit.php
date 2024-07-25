@@ -6,13 +6,13 @@ use App\Facades\EntityFacade;
 use App\Models\Entity;
 use App\Models\Membership;
 use App\Models\User;
+use App\Services\FederationService;
 use App\Traits\DumpFromGit\CreateCategoriesAndGroupsTrait;
 use App\Traits\DumpFromGit\CreateEntitiesTrait;
 use App\Traits\DumpFromGit\CreateFederationTrait;
 use App\Traits\DumpFromGit\EntitiesHelp\FixEntityTrait;
 use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
 use App\Traits\EdugainTrait;
-use App\Traits\FederationTrait;
 use App\Traits\GitTrait;
 use App\Traits\ValidatorTrait;
 use Exception;
@@ -22,7 +22,7 @@ class DumpFromGit extends Command
 {
     use CreateCategoriesAndGroupsTrait,CreateEntitiesTrait,CreateFederationTrait;
     use EdugainTrait;
-    use FederationTrait,FixEntityTrait,UpdateEntity;
+    use FixEntityTrait,UpdateEntity;
     use GitTrait, ValidatorTrait;
 
     /**
@@ -41,7 +41,7 @@ class DumpFromGit extends Command
 
     private function createMetadataFiles(): void
     {
-        $this->updateFederationFolders();
+        FederationService::createFoldersToAllFederation();
         $membership = Membership::select('entity_id', 'federation_id')->whereApproved(1)->get();
         foreach ($membership as $member) {
             EntityFacade::saveMetadataToFederationFolder($member->entity_id, $member->federation_id);
@@ -67,7 +67,7 @@ class DumpFromGit extends Command
             $this->createCategoriesAndGroups();
             $this->updateGroupsAndCategories();
             $this->updateEntitiesXml();
-            $this->updateFederationFolders();
+            FederationService::createFoldersToAllFederation();
             $this->fixEntities();
             $this->createMetadataFiles();
             $this->makeEdu2Edugain();

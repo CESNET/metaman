@@ -391,8 +391,8 @@ class EntityController extends Controller
                 Notification::sendNow($new_operators, new YourEntityRightsChanged($entity, 'added'));
                 NotificationService::sendOperatorNotification($old_operators, new EntityOperatorsChanged($entity, $new_operators, 'added'));
 
-/*                Notification::send($old_operators, new EntityOperatorsChanged($entity, $new_operators, 'added'));
-                Notification::send($admins, new EntityOperatorsChanged($entity, $new_operators, 'added'));*/
+                /*                Notification::send($old_operators, new EntityOperatorsChanged($entity, $new_operators, 'added'));
+                                Notification::send($admins, new EntityOperatorsChanged($entity, $new_operators, 'added'));*/
 
                 return redirect()
                     ->route('entities.show', $entity)
@@ -416,8 +416,8 @@ class EntityController extends Controller
                 $admins = User::activeAdmins()->select('id', 'email')->get();
                 Notification::sendNow($old_operators, new YourEntityRightsChanged($entity, 'deleted'));
                 NotificationService::sendOperatorNotification($old_operators, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));
-/*                Notification::send($new_operators, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));
-                Notification::send($admins, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));*/
+                /*                Notification::send($new_operators, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));
+                                Notification::send($admins, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));*/
 
                 return redirect()
                     ->route('entities.show', $entity)

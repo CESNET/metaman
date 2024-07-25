@@ -7,8 +7,6 @@ use App\Models\Entity;
 
 trait EdugainTrait
 {
-    use FederationTrait;
-
     public function makeEdu2Edugain()
     {
         $folderName = config('storageCfg.edu2edugain');

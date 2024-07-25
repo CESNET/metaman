@@ -7,14 +7,12 @@ use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\Group;
 use App\Models\User;
-use App\Traits\FederationTrait;
+use App\Services\FederationService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
-    use FederationTrait;
-
     /**
      * Seed the application's database.
      *
@@ -34,8 +32,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create(['active' => true]);
         User::factory(96)->create();
 
-        $edu2edugain = config('storageCfg.edu2edugain');
-        $this->createFederationFolder($edu2edugain);
+        FederationService::createFederationFolder(config('storageCfg.edu2edugain'));
 
         /*        Federation::factory(20)->create();
                 Entity::factory(100)->create();*/

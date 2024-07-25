@@ -3,13 +3,11 @@
 namespace App\Listeners;
 
 use App\Events\FederationApprove;
-use App\Traits\FederationTrait;
+use App\Services\FederationService;
 use Illuminate\Support\Facades\Storage;
 
 class CreateFederationFolder
 {
-    use FederationTrait;
-
     /**
      * Create the event listener.
      */
@@ -28,7 +26,7 @@ class CreateFederationFolder
         $federation = $event->federation;
         if ($federation->approved) {
             if (! Storage::disk($diskName)->exists($federation->name)) {
-                $this->createFederationFolder($federation->name);
+                FederationService::createFederationFolder($federation->name);
             }
         }
 
