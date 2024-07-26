@@ -1126,6 +1126,7 @@ class FederationControllerTest extends TestCase
     public function an_admin_can_purge_an_existing_federation()
     {
         Notification::fake();
+        Queue::fake();
 
         $admin = User::factory()->create(['admin' => true]);
         User::factory()->create(['admin' => true]);

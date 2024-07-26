@@ -2,8 +2,14 @@
 
 namespace App\Observers;
 
+use App\Jobs\DeleteFederation;
+use App\Jobs\RestoreFederation;
+use App\Jobs\RunMdaScript;
 use App\Models\Federation;
 use App\Services\FederationService;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class FederationObserver
@@ -34,7 +40,9 @@ class FederationObserver
      */
     public function deleted(Federation $federation): void
     {
-        //
+        if ($federation->approved) {
+            DeleteFederation::dispatch($federation);
+        }
     }
 
     /**
@@ -42,7 +50,37 @@ class FederationObserver
      */
     public function restored(Federation $federation): void
     {
-        //
+        $memberships = $federation->memberships;
+        if ($memberships->count() == 0) {
+            return;
+        }
+
+        $jobs = [];
+        $diskName = config('storageCfg.name');
+        $pathToDirectory = Storage::disk($diskName)->path($federation->name);
+
+        foreach ($memberships as $membership) {
+            $jobs[] = new RestoreFederation($membership);
+        }
+        FederationService::createFederationFolder($federation->xml_id);
+        $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
+        $lock = Cache::lock($lockKey, 120);
+
+        Log::info('Branch Start');
+        try {
+            $lock->block(120);
+            Bus::batch($jobs)->then(function () use ($federation, $lock) {
+                Log::info('Federation restored');
+                RunMdaScript::dispatch($federation, $lock->owner());
+            })->dispatch();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        } finally {
+            if ($lock->isOwnedByCurrentProcess()) {
+                $lock->release();
+            }
+        }
+
     }
 
     /**

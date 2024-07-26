@@ -43,6 +43,11 @@ class Federation extends Model
             ->withTimestamps();
     }
 
+    public function memberships()
+    {
+        return $this->hasMany(Membership::class);
+    }
+
     public function scopeVisibleTo($query, User $user)
     {
         if ($user->admin) {
