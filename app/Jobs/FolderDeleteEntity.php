@@ -43,7 +43,6 @@ class FolderDeleteEntity implements ShouldQueue
 
         $entity = $this->entity;
         $federations = $entity->federations;
-        $diskName = config('storageCfg.name');
         foreach ($federations as $federation) {
 
             try {

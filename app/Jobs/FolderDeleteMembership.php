@@ -48,25 +48,27 @@ class FolderDeleteMembership implements ShouldQueue
         $diskName = config('storageCfg.name');
 
         try {
-            $pathToFile = FederationService::getFederationFolder($federation).'/'.$entity->file;
+            $pathToDirectory = FederationService::getFederationFolder($federation);
+
         } catch (\Exception $e) {
             $this->fail($e);
-        }
 
+            return;
+        }
+        $pathToFile = $federation->xml_id.'/'.$entity->file;
+        Log::info($pathToFile);
         if (! Storage::disk($diskName)->exists($pathToFile)) {
             NotificationService::sendModelNotification($entity, new MembershipRejected($entity->entityid, $federation->name));
 
             return;
         }
 
-        $pathToDirectory = Storage::disk($diskName)->path($federation->name);
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
         $lock = Cache::lock($lockKey, 61);
 
         try {
             $lock->block(61);
             EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
-
             RunMdaScript::dispatch($federation, $lock->owner());
         } catch (Exception $e) {
             $this->fail($e);

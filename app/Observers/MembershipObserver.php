@@ -13,7 +13,9 @@ class MembershipObserver
      */
     public function created(Membership $membership): void
     {
-        //
+        if ($membership->approved == 1) {
+            FolderAddMembership::dispatch($membership);
+        }
     }
 
     /**
@@ -34,7 +36,6 @@ class MembershipObserver
         $entity = $membership->entity;
         $federation = $membership->federation;
         FolderDeleteMembership::dispatch($entity, $federation);
-
     }
 
     /**
@@ -50,6 +51,6 @@ class MembershipObserver
      */
     public function forceDeleted(Membership $membership): void
     {
-        //
+
     }
 }
