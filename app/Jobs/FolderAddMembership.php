@@ -8,6 +8,7 @@ use App\Models\Federation;
 use App\Models\Membership;
 use App\Notifications\EntityAddedToHfd;
 use App\Notifications\MembershipAccepted;
+use App\Services\FederationService;
 use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
@@ -17,7 +18,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
 class FolderAddMembership implements ShouldQueue
@@ -43,11 +43,15 @@ class FolderAddMembership implements ShouldQueue
         Log::info('MEMBERSHIP START');
         $federation = Federation::find($this->membership->federation_id);
         $entity = Entity::find($this->membership->entity_id);
-        $diskName = config('storageCfg.name');
-        if (! Storage::disk($diskName)->exists($federation->name)) {
-            $this->fail();
+
+        try {
+            $pathToDirectory = FederationService::getFederationFolder($federation);
+        } catch (\Exception $e) {
+            $this->fail($e);
+
+            return;
         }
-        $pathToDirectory = Storage::disk($diskName)->path($federation->name);
+
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
         $lock = Cache::lock($lockKey, 61);
 

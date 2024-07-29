@@ -22,7 +22,7 @@ class EntityService
         if (! $federation) {
             throw new Exception("Federation $federation_id not found");
         }
-        $this->saveEntityMetadataToFolder($entity_id, $federation->name);
+        $this->saveEntityMetadataToFolder($entity_id, $federation->xml_id);
     }
 
     /**

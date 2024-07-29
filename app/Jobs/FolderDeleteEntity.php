@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Facades\EntityFacade;
 use App\Models\Entity;
 use App\Notifications\EntityStateChanged;
+use App\Services\FederationService;
 use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
@@ -13,7 +14,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
 class FolderDeleteEntity implements ShouldQueue
@@ -45,10 +45,14 @@ class FolderDeleteEntity implements ShouldQueue
         $federations = $entity->federations;
         $diskName = config('storageCfg.name');
         foreach ($federations as $federation) {
-            if (! Storage::disk($diskName)->exists($federation->name)) {
-                continue;
+
+            try {
+                $pathToDirectory = FederationService::getFederationFolder($federation);
+            } catch (\Exception $e) {
+                $this->fail($e);
+
+                return;
             }
-            $pathToDirectory = Storage::disk($diskName)->path($federation->name);
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
             $lock = Cache::lock($lockKey, 61);
             try {

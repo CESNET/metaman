@@ -11,7 +11,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
 class DeleteFederation implements ShouldQueue
@@ -38,13 +37,20 @@ class DeleteFederation implements ShouldQueue
      */
     public function handle(): void
     {
-        $diskName = config('storageCfg.name');
-        $pathToDirectory = Storage::disk($diskName)->path($this->federation->name);
+
+        try {
+            $pathToDirectory = FederationService::getFederationFolder($this->federation);
+        } catch (\Exception $e) {
+            $this->fail($e);
+
+            return;
+        }
+
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
         $lock = Cache::lock($lockKey, 61);
         try {
             $lock->block(61);
-            FederationService::DeleteFederationFolder($this->federation->name);
+            FederationService::deleteFederationFolder($this->federation);
 
         } catch (Exception $e) {
             $this->fail($e);

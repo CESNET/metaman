@@ -8,6 +8,7 @@ use App\Models\Federation;
 use App\Models\Membership;
 use App\Notifications\EntityStateChanged;
 use App\Notifications\EntityUpdated;
+use App\Services\FederationService;
 use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
@@ -17,7 +18,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
 class FolderAddEntity implements ShouldQueue
@@ -55,10 +55,14 @@ class FolderAddEntity implements ShouldQueue
 
             $federation = Federation::where('id', $fedId->federation_id)->first();
 
-            if (! Storage::disk($diskName)->exists($federation->name)) {
-                continue;
+            try {
+                $pathToDirectory = FederationService::getFederationFolder($federation);
+            } catch (\Exception $e) {
+                $this->fail($e);
+
+                return;
             }
-            $pathToDirectory = Storage::disk($diskName)->path($federation->name);
+
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
             $lock = Cache::lock($lockKey, 61);
 

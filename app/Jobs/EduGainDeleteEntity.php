@@ -46,16 +46,11 @@ class EduGainDeleteEntity implements ShouldQueue
         $folderName = config('storageCfg.edu2edugain');
 
         if (! Storage::disk($diskName)->exists($folderName)) {
-            $this->makeEdu2Edugain();
+            $this->fail(new Exception("No $folderName in Disk"));
+
+            return;
         }
 
-        try {
-            if (! Storage::disk($diskName)->exists($folderName)) {
-                throw new Exception("No $folderName in $diskName");
-            }
-        } catch (Exception $e) {
-            $this->fail($e);
-        }
         $pathToDirectory = Storage::disk($diskName)->path($folderName);
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
         $lock = Cache::lock($lockKey, 61);

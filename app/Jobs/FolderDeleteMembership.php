@@ -6,6 +6,7 @@ use App\Facades\EntityFacade;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Notifications\MembershipRejected;
+use App\Services\FederationService;
 use App\Services\NotificationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
@@ -45,10 +46,13 @@ class FolderDeleteMembership implements ShouldQueue
         $federation = $this->federation;
         $entity = $this->entity;
         $diskName = config('storageCfg.name');
-        if (! Storage::disk($diskName)->exists($federation->name)) {
-            $this->fail();
+
+        try {
+            $pathToFile = FederationService::getFederationFolder($federation).'/'.$entity->file;
+        } catch (\Exception $e) {
+            $this->fail($e);
         }
-        $pathToFile = $federation->name.'/'.$entity->file;
+
         if (! Storage::disk($diskName)->exists($pathToFile)) {
             NotificationService::sendModelNotification($entity, new MembershipRejected($entity->entityid, $federation->name));
 

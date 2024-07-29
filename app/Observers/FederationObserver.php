@@ -27,11 +27,8 @@ class FederationObserver
      */
     public function updated(Federation $federation): void
     {
-        $diskName = config('storageCfg.name');
         if ($federation->approved && $federation->wasChanged('approved')) {
-            if (! Storage::disk($diskName)->exists($federation->name)) {
-                FederationService::createFederationFolder($federation->name);
-            }
+            FederationService::createFederationFolder($federation);
         }
     }
 
@@ -62,7 +59,7 @@ class FederationObserver
         foreach ($memberships as $membership) {
             $jobs[] = new RestoreFederation($membership);
         }
-        FederationService::createFederationFolder($federation->xml_id);
+        FederationService::createFederationFolder($federation);
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
         $lock = Cache::lock($lockKey, 120);
 
