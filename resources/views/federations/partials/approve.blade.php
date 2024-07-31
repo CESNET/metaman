@@ -1,6 +1,6 @@
-<form class="inline-block" action="{{ route('federations.update', $federation) }}" method="POST">
+<form class="inline-block" action="{{ route('federations.approve', $federation) }}" method="POST">
     @csrf
-    @method('patch')
+    @method('post')
     <input type="hidden" name="action" value="approve">
     <x-button>{{ __('common.approve') }}</x-button>
 </form>

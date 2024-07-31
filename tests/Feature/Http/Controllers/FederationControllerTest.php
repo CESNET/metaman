@@ -559,9 +559,7 @@ class FederationControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'reject',
-            ])
+            ->delete(route('federations.reject', $federation))
             ->assertSeeText(__('federations.rejected', ['name' => $federationName]));
 
         $this->assertEquals(0, Federation::count());
@@ -721,13 +719,11 @@ class FederationControllerTest extends TestCase
 
         $this
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'approve',
-            ])
+            ->post(route('federations.approve', $federation))
             ->assertStatus(403)
             ->assertSeeText('This action is unauthorized.');
 
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.approve', $federation), url()->current());
     }
 
     /** @test */
@@ -759,13 +755,11 @@ class FederationControllerTest extends TestCase
 
         $this
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'reject',
-            ])
+            ->delete(route('federations.reject', $federation))
             ->assertStatus(403)
             ->assertSeeText('This action is unauthorized.');
 
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.reject', $federation), url()->current());
     }
 
     /** @test */
@@ -779,13 +773,11 @@ class FederationControllerTest extends TestCase
 
         $this
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'approve',
-            ])
+            ->post(route('federations.approve', $federation))
             ->assertStatus(403)
             ->assertSeeText('This action is unauthorized.');
 
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.approve', $federation), url()->current());
     }
 
     /** @test */
@@ -1175,9 +1167,7 @@ class FederationControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'reject',
-            ])
+            ->delete(route('federations.reject', $federation))
             ->assertSeeText(__('federations.rejected', ['name' => $federationName]));
 
         $this->assertEquals(0, Federation::count());
@@ -1204,9 +1194,7 @@ class FederationControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'approve',
-            ])
+            ->post(route('federations.approve', $federation))
             ->assertSeeText(__('federations.approved', ['name' => $federation->name]));
 
         $this->assertEquals(route('federations.show', $federation), url()->current());

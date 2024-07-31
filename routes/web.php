@@ -13,6 +13,7 @@ use App\Http\Controllers\EntityOrganizationController;
 use App\Http\Controllers\EntityPreviewMetadataController;
 use App\Http\Controllers\EntityRsController;
 use App\Http\Controllers\FakeController;
+use App\Http\Controllers\FederationApprovalController;
 use App\Http\Controllers\FederationController;
 use App\Http\Controllers\FederationEntityController;
 use App\Http\Controllers\FederationJoinController;
@@ -70,6 +71,9 @@ Route::group(['prefix' => 'federations', 'as' => 'federations.', 'middleware' =>
     Route::get('{federation}/entities', [FederationEntityController::class, 'index'])->name('entities')->withTrashed();
     Route::get('{federation}/operators', [FederationOperatorController::class, 'index'])->name('operators')->withTrashed();
     Route::get('{federation}/requests', [FederationJoinController::class, 'index'])->name('requests')->withTrashed();
+
+    Route::post('{federation}/approve', [FederationApprovalController::class, 'store'])->name('approve');
+    Route::delete('{federation}/reject', [FederationApprovalController::class, 'destroy'])->name('reject');
 
     Route::resource('/', FederationController::class)->parameters(['' => 'federation'])->withTrashed();
     Route::get('{federation}', [FederationController::class, 'show'])->name('show')->withTrashed();

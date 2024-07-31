@@ -125,30 +125,31 @@ class FederationController extends Controller
     public function update(UpdateFederation $request, Federation $federation)
     {
         switch (request('action')) {
-            case 'reject':
-                $this->authorize('update', $federation);
 
-                $name = $federation->name;
-                NotificationService::sendModelNotification($federation, new FederationRejected($name));
-                $federation->forceDelete();
+            /*            case 'reject':
+                            $this->authorize('update', $federation);
 
-                return redirect('federations')
-                    ->with('status', __('federations.rejected', ['name' => $name]));
+                            $name = $federation->name;
+                            NotificationService::sendModelNotification($federation, new FederationRejected($name));
+                            $federation->forceDelete();
 
-                break;
+                            return redirect('federations')
+                                ->with('status', __('federations.rejected', ['name' => $name]));
 
-            case 'approve':
-                $this->authorize('do-everything');
+                            break;
 
-                $federation->approved = true;
-                $federation->update();
-                NotificationService::sendModelNotification($federation, new FederationApproved($federation));
+                        case 'approve':
+                            $this->authorize('do-everything');
 
-                //GitAddFederation::dispatch($federation, 'approve', Auth::user());
+                            $federation->approved = true;
+                            $federation->update();
+                            NotificationService::sendModelNotification($federation, new FederationApproved($federation));
 
-                return redirect()
-                    ->route('federations.show', $federation)
-                    ->with('status', __('federations.approved', ['name' => $federation->name]));
+                            //GitAddFederation::dispatch($federation, 'approve', Auth::user());
+
+                            return redirect()
+                                ->route('federations.show', $federation)
+                                ->with('status', __('federations.approved', ['name' => $federation->name]));*/
 
             case 'update':
 

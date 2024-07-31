@@ -43,23 +43,5 @@
         </x-forms.element.textarea>
 
     </x-forms.section.form-body-section>
-
-
-
-{{--
-
-    <x-forms.section.form-body-section
-        name="common.add_sp_idp"
-        label="add_sp_and_idp_section"
-    >
-        <label for="use_sp">
-            <input type="checkbox" name="sp_and_ip_feed" id="sp_and_ip_feed" value="1" {{ old('sp_and_ip_feed') ? 'checked' : '' }}>
-            {{ __('federations.add_sp_and_idp') }}
-        </label>
-    </x-forms.section.form-body-section>
-
---}}
-
-
 @endsection
 

@@ -1,7 +1,7 @@
 {{-- FederationController @update 'reject' Notifications --}}
-<form class="inline-block" action="{{ route('federations.update', $federation) }}" method="POST">
+<form class="inline-block" action="{{ route('federations.reject', $federation) }}" method="POST">
     @csrf
-    @method('patch')
+    @method('delete')
     <input type="hidden" name="action" value="reject">
     <x-button color="red">{{ __('common.reject') }}</x-button>
 </form>
