@@ -14,7 +14,7 @@ class EntityOrganizationController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
+
     }
 
     public function update(Entity $entity, AssignOrganization $request)

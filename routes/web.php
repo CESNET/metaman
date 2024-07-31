@@ -62,7 +62,7 @@ if (App::environment(['local', 'testing'])) {
 Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 // Federation group
-Route::group(['prefix' => 'federations', 'as' => 'federations.'], function () {
+Route::group(['prefix' => 'federations', 'as' => 'federations.', 'middleware' => ['auth']], function () {
     Route::get('import', [FederationManagementController::class, 'index'])->name('unknown');
     Route::post('import', [FederationManagementController::class, 'store'])->name('import');
     Route::get('refresh', [FederationManagementController::class, 'update'])->name('refresh');
@@ -78,7 +78,7 @@ Route::group(['prefix' => 'federations', 'as' => 'federations.'], function () {
 });
 
 // Entities groups
-Route::group(['prefix' => 'entities', 'as' => 'entities.'], function () {
+Route::group(['prefix' => 'entities', 'as' => 'entities.', 'middleware' => ['auth']], function () {
     Route::get('import', [EntityManagementController::class, 'index'])->name('unknown');
     Route::post('import', [EntityManagementController::class, 'store'])->name('import');
     Route::get('refresh', [EntityManagementController::class, 'update'])->name('refresh');
@@ -103,7 +103,7 @@ Route::group(['prefix' => 'entities', 'as' => 'entities.'], function () {
 });
 
 // Categories group
-Route::group(['prefix' => 'categories', 'as' => 'categories.'], function () {
+Route::group(['prefix' => 'categories', 'as' => 'categories.', 'middleware' => ['auth']], function () {
     Route::get('import', [CategoryManagementController::class, 'index'])->name('unknown');
     Route::post('import', [CategoryManagementController::class, 'store'])->name('import');
     Route::get('refresh', [CategoryManagementController::class, 'update'])->name('refresh');
@@ -111,7 +111,7 @@ Route::group(['prefix' => 'categories', 'as' => 'categories.'], function () {
     Route::resource('/', CategoryController::class)->parameters(['' => 'category'])->withTrashed();
 });
 // Groups group
-Route::group(['prefix' => 'groups', 'as' => 'groups.'], function () {
+Route::group(['prefix' => 'groups', 'as' => 'groups.', 'middleware' => ['auth']], function () {
     Route::get('import', [GroupManagementController::class, 'index'])->name('unknown');
     Route::post('import', [GroupManagementController::class, 'store'])->name('import');
     Route::get('refresh', [GroupManagementController::class, 'update'])->name('refresh');
