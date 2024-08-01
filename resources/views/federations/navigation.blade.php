@@ -22,7 +22,9 @@
         ),
         'cursor-default' => request()->routeIs('federations.operators'),
     ])
-        href="{{ route('federations.operators', $federation) }}">{{ __('common.operators') }}</a>
+       href="{{ route('federations.operators.index', $federation) }}">{{ __('common.operators') }}
+    </a>
+
     <a @class([
         'px-2',
         'py-1',

@@ -452,28 +452,26 @@ class FederationControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'add_operators',
+            ->post(route('federations.operators.store', $federation), [
                 'operators' => [$new_operator->id],
             ])
             ->assertSeeText(__('federations.operators_added'));
 
         $federation->refresh();
         $this->assertEquals(2, $federation->operators()->count());
-        $this->assertEquals(route('federations.operators', $federation), url()->current());
+        $this->assertEquals(route('federations.operators.index', $federation), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'delete_operators',
+            ->delete(route('federations.operators.destroy', $federation), [
                 'operators' => [$new_operator->id],
             ])
             ->assertSeeText(__('federations.operators_deleted'));
 
         $federation->refresh();
         $this->assertEquals(1, $federation->operators()->count());
-        $this->assertEquals(route('federations.operators', $federation), url()->current());
+        $this->assertEquals(route('federations.operators.index', $federation), url()->current());
     }
 
     /** @test */
@@ -632,27 +630,25 @@ class FederationControllerTest extends TestCase
 
         $this
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'add_operators',
+            ->post(route('federations.operators.store', $federation), [
                 'operators' => [$operator->id],
             ])
             ->assertStatus(403)
             ->assertSeeText('This action is unauthorized.');
 
         $this->assertEquals(1, $federation->operators()->count());
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.operators.index', $federation), url()->current());
 
         $this
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'delete_operators',
+            ->delete(route('federations.operators.destroy', $federation), [
                 'operators' => [User::find(1)->id],
             ])
             ->assertStatus(403)
             ->assertSeeText('This action is unauthorized.');
 
         $this->assertEquals(1, $federation->operators()->count());
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.operators.index', $federation), url()->current());
     }
 
     /** @test */
@@ -975,51 +971,46 @@ class FederationControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'add_operators',
-            ])
+            ->post(route('federations.operators.store', $federation))
             ->assertSeeText(__('federations.add_empty_operators'));
 
         $federation->refresh();
         $this->assertEquals(0, $federation->operators()->count());
-        $this->assertEquals(route('federations.operators', $federation), url()->current());
+        $this->assertEquals(route('federations.operators.index', $federation), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'add_operators',
+            ->post(route('federations.operators.store', $federation), [
                 'operators' => [$new_operator->id],
             ])
             ->assertSeeText(__('federations.operators_added'));
 
         $federation->refresh();
         $this->assertEquals(1, $federation->operators()->count());
-        $this->assertEquals(route('federations.operators', $federation), url()->current());
+        $this->assertEquals(route('federations.operators.index', $federation), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'delete_operators',
-            ])
+            ->delete(route('federations.operators.destroy', $federation))
             ->assertSeeText(__('federations.delete_empty_operators'));
 
+
         $this->assertEquals(1, $federation->operators()->count());
-        $this->assertEquals(route('federations.operators', $federation), url()->current());
+        $this->assertEquals(route('federations.operators.index', $federation), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'delete_operators',
+            ->delete(route('federations.operators.destroy', $federation), [
                 'operators' => [$new_operator->id],
             ])
             ->assertSeeText(__('federations.operators_deleted'));
 
         $federation->refresh();
         $this->assertEquals(0, $federation->operators()->count());
-        $this->assertEquals(route('federations.operators', $federation), url()->current());
+        $this->assertEquals(route('federations.operators.index', $federation), url()->current());
     }
 
     /** @test */

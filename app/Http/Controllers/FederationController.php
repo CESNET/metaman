@@ -158,23 +158,7 @@ class FederationController extends Controller
 
                 break;
 
-                /*            case 'state':
-                                $this->authorize('delete', $federation);
-
-                                $federation->trashed() ? $federation->restore() : $federation->delete();
-
-                                $state = $federation->trashed() ? 'deleted' : 'restored';
-                                $color = $federation->trashed() ? 'red' : 'green';
-
-                                NotificationService::sendModelNotification($federation, new FederationStateChanged($federation));
-
-
-                                return redirect()
-                                    ->route('federations.show', $federation)
-                                    ->with('status', __("federations.$state", ['name' => $federation->name]))
-                                    ->with('color', $color);*/
-
-            case 'add_operators':
+/*            case 'add_operators':
                 $this->authorize('update', $federation);
 
                 if (! request('operators')) {
@@ -187,17 +171,15 @@ class FederationController extends Controller
                 $new_operators = User::whereIn('id', request('operators'))->get();
                 $federation->operators()->attach(request('operators'));
 
-                $admins = User::activeAdmins()->select('id', 'email')->get();
                 Notification::sendNow($new_operators, new YourFederationRightsChanged($federation, 'added'));
                 NotificationService::sendOperatorNotification($old_operators, new FederationOperatorsChanged($federation, $new_operators, 'added'));
 
                 return redirect()
                     ->route('federations.operators', $federation)
-                    ->with('status', __('federations.operators_added'));
+                    ->with('status', __('federations.operators_added'));*/
 
-                break;
 
-            case 'delete_operators':
+/*            case 'delete_operators':
                 $this->authorize('update', $federation);
 
                 if (! request('operators')) {
@@ -210,15 +192,13 @@ class FederationController extends Controller
                 $federation->operators()->toggle(request('operators'));
                 $new_operators = $federation->operators;
 
-                $admins = User::activeAdmins()->select('id', 'email')->get();
                 Notification::sendNow($old_operators, new YourFederationRightsChanged($federation, 'deleted'));
                 NotificationService::sendOperatorNotification($new_operators, new FederationOperatorsChanged($federation, $old_operators, 'added'));
 
                 return redirect()
                     ->route('federations.operators', $federation)
-                    ->with('status', __('federations.operators_deleted'));
+                    ->with('status', __('federations.operators_deleted'));*/
 
-                break;
 
             case 'add_entities':
                 $this->authorize('update', $federation);

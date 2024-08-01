@@ -70,8 +70,13 @@ Route::group(['prefix' => 'federations', 'as' => 'federations.', 'middleware' =>
     Route::get('refresh', [FederationManagementController::class, 'update'])->name('refresh');
 
     Route::get('{federation}/entities', [FederationEntityController::class, 'index'])->name('entities')->withTrashed();
-    Route::get('{federation}/operators', [FederationOperatorController::class, 'index'])->name('operators')->withTrashed();
     Route::get('{federation}/requests', [FederationJoinController::class, 'index'])->name('requests')->withTrashed();
+
+
+    Route::resource('{federation}/operators', FederationOperatorController::class)
+        ->only(['index', 'store',])->withTrashed();
+    Route::delete('{federation}/operators', [FederationOperatorController::class, 'destroy'])->name('operators.destroy')->withTrashed();
+
 
     Route::patch('{federation}/state', [FederationStateController::class, 'state'])->name('state')->withTrashed();
 
