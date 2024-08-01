@@ -19,6 +19,7 @@ use App\Http\Controllers\FederationEntityController;
 use App\Http\Controllers\FederationJoinController;
 use App\Http\Controllers\FederationManagementController;
 use App\Http\Controllers\FederationOperatorController;
+use App\Http\Controllers\FederationStateController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupManagementController;
 use App\Http\Controllers\MembershipController;
@@ -71,6 +72,8 @@ Route::group(['prefix' => 'federations', 'as' => 'federations.', 'middleware' =>
     Route::get('{federation}/entities', [FederationEntityController::class, 'index'])->name('entities')->withTrashed();
     Route::get('{federation}/operators', [FederationOperatorController::class, 'index'])->name('operators')->withTrashed();
     Route::get('{federation}/requests', [FederationJoinController::class, 'index'])->name('requests')->withTrashed();
+
+    Route::patch('{federation}/state', [FederationStateController::class, 'state'])->name('state')->withTrashed();
 
     Route::post('{federation}/approve', [FederationApprovalController::class, 'store'])->name('approve');
     Route::delete('{federation}/reject', [FederationApprovalController::class, 'destroy'])->name('reject');

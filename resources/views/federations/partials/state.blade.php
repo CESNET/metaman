@@ -1,4 +1,4 @@
-<form x-data="{ open: false }" class="inline-block" action="{{ route('federations.update', $federation) }}" method="POST">
+<form x-data="{ open: false }" class="inline-block" action="{{ route('federations.state', $federation) }}" method="POST">
     @csrf
     @method('patch')
     <input type="hidden" name="action" value="state">

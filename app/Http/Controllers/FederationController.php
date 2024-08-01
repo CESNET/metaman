@@ -8,11 +8,9 @@ use App\Jobs\GitDeleteMembers;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
-use App\Notifications\FederationApproved;
 use App\Notifications\FederationDestroyed;
 use App\Notifications\FederationMembersChanged;
 use App\Notifications\FederationOperatorsChanged;
-use App\Notifications\FederationRejected;
 use App\Notifications\FederationRequested;
 use App\Notifications\FederationStateChanged;
 use App\Notifications\FederationUpdated;
@@ -125,32 +123,6 @@ class FederationController extends Controller
     public function update(UpdateFederation $request, Federation $federation)
     {
         switch (request('action')) {
-
-            /*            case 'reject':
-                            $this->authorize('update', $federation);
-
-                            $name = $federation->name;
-                            NotificationService::sendModelNotification($federation, new FederationRejected($name));
-                            $federation->forceDelete();
-
-                            return redirect('federations')
-                                ->with('status', __('federations.rejected', ['name' => $name]));
-
-                            break;
-
-                        case 'approve':
-                            $this->authorize('do-everything');
-
-                            $federation->approved = true;
-                            $federation->update();
-                            NotificationService::sendModelNotification($federation, new FederationApproved($federation));
-
-                            //GitAddFederation::dispatch($federation, 'approve', Auth::user());
-
-                            return redirect()
-                                ->route('federations.show', $federation)
-                                ->with('status', __('federations.approved', ['name' => $federation->name]));*/
-
             case 'update':
 
                 $this->authorize('update', $federation);
@@ -186,29 +158,21 @@ class FederationController extends Controller
 
                 break;
 
-            case 'state':
-                $this->authorize('delete', $federation);
+                /*            case 'state':
+                                $this->authorize('delete', $federation);
 
-                $federation->trashed() ? $federation->restore() : $federation->delete();
+                                $federation->trashed() ? $federation->restore() : $federation->delete();
 
-                $state = $federation->trashed() ? 'deleted' : 'restored';
-                $color = $federation->trashed() ? 'red' : 'green';
+                                $state = $federation->trashed() ? 'deleted' : 'restored';
+                                $color = $federation->trashed() ? 'red' : 'green';
 
-                NotificationService::sendModelNotification($federation, new FederationStateChanged($federation));
+                                NotificationService::sendModelNotification($federation, new FederationStateChanged($federation));
 
-                /*                if ($federation->trashed()) {
-                                    GitDeleteFederation::dispatch($federation, Auth::user());
-                                } else {
 
-                                    GitAddFederation::dispatch($federation, 'state', Auth::user());
-                                }*/
-
-                return redirect()
-                    ->route('federations.show', $federation)
-                    ->with('status', __("federations.$state", ['name' => $federation->name]))
-                    ->with('color', $color);
-
-                break;
+                                return redirect()
+                                    ->route('federations.show', $federation)
+                                    ->with('status', __("federations.$state", ['name' => $federation->name]))
+                                    ->with('color', $color);*/
 
             case 'add_operators':
                 $this->authorize('update', $federation);

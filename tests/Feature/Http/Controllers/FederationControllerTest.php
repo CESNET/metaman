@@ -411,9 +411,7 @@ class FederationControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'state',
-            ])
+            ->patch(route('federations.state', $federation))
             ->assertSeeText(__('federations.deleted', ['name' => $federation->name]));
 
         $federation->refresh();
@@ -427,16 +425,12 @@ class FederationControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'state',
-            ])
+            ->patch(route('federations.state', $federation))
             ->assertSeeText(__('federations.restored', ['name' => $federation->name]));
 
         $federation->refresh();
         $this->assertFalse($federation->trashed());
         $this->assertEquals(route('federations.show', $federation), url()->current());
-
-        // TODO ask about  this because no job no test
 
         /*        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
                     return $job->federation->is($federation);
@@ -614,13 +608,11 @@ class FederationControllerTest extends TestCase
 
         $this
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'state',
-            ])
+            ->patch(route('federations.state', $federation))
             ->assertStatus(403)
             ->assertSeeText('This action is unauthorized.');
 
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.state', $federation), url()->current());
     }
 
     /** @test */
@@ -943,9 +935,7 @@ class FederationControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'state',
-            ])
+            ->patch(route('federations.state', $federation))
             ->assertSeeText(__('federations.deleted', ['name' => $federation->name]));
 
         $federation->refresh();
@@ -959,9 +949,7 @@ class FederationControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'state',
-            ])
+            ->patch(route('federations.state', $federation))
             ->assertSeeText(__('federations.restored', ['name' => $federation->name]));
 
         $federation->refresh();
