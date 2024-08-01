@@ -112,47 +112,40 @@ class FederationController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdateFederation $request, Federation $federation)
     {
-        switch (request('action')) {
-            case 'update':
+        $this->authorize('update', $federation);
 
-                $this->authorize('update', $federation);
+        $validated = $request->validated();
 
-                $validated = $request->validated();
-
-                $id = $federation->name;
-                if (isset($validated['name'])) {
-                    $id = generateFederationID($validated['name']);
-                }
-                $additionalFilters = $request->input('sp_and_ip_feed', 0);
-                $filters = $id;
-
-                if ($additionalFilters) {
-                    $filters .= ', '.$id.'+idp';
-                    $filters .= ', '.$id.'+sp';
-                }
-                $validated['filters'] = $filters;
-                $validated['additional_filters'] = $additionalFilters;
-
-                $federation->update($validated);
-
-                if (! $federation->wasChanged()) {
-                    return redirect()
-                        ->route('federations.show', $federation);
-                }
-                NotificationService::sendModelNotification($federation, new FederationUpdated($federation));
-                //  GitUpdateFederation::dispatch($federation, Auth::user());
-
-                return redirect()
-                    ->route('federations.show', $federation)
-                    ->with('status', __('federations.updated'));
-
-            default:
-                return redirect()->route('federations.show', $federation);
+        $id = $federation->name;
+        if (isset($validated['name'])) {
+            $id = generateFederationID($validated['name']);
         }
+        $additionalFilters = $request->input('sp_and_ip_feed', 0);
+        $filters = $id;
+
+        if ($additionalFilters) {
+            $filters .= ', '.$id.'+idp';
+            $filters .= ', '.$id.'+sp';
+        }
+        $validated['filters'] = $filters;
+        $validated['additional_filters'] = $additionalFilters;
+
+        $federation->update($validated);
+
+        if (! $federation->wasChanged()) {
+            return redirect()
+                ->route('federations.show', $federation);
+        }
+        NotificationService::sendModelNotification($federation, new FederationUpdated($federation));
+        //  GitUpdateFederation::dispatch($federation, Auth::user());
+
+        return redirect()
+            ->route('federations.show', $federation)
+            ->with('status', __('federations.updated'));
     }
 
     /**

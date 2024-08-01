@@ -1,7 +1,6 @@
 <form x-data="{ open: false }" class="inline-block" action="{{ route('federations.state', $federation) }}" method="POST">
     @csrf
     @method('patch')
-    <input type="hidden" name="action" value="state">
 
     @if ($federation->trashed())
         <x-button @click.prevent="open = !open" color="green">{{ __('common.restore') }}</x-button>
