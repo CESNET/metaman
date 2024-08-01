@@ -12,7 +12,6 @@ use App\Notifications\FederationDestroyed;
 use App\Notifications\FederationMembersChanged;
 use App\Notifications\FederationOperatorsChanged;
 use App\Notifications\FederationRequested;
-use App\Notifications\FederationStateChanged;
 use App\Notifications\FederationUpdated;
 use App\Notifications\YourFederationRightsChanged;
 use App\Services\NotificationService;
@@ -158,47 +157,45 @@ class FederationController extends Controller
 
                 break;
 
-/*            case 'add_operators':
-                $this->authorize('update', $federation);
+                /*            case 'add_operators':
+                                $this->authorize('update', $federation);
 
-                if (! request('operators')) {
-                    return to_route('federations.operators', $federation)
-                        ->with('status', __('federations.add_empty_operators'))
-                        ->with('color', 'red');
-                }
+                                if (! request('operators')) {
+                                    return to_route('federations.operators', $federation)
+                                        ->with('status', __('federations.add_empty_operators'))
+                                        ->with('color', 'red');
+                                }
 
-                $old_operators = $federation->operators;
-                $new_operators = User::whereIn('id', request('operators'))->get();
-                $federation->operators()->attach(request('operators'));
+                                $old_operators = $federation->operators;
+                                $new_operators = User::whereIn('id', request('operators'))->get();
+                                $federation->operators()->attach(request('operators'));
 
-                Notification::sendNow($new_operators, new YourFederationRightsChanged($federation, 'added'));
-                NotificationService::sendOperatorNotification($old_operators, new FederationOperatorsChanged($federation, $new_operators, 'added'));
+                                Notification::sendNow($new_operators, new YourFederationRightsChanged($federation, 'added'));
+                                NotificationService::sendOperatorNotification($old_operators, new FederationOperatorsChanged($federation, $new_operators, 'added'));
 
-                return redirect()
-                    ->route('federations.operators', $federation)
-                    ->with('status', __('federations.operators_added'));*/
+                                return redirect()
+                                    ->route('federations.operators', $federation)
+                                    ->with('status', __('federations.operators_added'));*/
 
+                /*            case 'delete_operators':
+                                $this->authorize('update', $federation);
 
-/*            case 'delete_operators':
-                $this->authorize('update', $federation);
+                                if (! request('operators')) {
+                                    return to_route('federations.operators', $federation)
+                                        ->with('status', __('federations.delete_empty_operators'))
+                                        ->with('color', 'red');
+                                }
 
-                if (! request('operators')) {
-                    return to_route('federations.operators', $federation)
-                        ->with('status', __('federations.delete_empty_operators'))
-                        ->with('color', 'red');
-                }
+                                $old_operators = User::whereIn('id', request('operators'))->get();
+                                $federation->operators()->toggle(request('operators'));
+                                $new_operators = $federation->operators;
 
-                $old_operators = User::whereIn('id', request('operators'))->get();
-                $federation->operators()->toggle(request('operators'));
-                $new_operators = $federation->operators;
+                                Notification::sendNow($old_operators, new YourFederationRightsChanged($federation, 'deleted'));
+                                NotificationService::sendOperatorNotification($new_operators, new FederationOperatorsChanged($federation, $old_operators, 'added'));
 
-                Notification::sendNow($old_operators, new YourFederationRightsChanged($federation, 'deleted'));
-                NotificationService::sendOperatorNotification($new_operators, new FederationOperatorsChanged($federation, $old_operators, 'added'));
-
-                return redirect()
-                    ->route('federations.operators', $federation)
-                    ->with('status', __('federations.operators_deleted'));*/
-
+                                return redirect()
+                                    ->route('federations.operators', $federation)
+                                    ->with('status', __('federations.operators_deleted'));*/
 
             case 'add_entities':
                 $this->authorize('update', $federation);

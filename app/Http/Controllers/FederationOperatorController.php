@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Federation;
 use App\Models\User;
-use App\Notifications\FederationApproved;
 use App\Notifications\FederationOperatorsChanged;
-use App\Notifications\FederationRejected;
 use App\Notifications\YourFederationRightsChanged;
 use App\Services\NotificationService;
 use Illuminate\Support\Facades\Notification;
@@ -83,7 +81,4 @@ class FederationOperatorController extends Controller
             ->with('status', __('federations.operators_deleted'));
 
     }
-
-
-
 }

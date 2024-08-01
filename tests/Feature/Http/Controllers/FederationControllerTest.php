@@ -996,7 +996,6 @@ class FederationControllerTest extends TestCase
             ->delete(route('federations.operators.destroy', $federation))
             ->assertSeeText(__('federations.delete_empty_operators'));
 
-
         $this->assertEquals(1, $federation->operators()->count());
         $this->assertEquals(route('federations.operators.index', $federation), url()->current());
 
