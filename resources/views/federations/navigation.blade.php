@@ -37,7 +37,7 @@
         ),
         'cursor-default' => request()->routeIs('federations.entities'),
     ])
-        href="{{ route('federations.entities', $federation) }}">{{ __('common.entities') }}</a>
+        href="{{ route('federations.entities.index', $federation) }}">{{ __('common.entities') }}</a>
     @can('update', $federation)
         <a @class([
             'px-2',

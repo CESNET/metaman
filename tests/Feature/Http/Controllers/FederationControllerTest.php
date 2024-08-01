@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\GitDeleteMembers;
 use App\Jobs\GitUpdateFederation;
 use App\Jobs\Old_GitAddFederation;
 use App\Models\Entity;
@@ -496,38 +495,27 @@ class FederationControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'add_entities',
+            ->post(route('federations.entities.store', $federation), [
                 'entities' => [$new_entity->id],
             ])
             ->assertSeeText(__('federations.entities_added'));
 
         $federation->refresh();
         $this->assertEquals(2, $federation->entities()->count());
-        $this->assertEquals(route('federations.entities', $federation), url()->current());
-
-        /*        Bus::assertDispatched(GitAddMembers::class, function ($job) use ($federation, $new_entity) {
-                    return $job->federation->is($federation) &&
-                        $job->entities->contains($new_entity);
-                });*/
+        $this->assertEquals(route('federations.entities.index', $federation), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'delete_entities',
+            ->delete(route('federations.entities.destroy', $federation), [
                 'entities' => [$new_entity->id],
             ])
             ->assertSeeText(__('federations.entities_deleted'));
 
         $federation->refresh();
         $this->assertEquals(1, $federation->entities()->count());
-        $this->assertEquals(route('federations.entities', $federation), url()->current());
+        $this->assertEquals(route('federations.entities.index', $federation), url()->current());
 
-        /*        Bus::assertDispatched(GitDeleteMembers::class, function ($job) use ($federation, $new_entity) {
-                    return $job->federation->is($federation) &&
-                        $job->entities->contains($new_entity);
-                });*/
     }
 
     /** @test */
@@ -670,8 +658,7 @@ class FederationControllerTest extends TestCase
 
         $this
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'add_entities',
+            ->post(route('federations.entities.store', $federation), [
                 'entity' => $new_entity->id,
             ])
             ->assertStatus(403)
@@ -679,12 +666,11 @@ class FederationControllerTest extends TestCase
 
         $federation->refresh();
         $this->assertEquals(1, $federation->entities()->count());
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.entities.index', $federation), url()->current());
 
         $this
             ->actingAs($user)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'delete_entities',
+            ->delete(route('federations.entities.destroy', $federation), [
                 'entity' => $entity->id,
             ])
             ->assertStatus(403)
@@ -692,7 +678,7 @@ class FederationControllerTest extends TestCase
 
         $federation->refresh();
         $this->assertEquals(1, $federation->entities()->count());
-        $this->assertEquals(route('federations.show', $federation), url()->current());
+        $this->assertEquals(route('federations.entities.index', $federation), url()->current());
 
     }
 
@@ -1036,60 +1022,45 @@ class FederationControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'add_entities',
-            ])
+            ->post(route('federations.entities.store', $federation))
             ->assertSeeText(__('federations.add_empty_entities'));
 
         $this->assertEquals(1, $federation->entities()->count());
-        $this->assertEquals(route('federations.entities', $federation), url()->current());
+        $this->assertEquals(route('federations.entities.index', $federation), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'add_entities',
+            ->post(route('federations.entities.store', $federation), [
                 'entities' => [$new_entity->id],
             ])
             ->assertSeeText(__('federations.entities_added'));
 
         $federation->refresh();
         $this->assertEquals(2, $federation->entities()->count());
-        $this->assertEquals(route('federations.entities', $federation), url()->current());
-
-        /*        Bus::assertDispatched(GitAddMembers::class, function ($job) use ($federation, $new_entity) {
-                    return $job->federation->is($federation) &&
-                        $job->entities->contains($new_entity);
-                });*/
+        $this->assertEquals(route('federations.entities.index', $federation), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'delete_entities',
-            ])
+            ->delete(route('federations.entities.destroy', $federation), [])
             ->assertSeeText(__('federations.delete_empty_entities'));
 
         $this->assertEquals(2, $federation->entities()->count());
-        $this->assertEquals(route('federations.entities', $federation), url()->current());
+        $this->assertEquals(route('federations.entities.index', $federation), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('federations.update', $federation), [
-                'action' => 'delete_entities',
+            ->delete(route('federations.entities.destroy', $federation), [
                 'entities' => [$new_entity->id],
             ])
             ->assertSeeText(__('federations.entities_deleted'));
 
         $federation->refresh();
         $this->assertEquals(1, $federation->entities()->count());
-        $this->assertEquals(route('federations.entities', $federation), url()->current());
+        $this->assertEquals(route('federations.entities.index', $federation), url()->current());
 
-        /*        Bus::assertDispatched(GitDeleteMembers::class, function ($job) use ($federation, $new_entity) {
-                    return $job->federation->is($federation) &&
-                        $job->entities->contains($new_entity);
-                });*/
     }
 
     /** @test */

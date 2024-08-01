@@ -69,12 +69,13 @@ Route::group(['prefix' => 'federations', 'as' => 'federations.', 'middleware' =>
     Route::post('import', [FederationManagementController::class, 'store'])->name('import');
     Route::get('refresh', [FederationManagementController::class, 'update'])->name('refresh');
 
-    Route::get('{federation}/entities', [FederationEntityController::class, 'index'])->name('entities')->withTrashed();
     Route::get('{federation}/requests', [FederationJoinController::class, 'index'])->name('requests')->withTrashed();
 
-    Route::resource('{federation}/operators', FederationOperatorController::class)
-        ->only(['index', 'store'])->withTrashed();
+    Route::resource('{federation}/operators', FederationOperatorController::class)->only(['index', 'store'])->withTrashed();
     Route::delete('{federation}/operators', [FederationOperatorController::class, 'destroy'])->name('operators.destroy')->withTrashed();
+
+    Route::resource('{federation}/entities', FederationEntityController::class)->only(['index', 'store'])->withTrashed();
+    Route::delete('{federation}/entities', [FederationEntityController::class, 'destroy'])->name('entities.destroy')->withTrashed();
 
     Route::patch('{federation}/state', [FederationStateController::class, 'state'])->name('state')->withTrashed();
 
