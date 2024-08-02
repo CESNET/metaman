@@ -4,15 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Mail\AskRs;
 use App\Models\Entity;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class EntityRsController extends Controller
 {
-    public function __construct()
-    {
-
-    }
-
     public function store(Entity $entity)
     {
         $this->authorize('update', $entity);
@@ -25,5 +21,31 @@ class EntityRsController extends Controller
         return redirect()
             ->back()
             ->with('status', __('entities.rs_asked'));
+    }
+
+    public function rsState(Entity $entity)
+    {
+        $this->authorize('do-everything');
+
+        if ($entity->type->value !== 'sp') {
+            return redirect()
+                ->back()
+                ->with('status', __('categories.rs_controlled_for_sps_only'));
+        }
+
+        $entity = DB::transaction(function () use ($entity) {
+            $entity->rs = $entity->rs ? false : true;
+            $entity->update();
+
+            return $entity;
+        });
+
+        $status = $entity->rs ? 'rs' : 'no_rs';
+        $color = $entity->rs ? 'green' : 'red';
+
+        return redirect()
+            ->back()
+            ->with('status', __("entities.$status"))
+            ->with('color', $color);
     }
 }

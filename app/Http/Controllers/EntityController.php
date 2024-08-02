@@ -7,7 +7,6 @@ use App\Jobs\GitAddToCategory;
 use App\Jobs\GitAddToHfd;
 use App\Jobs\GitDeleteFromCategory;
 use App\Jobs\GitDeleteFromHfd;
-use App\Jobs\GitDeleteFromRs;
 use App\Ldap\CesnetOrganization;
 use App\Ldap\EduidczOrganization;
 use App\Mail\NewIdentityProvider;
@@ -16,9 +15,7 @@ use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
 use App\Notifications\EntityAddedToHfd;
-use App\Notifications\EntityAddedToRs;
 use App\Notifications\EntityDeletedFromHfd;
-use App\Notifications\EntityDeletedFromRs;
 use App\Notifications\EntityDestroyed;
 use App\Notifications\EntityRequested;
 use App\Notifications\EntityUpdated;
@@ -293,43 +290,6 @@ class EntityController extends Controller
 
                         break;
                 }
-
-                break;
-
-            case 'rs':
-                $this->authorize('do-everything');
-
-                if ($entity->type->value !== 'sp') {
-                    return redirect()
-                        ->back()
-                        ->with('status', __('categories.rs_controlled_for_sps_only'));
-                }
-
-                $entity = DB::transaction(function () use ($entity) {
-                    $entity->rs = $entity->rs ? false : true;
-                    $entity->update();
-
-                    return $entity;
-                });
-
-                $status = $entity->rs ? 'rs' : 'no_rs';
-                $color = $entity->rs ? 'green' : 'red';
-
-                // TODO notification (not ready ask about this)
-                /*                if ($entity->rs) {
-                                    GitAddToRs::dispatch($entity, Auth::user());
-                                    Notification::send($entity->operators, new EntityAddedToRs($entity));
-                                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToRs($entity));
-                                } else {
-                                    GitDeleteFromRs::dispatch($entity, Auth::user());
-                                    Notification::send($entity->operators, new EntityDeletedFromRs($entity));
-                                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromRs($entity));
-                                }*/
-
-                return redirect()
-                    ->back()
-                    ->with('status', __("entities.$status"))
-                    ->with('color', $color);
 
                 break;
 

@@ -106,7 +106,8 @@ Route::group(['prefix' => 'entities', 'as' => 'entities.', 'middleware' => ['aut
     Route::patch('{entity}/state', [EntityStateController::class, 'state'])->name('state')->withTrashed();
     Route::patch('{entity}/edugain', [EntityEduGainController::class, 'edugain'])->name('edugain')->withTrashed();
 
-    Route::post('{entity}/rs', [EntityRsController::class, 'store'])->name('rs');
+    Route::post('{entity}/rs', [EntityRsController::class, 'store'])->name('rs.store');
+    Route::patch('{entity}/rs', [EntityRsController::class, 'rsState'])->name('rs.state')->withTrashed();
 
     Route::get('{entity}/metadata', [EntityMetadataController::class, 'store'])->name('metadata');
     Route::get('{entity}/showmetadata', [EntityMetadataController::class, 'show'])->name('showmetadata');

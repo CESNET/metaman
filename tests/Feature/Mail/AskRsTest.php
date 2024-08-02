@@ -35,7 +35,7 @@ class AskRsTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->post(route('entities.rs', $entity))
+            ->post(route('entities.rs.store', $entity))
             ->assertStatus(200);
 
         Mail::assertQueued(AskRs::class, function ($email) use ($entity) {
@@ -56,7 +56,7 @@ class AskRsTest extends TestCase
 
         $this
             ->actingAs($user)
-            ->post(route('entities.rs', $entity))
+            ->post(route('entities.rs.store', $entity))
             ->assertStatus(403);
 
         Mail::assertNotQueued(AskRs::class);

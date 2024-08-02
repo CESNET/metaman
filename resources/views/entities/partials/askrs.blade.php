@@ -1,4 +1,4 @@
-<form x-data="{ open: false }" class="inline-block" action="{{ route('entities.rs', $entity) }}" method="POST">
+<form x-data="{ open: false }" class="inline-block" action="{{ route('entities.rs.store', $entity) }}" method="POST">
     @csrf
 
     <x-button @click.prevent="open = !open">{{ __('entities.ask_rs') }}</x-button>

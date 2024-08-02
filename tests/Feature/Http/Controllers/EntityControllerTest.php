@@ -1527,7 +1527,7 @@ class EntityControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->post(route('entities.rs', $entity))
+            ->post(route('entities.rs.store', $entity))
             ->assertStatus(403)
             ->assertSeeText(__('entities.rs_only_for_eduidcz_members'));
 
@@ -1556,7 +1556,7 @@ class EntityControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->post(route('entities.rs', $entity))
+            ->post(route('entities.rs.store', $entity))
             ->assertStatus(200)
             ->assertSeeText(__('entities.rs_asked'));
 
