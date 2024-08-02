@@ -95,10 +95,12 @@ Route::group(['prefix' => 'entities', 'as' => 'entities.', 'middleware' => ['aut
     Route::post('import', [EntityManagementController::class, 'store'])->name('import');
     Route::get('refresh', [EntityManagementController::class, 'update'])->name('refresh');
 
-    Route::get('{entity}/operators', [EntityOperatorController::class, 'index'])->name('operators')->withTrashed();
     Route::get('{entity}/federations', [EntityFederationController::class, 'index'])->name('federations')->withTrashed();
     Route::post('{entity}/join', [EntityFederationController::class, 'store'])->name('join');
     Route::post('{entity}/leave', [EntityFederationController::class, 'destroy'])->name('leave');
+
+    Route::resource('{entity}/operators', EntityOperatorController::class)->only(['index', 'store'])->withTrashed();
+    Route::delete('{entity}/operators', [EntityOperatorController::class, 'destroy'])->name('operators.destroy')->withTrashed();
 
     Route::patch('{entity}/state', [EntityStateController::class, 'state'])->name('state')->withTrashed();
 

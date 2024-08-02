@@ -21,7 +21,7 @@
         ),
         'cursor-default' => request()->routeIs('entities.operators'),
     ])
-        href="{{ route('entities.operators', $entity) }}">{{ __('common.operators') }}</a>
+        href="{{ route('entities.operators.index', $entity) }}">{{ __('common.operators') }}</a>
     <a @class([
         'px-2',
         'py-1',

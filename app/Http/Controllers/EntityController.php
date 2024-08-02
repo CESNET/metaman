@@ -23,12 +23,9 @@ use App\Notifications\EntityDeletedFromHfd;
 use App\Notifications\EntityDeletedFromRs;
 use App\Notifications\EntityDestroyed;
 use App\Notifications\EntityEdugainStatusChanged;
-use App\Notifications\EntityOperatorsChanged;
 use App\Notifications\EntityRequested;
 use App\Notifications\EntityUpdated;
 use App\Notifications\IdpCategoryChanged;
-use App\Notifications\YourEntityRightsChanged;
-use App\Services\NotificationService;
 use App\Traits\DumpFromGit\EntitiesHelp\DeleteFromEntity;
 use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
 use App\Traits\GitTrait;
@@ -299,61 +296,6 @@ class EntityController extends Controller
 
                         break;
                 }
-
-                break;
-
-            case 'state':
-
-                break;
-
-            case 'add_operators':
-                $this->authorize('update', $entity);
-
-                if (! request('operators')) {
-                    return to_route('entities.operators', $entity)
-                        ->with('status', __('entities.add_empty_operators'))
-                        ->with('color', 'red');
-                }
-
-                $old_operators = $entity->operators;
-                $new_operators = User::whereIn('id', request('operators'))->get();
-                $entity->operators()->attach(request('operators'));
-
-                $admins = User::activeAdmins()->select('id', 'email')->get();
-                Notification::sendNow($new_operators, new YourEntityRightsChanged($entity, 'added'));
-                NotificationService::sendOperatorNotification($old_operators, new EntityOperatorsChanged($entity, $new_operators, 'added'));
-
-                /*                Notification::send($old_operators, new EntityOperatorsChanged($entity, $new_operators, 'added'));
-                                Notification::send($admins, new EntityOperatorsChanged($entity, $new_operators, 'added'));*/
-
-                return redirect()
-                    ->route('entities.show', $entity)
-                    ->with('status', __('entities.operators_added'));
-
-                break;
-
-            case 'delete_operators':
-                $this->authorize('update', $entity);
-
-                if (! request('operators')) {
-                    return to_route('entities.operators', $entity)
-                        ->with('status', __('entities.delete_empty_operators'))
-                        ->with('color', 'red');
-                }
-
-                $old_operators = User::whereIn('id', request('operators'))->get();
-                $entity->operators()->detach(request('operators'));
-                $new_operators = $entity->operators;
-
-                $admins = User::activeAdmins()->select('id', 'email')->get();
-                Notification::sendNow($old_operators, new YourEntityRightsChanged($entity, 'deleted'));
-                NotificationService::sendOperatorNotification($old_operators, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));
-                /*                Notification::send($new_operators, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));
-                                Notification::send($admins, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));*/
-
-                return redirect()
-                    ->route('entities.show', $entity)
-                    ->with('status', __('entities.operators_deleted'));
 
                 break;
 

@@ -712,28 +712,26 @@ class EntityControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->patch(route('entities.update', $entity), [
-                'action' => 'add_operators',
+            ->post(route('entities.operators.store', $entity), [
                 'operators' => [$new_operator->id],
             ])
             ->assertSeeText(__('entities.operators_added'));
 
         $entity->refresh();
         $this->assertEquals(2, $entity->operators()->count());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
+        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->patch(route('entities.update', $entity), [
-                'action' => 'delete_operators',
+            ->delete(route('entities.operators.destroy', $entity), [
                 'operators' => [$new_operator->id],
             ])
             ->assertSeeText(__('entities.operators_deleted'));
 
         $entity->refresh();
         $this->assertEquals(1, $entity->operators()->count());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
+        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
 
     }
 
@@ -818,8 +816,7 @@ class EntityControllerTest extends TestCase
 
         $this
             ->actingAs($user)
-            ->patch(route('entities.update', $entity), [
-                'action' => 'add_operators',
+            ->post(route('entities.operators.store', $entity), [
                 'operators' => [$new_operator->id],
             ])
             ->assertForbidden();
@@ -829,8 +826,7 @@ class EntityControllerTest extends TestCase
 
         $this
             ->actingAs($user)
-            ->patch(route('entities.update', $entity), [
-                'action' => 'delete_operators',
+            ->delete(route('entities.operators.destroy', $entity), [
                 'operators' => [$new_operator->id],
             ])
             ->assertForbidden();
@@ -1369,48 +1365,46 @@ class EntityControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('entities.update', $entity), ['action' => 'add_operators'])
+            ->post(route('entities.operators.store', $entity))
             ->assertSeeText(__('entities.add_empty_operators'));
 
         $entity->refresh();
         $this->assertEquals(0, $entity->operators()->count());
-        $this->assertEquals(route('entities.operators', $entity), url()->current());
+        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('entities.update', $entity), [
-                'action' => 'add_operators',
+            ->post(route('entities.operators.store', $entity), [
                 'operators' => [$new_operator->id],
             ])
             ->assertSeeText(__('entities.operators_added'));
 
         $entity->refresh();
         $this->assertEquals(1, $entity->operators()->count());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
+        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('entities.update', $entity), ['action' => 'delete_operators'])
+            ->delete(route('entities.operators.destroy', $entity))
             ->assertSeeText(__('entities.delete_empty_operators'));
 
         $entity->refresh();
         $this->assertEquals(1, $entity->operators()->count());
-        $this->assertEquals(route('entities.operators', $entity), url()->current());
+        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
 
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('entities.update', $entity), [
-                'action' => 'delete_operators',
+            ->delete(route('entities.operators.destroy', $entity), [
                 'operators' => [$new_operator->id],
             ])
             ->assertSeeText(__('entities.operators_deleted'));
 
         $entity->refresh();
         $this->assertEquals(0, $entity->operators()->count());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
+        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
 
     }
 
