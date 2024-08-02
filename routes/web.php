@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryManagementController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EduidczStatisticController;
 use App\Http\Controllers\EntityController;
+use App\Http\Controllers\EntityEduGainController;
 use App\Http\Controllers\EntityFederationController;
 use App\Http\Controllers\EntityManagementController;
 use App\Http\Controllers\EntityMetadataController;
@@ -103,6 +104,7 @@ Route::group(['prefix' => 'entities', 'as' => 'entities.', 'middleware' => ['aut
     Route::delete('{entity}/operators', [EntityOperatorController::class, 'destroy'])->name('operators.destroy')->withTrashed();
 
     Route::patch('{entity}/state', [EntityStateController::class, 'state'])->name('state')->withTrashed();
+    Route::patch('{entity}/edugain', [EntityEduGainController::class, 'edugain'])->name('edugain')->withTrashed();
 
     Route::post('{entity}/rs', [EntityRsController::class, 'store'])->name('rs');
 

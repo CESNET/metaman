@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEntity;
 use App\Jobs\GitAddToCategory;
-use App\Jobs\GitAddToEdugain;
 use App\Jobs\GitAddToHfd;
 use App\Jobs\GitDeleteFromCategory;
-use App\Jobs\GitDeleteFromEdugain;
 use App\Jobs\GitDeleteFromHfd;
 use App\Jobs\GitDeleteFromRs;
 use App\Ldap\CesnetOrganization;
@@ -22,7 +20,6 @@ use App\Notifications\EntityAddedToRs;
 use App\Notifications\EntityDeletedFromHfd;
 use App\Notifications\EntityDeletedFromRs;
 use App\Notifications\EntityDestroyed;
-use App\Notifications\EntityEdugainStatusChanged;
 use App\Notifications\EntityRequested;
 use App\Notifications\EntityUpdated;
 use App\Notifications\IdpCategoryChanged;
@@ -296,47 +293,6 @@ class EntityController extends Controller
 
                         break;
                 }
-
-                break;
-
-            case 'edugain':
-                $this->authorize('update', $entity);
-
-                $entity = DB::transaction(function () use ($entity) {
-                    $entity->edugain = $entity->edugain ? false : true;
-                    $entity->update();
-
-                    return $entity;
-                });
-
-                $status = $entity->edugain ? 'edugain' : 'no_edugain';
-                $color = $entity->edugain ? 'green' : 'red';
-
-                // TODO  add and delete from EDUGAIN (functional)
-                /*                if ($entity->edugain) {
-                                    Bus::chain([
-                                        new GitAddToEdugain($entity, Auth::user()),
-                                        function () use ($entity) {
-                                            $admins = User::activeAdmins()->select('id', 'email')->get();
-                                            Notification::send($entity->operators, new EntityEdugainStatusChanged($entity));
-                                            Notification::send($admins, new EntityEdugainStatusChanged($entity));
-                                        },
-                                    ])->dispatch();
-                                } else {
-                                    Bus::chain([
-                                        new GitDeleteFromEdugain($entity, Auth::user()),
-                                        function () use ($entity) {
-                                            $admins = User::activeAdmins()->select('id', 'email')->get();
-                                            Notification::send($entity->operators, new EntityEdugainStatusChanged($entity));
-                                            Notification::send($admins, new EntityEdugainStatusChanged($entity));
-                                        },
-                                    ])->dispatch();
-                                }*/
-
-                return redirect()
-                    ->back()
-                    ->with('status', __("entities.$status"))
-                    ->with('color', $color);
 
                 break;
 

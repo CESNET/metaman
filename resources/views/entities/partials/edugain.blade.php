@@ -1,9 +1,6 @@
-<form x-data="{ open: false }" class="inline-block" action="{{ route('entities.update', $entity) }}" method="POST">
+<form x-data="{ open: false }" class="inline-block" action="{{ route('entities.edugain', $entity) }}" method="POST">
     @csrf
     @method('patch')
-
-    <input type="hidden" name="action" value="edugain">
-
     <input type="checkbox" name="edugainbox" @click.prevent="open = !open"
         @if ($entity->edugain) checked @endif>
 
