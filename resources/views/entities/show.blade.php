@@ -118,10 +118,9 @@
                 {{ __('common.eduidcz_category') }}
             </dt>
             <dd class="sm:col-span-2">
-                <form class="inline-block" action="{{ route('entities.update', $entity) }}" method="post">
+                <form class="inline-block" action="{{ route('entities.category.update', $entity) }}" method="post">
                     @csrf
                     @method('patch')
-                    <input type="hidden" name="action" value="category">
                     <select class="text-sm rounded" name="category" id="category">
                         <option value="">{{ __('categories.select_category') }}</option>
                         @forelse ($categories as $category)

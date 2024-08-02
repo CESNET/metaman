@@ -7,7 +7,7 @@ use App\Models\Entity;
 
 class EntityCategoryController extends Controller
 {
-    public function store(Entity $entity)
+    public function update(Entity $entity)
     {
         $this->authorize('do-everything');
 
@@ -21,7 +21,6 @@ class EntityCategoryController extends Controller
         $category = Category::findOrFail(request('category'));
         $entity->category()->associate($category);
         $entity->save();
-
         // TODO work with category (not  ready)
         /*                Bus::chain([
                             new GitDeleteFromCategory($old_category, $entity, Auth::user()),
