@@ -1,9 +1,6 @@
-<form x-data="{ open: false }" class="inline-block" action="{{ route('entities.update', $entity) }}" method="POST">
+<form x-data="{ open: false }" class="inline-block" action="{{ route('entities.hfd', $entity) }}" method="POST">
     @csrf
     @method('patch')
-
-    <input type="hidden" name="action" value="hfd">
-
     <input type="checkbox" name="hfdbox" @click.prevent="open = !open" @if ($entity->hfd) checked @endif>
 
     <x-modal>

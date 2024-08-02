@@ -8,6 +8,7 @@ use App\Http\Controllers\EntityCategoryController;
 use App\Http\Controllers\EntityController;
 use App\Http\Controllers\EntityEduGainController;
 use App\Http\Controllers\EntityFederationController;
+use App\Http\Controllers\EntityHfdController;
 use App\Http\Controllers\EntityManagementController;
 use App\Http\Controllers\EntityMetadataController;
 use App\Http\Controllers\EntityOperatorController;
@@ -111,6 +112,7 @@ Route::group(['prefix' => 'entities', 'as' => 'entities.', 'middleware' => ['aut
     Route::patch('{entity}/rs', [EntityRsController::class, 'rsState'])->name('rs.state')->withTrashed();
 
     Route::patch('{entity}/category', [EntityCategoryController::class, 'update'])->name('category.update');
+    Route::patch('{entity}/hfd', [EntityHfdController::class, 'update'])->name('hfd');
 
     Route::get('{entity}/metadata', [EntityMetadataController::class, 'store'])->name('metadata');
     Route::get('{entity}/showmetadata', [EntityMetadataController::class, 'show'])->name('showmetadata');
