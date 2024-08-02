@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEntity;
-use App\Jobs\GitAddToCategory;
 use App\Jobs\GitAddToHfd;
-use App\Jobs\GitDeleteFromCategory;
 use App\Jobs\GitDeleteFromHfd;
 use App\Ldap\CesnetOrganization;
 use App\Ldap\EduidczOrganization;
@@ -19,7 +17,6 @@ use App\Notifications\EntityDeletedFromHfd;
 use App\Notifications\EntityDestroyed;
 use App\Notifications\EntityRequested;
 use App\Notifications\EntityUpdated;
-use App\Notifications\IdpCategoryChanged;
 use App\Traits\DumpFromGit\EntitiesHelp\DeleteFromEntity;
 use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
 use App\Traits\GitTrait;
@@ -290,42 +287,6 @@ class EntityController extends Controller
 
                         break;
                 }
-
-                break;
-
-            case 'category':
-                $this->authorize('do-everything');
-
-                if (empty(request('category'))) {
-                    return redirect()
-                        ->back()
-                        ->with('status', __('categories.no_category_selected'))
-                        ->with('color', 'red');
-                }
-
-                $old_category = $entity->category ?? null;
-                $category = Category::findOrFail(request('category'));
-                $entity->category()->associate($category);
-                $entity->save();
-
-                // TODO work with category (not  ready)
-                /*                Bus::chain([
-                                    new GitDeleteFromCategory($old_category, $entity, Auth::user()),
-                                    new GitAddToCategory($category, $entity, Auth::user()),
-                                    function () use ($entity, $category) {
-                                        $admins = User::activeAdmins()->select('id', 'email')->get();
-                                        Notification::send($admins, new IdpCategoryChanged($entity, $category));
-                                    },
-                                ])->dispatch();*/
-
-                if (! $entity->wasChanged()) {
-                    return redirect()
-                        ->back();
-                }
-
-                return redirect()
-                    ->route('entities.show', $entity)
-                    ->with('status', __('entities.category_updated'));
 
                 break;
 
