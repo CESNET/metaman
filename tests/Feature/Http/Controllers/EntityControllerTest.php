@@ -680,12 +680,8 @@ class EntityControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->patch(route('entities.update', $entity), ['action' => 'state'])
+            ->patch(route('entities.state', $entity))
             ->assertSeeText(__('entities.deleted', ['name' => $entity->name_en]));
-
-        /*        Bus::assertDispatched(GitDeleteEntity::class, function ($job) use ($entity) {
-                    return $job->entity->is($entity);
-                });*/
 
         $entity->refresh();
         $this->assertTrue($entity->trashed());
@@ -694,16 +690,12 @@ class EntityControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($user)
-            ->patch(route('entities.update', $entity), ['action' => 'state'])
+            ->patch(route('entities.state', $entity))
             ->assertSeeText(__('entities.restored', ['name' => $entity->name_en]));
 
         $entity->refresh();
         $this->assertFalse($entity->trashed());
         $this->assertEquals(route('entities.show', $entity), url()->current());
-
-        /*        Bus::assertDispatched(GitAddEntity::class, function ($job) use ($entity) {
-                    return $job->entity->is($entity);
-                });*/
     }
 
     /** @test */
@@ -811,7 +803,7 @@ class EntityControllerTest extends TestCase
 
         $this
             ->actingAs($user)
-            ->patch(route('entities.update', $entity), ['action' => 'state'])
+            ->patch(route('entities.state', $entity))
             ->assertForbidden();
 
     }
@@ -1344,12 +1336,8 @@ class EntityControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('entities.update', $entity), ['action' => 'state'])
+            ->patch(route('entities.state', $entity))
             ->assertSeeText(__('entities.deleted', ['name' => $entity->name_en]));
-
-        /*        Bus::assertDispatched(GitDeleteEntity::class, function ($job) use ($entity) {
-                    return $job->entity->is($entity);
-                });*/
 
         $entity->refresh();
         $this->assertTrue($entity->trashed());
@@ -1358,16 +1346,12 @@ class EntityControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->actingAs($admin)
-            ->patch(route('entities.update', $entity), ['action' => 'state'])
+            ->patch(route('entities.state', $entity))
             ->assertSeeText(__('entities.restored', ['name' => $entity->name_en]));
 
         $entity->refresh();
         $this->assertFalse($entity->trashed());
         $this->assertEquals(route('entities.show', $entity), url()->current());
-
-        /*        Bus::assertDispatched(GitAddEntity::class, function ($job) use ($entity) {
-                    return $job->entity->is($entity);
-                });*/
     }
 
     /** @test */

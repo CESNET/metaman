@@ -12,6 +12,7 @@ use App\Http\Controllers\EntityOperatorController;
 use App\Http\Controllers\EntityOrganizationController;
 use App\Http\Controllers\EntityPreviewMetadataController;
 use App\Http\Controllers\EntityRsController;
+use App\Http\Controllers\EntityStateController;
 use App\Http\Controllers\FakeController;
 use App\Http\Controllers\FederationApprovalController;
 use App\Http\Controllers\FederationController;
@@ -98,6 +99,8 @@ Route::group(['prefix' => 'entities', 'as' => 'entities.', 'middleware' => ['aut
     Route::get('{entity}/federations', [EntityFederationController::class, 'index'])->name('federations')->withTrashed();
     Route::post('{entity}/join', [EntityFederationController::class, 'store'])->name('join');
     Route::post('{entity}/leave', [EntityFederationController::class, 'destroy'])->name('leave');
+
+    Route::patch('{entity}/state', [EntityStateController::class, 'state'])->name('state')->withTrashed();
 
     Route::post('{entity}/rs', [EntityRsController::class, 'store'])->name('rs');
 

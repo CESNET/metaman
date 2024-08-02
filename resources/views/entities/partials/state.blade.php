@@ -1,8 +1,6 @@
-<form x-data="{ open: false }" class="inline-block" action="{{ route('entities.update', $entity) }}" method="POST">
+<form x-data="{ open: false }" class="inline-block" action="{{ route('entities.state', $entity) }}" method="POST">
     @csrf
     @method('patch')
-    <input type="hidden" name="action" value="state">
-
     @if ($entity->trashed())
         <x-button @click.prevent="open =! open" color="green">{{ __('common.restore') }}</x-button>
     @else

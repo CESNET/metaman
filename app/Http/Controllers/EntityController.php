@@ -10,8 +10,6 @@ use App\Jobs\GitDeleteFromCategory;
 use App\Jobs\GitDeleteFromEdugain;
 use App\Jobs\GitDeleteFromHfd;
 use App\Jobs\GitDeleteFromRs;
-use App\Jobs\GitRestoreToCategory;
-use App\Jobs\GitRestoreToEdugain;
 use App\Ldap\CesnetOrganization;
 use App\Ldap\EduidczOrganization;
 use App\Mail\NewIdentityProvider;
@@ -27,9 +25,7 @@ use App\Notifications\EntityDestroyed;
 use App\Notifications\EntityEdugainStatusChanged;
 use App\Notifications\EntityOperatorsChanged;
 use App\Notifications\EntityRequested;
-use App\Notifications\EntityStateChanged;
 use App\Notifications\EntityUpdated;
-use App\Notifications\FederationMemberChanged;
 use App\Notifications\IdpCategoryChanged;
 use App\Notifications\YourEntityRightsChanged;
 use App\Services\NotificationService;
@@ -307,70 +303,6 @@ class EntityController extends Controller
                 break;
 
             case 'state':
-                $this->authorize('delete', $entity);
-
-                // TODO  restore
-                if ($entity->trashed()) {
-                    $entity->restore();
-
-                    //TODO restore chain (functional)
-                    /*                    Bus::chain([
-                                            new GitAddEntity($entity, Auth::user()),
-                                            new GitAddToHfd($entity, Auth::user()),
-                                            new GitRestoreToEdugain($entity, Auth::user()),
-                                            new GitRestoreToCategory($entity, Auth::user()),
-                                            function () use ($entity) {
-                                                $admins = User::activeAdmins()->select('id', 'email')->get();
-                                                Notification::send($entity->operators, new EntityStateChanged($entity));
-                                                Notification::send($admins, new EntityStateChanged($entity));
-                                                if ($entity->hfd) {
-                                                    Notification::send($entity->operators, new EntityAddedToHfd($entity));
-                                                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToHfd($entity));
-                                                }
-                                            },
-                                        ])->dispatch();*/
-
-                    // TODO here M:N  connection wit federation
-                    /*                    foreach ($entity->federations as $federation) {
-                                            Bus::chain([
-                                                new GitAddMember($federation, $entity, Auth::user()),
-                                                function () use ($federation, $entity) {
-                                                    $admins = User::activeAdmins()->select('id', 'email')->get();
-                                                    Notification::send($federation->operators, new FederationMemberChanged($federation, $entity, 'added'));
-                                                    Notification::send($admins, new FederationMemberChanged($federation, $entity, 'added'));
-                                                },
-                                            ])->dispatch();
-                                        }*/
-                } else {
-                    $entity->delete();
-
-                    //TODO delete chain (functional)
-                    /*                    Bus::chain([
-                                            new GitDeleteEntity($entity, Auth::user()),
-                                            new GitDeleteFromHfd($entity, Auth::user()),
-                                            new GitDeleteFromEdugain($entity, Auth::user()),
-                                            new GitDeleteFromCategory($entity->category ?? null, $entity, Auth::user()),
-                                            function () use ($entity) {
-                                                $admins = User::activeAdmins()->select('id', 'email')->get();
-                                                Notification::send($entity->operators, new EntityStateChanged($entity));
-                                                Notification::send($admins, new EntityStateChanged($entity));
-                                                if ($entity->hfd) {
-                                                    Notification::send($entity->operators, new EntityDeletedFromHfd($entity));
-                                                    Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromHfd($entity));
-                                                }
-                                            },
-                                        ])->dispatch();*/
-                }
-
-                $state = $entity->trashed() ? 'deleted' : 'restored';
-                $color = $entity->trashed() ? 'red' : 'green';
-
-                $locale = app()->getLocale();
-
-                return redirect()
-                    ->route('entities.show', $entity)
-                    ->with('status', __("entities.$state", ['name' => $entity->{"name_$locale"} ?? $entity->entityid]))
-                    ->with('color', $color);
 
                 break;
 
