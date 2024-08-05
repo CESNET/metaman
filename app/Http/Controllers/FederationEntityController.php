@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\FolderDeleteMembership;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Notifications\FederationMembersChanged;
@@ -74,6 +75,11 @@ class FederationEntityController extends Controller
         }
 
         $federation->entities()->detach(request('entities'));
+
+        foreach (request('entities') as $id) {
+            $entity = Entity::find($id);
+            FolderDeleteMembership::dispatch($entity, $federation);
+        }
 
         $old_entities = Entity::whereIn('id', request('entities'))->get();
         NotificationService::sendModelNotification($federation, new FederationMembersChanged($federation, $old_entities, 'deleted'));
