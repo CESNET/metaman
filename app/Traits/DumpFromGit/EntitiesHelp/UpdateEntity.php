@@ -2,6 +2,7 @@
 
 namespace App\Traits\DumpFromGit\EntitiesHelp;
 
+use App\Facades\RsTag;
 use App\Models\Category;
 use App\Models\Entity;
 use App\Traits\ValidatorTrait;
@@ -27,7 +28,7 @@ trait UpdateEntity
         $rootTag = $xPath->query("//*[local-name()='EntityDescriptor']")->item(0);
         $entityExtensions = $xPath->query('//md:Extensions');
         if ($entityExtensions->length === 0) {
-            $namespaceURI = $dom->documentElement->lookupNamespaceURI('md');
+            $dom->documentElement->lookupNamespaceURI('md');
             $entityExtensions = $dom->createElementNS($this->mdURI, 'md:Extensions');
             $rootTag->insertBefore($entityExtensions, $rootTag->firstChild);
         } else {
@@ -146,10 +147,7 @@ trait UpdateEntity
         if ($entity->type == 'idp') {
             $isIdp = true;
         }
-
-        if ($entity->rs) {
-            $xml_document = $this->createResearchAndScholarshipTag($xml_document, $isIdp);
-        }
+        RsTag::update($entity);
         if (! empty($entity->category_id)) {
             $xml_document = $this->updateXmlCategories($xml_document, $entity->category_id);
         }
