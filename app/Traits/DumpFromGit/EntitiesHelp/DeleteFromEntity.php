@@ -2,50 +2,13 @@
 
 namespace App\Traits\DumpFromGit\EntitiesHelp;
 
+use App\Facades\RsTag;
+use App\Traits\EntitiesXML\TagTrait;
 use App\Traits\ValidatorTrait;
 
 trait DeleteFromEntity
 {
-    use ValidatorTrait;
-
-    private function hasChildElements(object $parent): bool
-    {
-        foreach ($parent->childNodes as $child) {
-            if ($child->nodeType === XML_ELEMENT_NODE) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private function deleteTag(object $tag): void
-    {
-        if ($tag->parentNode) {
-            $tag->parentNode->removeChild($tag);
-        }
-    }
-
-    private function deleteNoChilledTag(object $tag): void
-    {
-        if (! $this->hasChildElements($tag)) {
-            $this->deleteTag($tag);
-        }
-    }
-
-    private function DeleteAllTags(string $xpathQuery, \DOMXPath $xPath): void
-    {
-        $tags = $xPath->query($xpathQuery);
-
-        foreach ($tags as $tag) {
-            $parent = $tag->parentNode;
-            $grandParent = $parent->parentNode;
-            $this->deleteTag($tag);
-
-            $this->deleteNoChilledTag($parent);
-            $this->deleteNoChilledTag($grandParent);
-        }
-    }
+    use TagTrait, ValidatorTrait;
 
     private function deleteCategories(\DOMXPath $xPath): void
     {
@@ -55,16 +18,7 @@ trait DeleteFromEntity
         }, $values);
 
         $xpathQuery = '//saml:AttributeValue['.implode(' or ', $xpathQueryParts).']';
-        $this->DeleteAllTags($xpathQuery, $xPath);
-    }
-
-    private function deleteResearchAndScholarship(\DOMXPath $xPath): void
-    {
-        $value = 'http://refeds.org/category/research-and-scholarship';
-        $xpathQueryParts = "text()='$value'";
-
-        $xpathQuery = '//saml:AttributeValue['.$xpathQueryParts.']';
-        $this->DeleteAllTags($xpathQuery, $xPath);
+        $this->deleteAllTags($xpathQuery, $xPath);
     }
 
     private function deleteRegistrationInfo(\DOMXPath $xPath): void
@@ -76,7 +30,6 @@ trait DeleteFromEntity
                 $this->deleteTag($tag);
             }
         }
-
     }
 
     private function deleteFromIdp(\DOMXPath $xPath): void
@@ -86,8 +39,7 @@ trait DeleteFromEntity
 
     private function deleteFromSP(\DOMXPath $xpath): void
     {
-        $this->deleteResearchAndScholarship($xpath);
-
+        RsTag::deleteByXpath($xpath);
     }
 
     private function deleteRepublishRequest(\DOMXPath $xPath): void

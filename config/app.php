@@ -230,6 +230,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'EntityFacade' => App\Facades\EntityFacade::class,
+        'RsTag' => App\Facades\RsTag::class,
     ],
 
 ];

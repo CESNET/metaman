@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Jobs\RunMdaScript;
+use App\Services\RsTagService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
@@ -19,7 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
+        $this->app->singleton(RsTagService::class, function () {
+            return new RsTagService();
+        });
     }
 
     /**

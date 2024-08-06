@@ -62,54 +62,6 @@ trait UpdateEntity
         return $dom->saveXML();
     }
 
-    private function updateResearchAndScholarship(string $xml_document, bool $isIdp): string
-    {
-        $dom = $this->createDOM($xml_document);
-        $xPath = $this->createXPath($dom);
-
-        $rootTag = $xPath->query("//*[local-name()='EntityDescriptor']")->item(0);
-
-        $extensions = $xPath->query('//md:Extensions');
-        if ($extensions->length === 0) {
-            $extensions = $dom->createElementNS($this->mdURI, 'md:Extensions');
-            $rootTag->appendChild($extensions);
-        } else {
-            $extensions = $extensions->item(0);
-        }
-
-        $entityAttributes = $xPath->query('//mdattr:EntityAttributes');
-        if ($entityAttributes->length === 0) {
-            $entityAttributes = $dom->createElementNS($this->mdattrURI, 'mdattr:EntityAttributes');
-            $extensions->appendChild($entityAttributes);
-        } else {
-            $entityAttributes = $entityAttributes->item(0);
-        }
-
-        $attribute = $xPath->query('//mdattr:EntityAttributes/saml:Attribute', $entityAttributes);
-        if ($attribute->length === 0) {
-            $attribute = $dom->createElementNS($this->samlURI, 'saml:Attribute');
-            $attribute->setAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-
-            if ($isIdp) {
-                $attribute->setAttribute('Name', 'http://macedir.org/entity-category-support');
-            } else {
-                $attribute->setAttribute('Name', 'http://macedir.org/entity-category');
-            }
-
-            $entityAttributes->appendChild($attribute);
-        } else {
-            $attribute = $attribute->item(0);
-        }
-
-        $attributeValue = $dom->createElementNS($this->samlURI, 'saml:AttributeValue', 'http://refeds.org/category/research-and-scholarship');
-        $attribute->appendChild($attributeValue);
-
-        $dom->normalize();
-
-        return $dom->saveXML();
-
-    }
-
     /**
      * @throws Exception if  exist more or less then 2 part something gone wrong
      */
@@ -196,7 +148,7 @@ trait UpdateEntity
         }
 
         if ($entity->rs) {
-            $xml_document = $this->updateResearchAndScholarship($xml_document, $isIdp);
+            $xml_document = $this->createResearchAndScholarshipTag($xml_document, $isIdp);
         }
         if (! empty($entity->category_id)) {
             $xml_document = $this->updateXmlCategories($xml_document, $entity->category_id);
