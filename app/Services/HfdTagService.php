@@ -7,11 +7,11 @@ use App\Traits\EntitiesXML\TagTrait;
 use App\Traits\ValidatorTrait;
 use DOMXPath;
 
-class RsTagService
+class HfdTagService
 {
     use TagTrait,ValidatorTrait;
 
-    private string $value = 'http://refeds.org/category/research-and-scholarship';
+    private string $value = 'http://refeds.org/category/hide-from-discovery';
 
     public function create(Entity $entity): false|string
     {
@@ -28,7 +28,7 @@ class RsTagService
         $rootTag = $this->getRootTag($xPath);
         $extensions = $this->getOrCreateExtensions($xPath, $dom, $rootTag, $mdURI);
         $entityAttributes = $this->getOrCreateEntityAttributes($xPath, $dom, $extensions, $mdattrURI);
-        $attribute = $this->getOrCreateAttribute($xPath, $dom, $entityAttributes, $samlURI, $isIdp);
+        $attribute = $this->getOrCreateAttribute($xPath, $dom, $entityAttributes, $samlURI);
 
         $attributeValue = $dom->createElementNS($samlURI, 'saml:AttributeValue', $this->value);
         $attribute->appendChild($attributeValue);
@@ -40,7 +40,6 @@ class RsTagService
 
     public function delete(Entity $entity): void
     {
-
         $dom = $this->createDOM($entity->xml_file);
         $xPath = $this->createXPath($dom);
         $this->deleteByXpath($xPath);
@@ -52,47 +51,7 @@ class RsTagService
         $this->DeleteAllTags($xpathQuery, $xPath);
     }
 
-    public function update(Entity $entity): void
-    {
-        if ($entity->rs) {
-
-            if (! $this->hasResearchAndScholarshipTag($entity->xml_file)) {
-                $this->create($entity);
-            }
-
-        } else {
-            if ($this->hasResearchAndScholarshipTag($entity->xml_file)) {
-                $this->delete($entity);
-            }
-        }
-
-    }
-
-    private function hasResearchAndScholarshipTag(string $xml_document): bool
-    {
-        try {
-            $dom = $this->createDOM($xml_document);
-            $xPath = $this->createXPath($dom);
-            $xpathQuery = "//saml:AttributeValue[text()='$this->value']";
-
-            $nodes = $xPath->query($xpathQuery);
-
-            if ($nodes === false) {
-                throw new \RuntimeException('Error executing XPath query');
-            }
-
-            return $nodes->length > 0;
-        } catch (\Exception $e) {
-            throw new \RuntimeException('An error occurred while checking for the tag: '.$e->getMessage());
-        }
-    }
-
-    private function buildXPathQuery(): string
-    {
-        return "//saml:AttributeValue[text()='$this->value']";
-    }
-
-    private function getRootTag(\DOMXPath $xPath): \DOMNode
+    private function getRootTag(DOMXPath $xPath): \DOMNode
     {
         $rootTag = $xPath->query("//*[local-name()='EntityDescriptor']")->item(0);
         if (! $rootTag) {
@@ -102,13 +61,13 @@ class RsTagService
         return $rootTag;
     }
 
-    private function getOrCreateAttribute(\DOMXPath $xPath, \DOMDocument $dom, \DOMNode $entityAttributes, string $samlURI, bool $isIdp): \DOMNode
+    private function getOrCreateAttribute(DOMXPath $xPath, \DOMDocument $dom, \DOMNode $entityAttributes, string $samlURI): \DOMNode
     {
         $attribute = $xPath->query('//mdattr:EntityAttributes/saml:Attribute', $entityAttributes);
         if ($attribute->length === 0) {
             $attribute = $dom->createElementNS($samlURI, 'saml:Attribute');
             $attribute->setAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-            $attribute->setAttribute('Name', $isIdp ? 'http://macedir.org/entity-category-support' : 'http://macedir.org/entity-category');
+            $attribute->setAttribute('Name', 'http://macedir.org/entity-category');
             $entityAttributes->appendChild($attribute);
         } else {
             $attribute = $attribute->item(0);
@@ -117,7 +76,7 @@ class RsTagService
         return $attribute;
     }
 
-    private function getOrCreateEntityAttributes(\DOMXPath $xPath, \DOMDocument $dom, \DOMNode $extensions, string $mdattrURI): \DOMNode
+    private function getOrCreateEntityAttributes(DOMXPath $xPath, \DOMDocument $dom, \DOMNode $extensions, string $mdattrURI): \DOMNode
     {
         $entityAttributes = $xPath->query('//mdattr:EntityAttributes');
         if ($entityAttributes->length === 0) {
@@ -130,7 +89,7 @@ class RsTagService
         return $entityAttributes;
     }
 
-    private function getOrCreateExtensions(\DOMXPath $xPath, \DOMDocument $dom, \DOMNode $rootTag, string $mdURI): \DOMNode
+    private function getOrCreateExtensions(DOMXPath $xPath, \DOMDocument $dom, \DOMNode $rootTag, string $mdURI): \DOMNode
     {
         $extensions = $xPath->query('//md:Extensions');
         if ($extensions->length === 0) {
@@ -141,5 +100,10 @@ class RsTagService
         }
 
         return $extensions;
+    }
+
+    private function buildXPathQuery(): string
+    {
+        return "//saml:AttributeValue[text()='$this->value']";
     }
 }
