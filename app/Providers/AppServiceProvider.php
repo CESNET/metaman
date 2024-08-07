@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Jobs\RunMdaScript;
+use App\Services\HfdTagService;
 use App\Services\RsTagService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(RsTagService::class, function () {
             return new RsTagService();
         });
+
+        $this->app->singleton(HfdTagService::class, function () {
+            return new HfdTagService();
+        });
+
     }
 
     /**
