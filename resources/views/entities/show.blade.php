@@ -73,6 +73,7 @@
             @includeWhen(request()->user()->cannot('do-everything') &&
                     request()->user()->can('update', $entity) &&
                     $entity->type->value === 'sp' &&
+                    $entity->federations()->where('xml_name', Config::get('git.rs_federation'))->count() &&
                     !$entity->rs,
                     'entities.partials.askrs')
 
