@@ -13,11 +13,6 @@ class HfdTagService
 
     private string $value = 'http://refeds.org/category/hide-from-discovery';
 
-    public function hello()
-    {
-        dump('hello');
-    }
-
     public function create(Entity $entity): false|string
     {
         $mdURI = config('xmlNameSpace.md');

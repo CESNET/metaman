@@ -143,10 +143,6 @@ trait UpdateEntity
         }
 
         $xml_document = $entity->xml_file;
-        $isIdp = false;
-        if ($entity->type == 'idp') {
-            $isIdp = true;
-        }
         RsTag::update($entity);
         if (! empty($entity->category_id)) {
             $xml_document = $this->updateXmlCategories($xml_document, $entity->category_id);

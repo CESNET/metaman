@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Facades\RsTag;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Traits\DumpFromGit\EntitiesHelp\FixEntityTrait;
@@ -99,8 +98,6 @@ class ValidateMetaConsole extends Command
 
     public function handle()
     {
-        RsTag::hello();
-
         /*        $federation = Federation::where('id', 1)->first();
                 $this->runMDA($federation);*/
 
