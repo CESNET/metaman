@@ -7,11 +7,6 @@ use Illuminate\Support\Facades\Storage;
 
 class EntityMetadataController extends Controller
 {
-    public function __construct()
-    {
-
-    }
-
     public function store(Entity $entity)
     {
         $this->authorize('view', $entity);
@@ -21,8 +16,14 @@ class EntityMetadataController extends Controller
                 ->with('status', __('entities.not_yet_approved'))
                 ->with('color', 'red');
         }
+        $folderName = optional($entity->federations->first())->name;
+        if (is_null($folderName)) {
+            return to_route('entities.show', $entity)
+                ->with('status', __('entities.without_federation'))
+                ->with('color', 'red');
+        }
 
-        return Storage::download($entity->file);
+        return Storage::disk(config('storageCfg.name'))->download("{$folderName}/{$entity->file}");
     }
 
     public function show(Entity $entity)
@@ -34,7 +35,13 @@ class EntityMetadataController extends Controller
                 ->with('status', __('entities.not_yet_approved'))
                 ->with('color', 'red');
         }
+        $folderName = optional($entity->federations->first())->name;
+        if (is_null($folderName)) {
+            return to_route('entities.show', $entity)
+                ->with('status', __('entities.without_federation'))
+                ->with('color', 'red');
+        }
 
-        return response()->file(Storage::path($entity->file));
+        return response()->file(Storage::disk(config('storageCfg.name'))->path("{$folderName}/{$entity->file}"));
     }
 }

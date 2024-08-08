@@ -70,4 +70,5 @@ return [
     'url_placeholder' => 'Vložte URL metadat entity',
     'organization_assigned' => 'Organizace byla úspěšně přiřazena.',
     'not_yet_approved' => 'Tato entity ještě není schválená, proto nelze požadavek provést.',
+    'without_federation' => 'Tato entity nemá přidělenout federaci',
 ];
