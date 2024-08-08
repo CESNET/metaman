@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\HfdTag;
 use App\Http\Requests\StoreEntity;
 use App\Ldap\CesnetOrganization;
 use App\Ldap\EduidczOrganization;
@@ -96,10 +97,12 @@ class EntityController extends Controller
             case '0':
                 $federation = Federation::findOrFail($validated['federation']);
                 $entity = DB::transaction(function () use ($new_entity, $federation) {
+                    $new_entity = array_merge($new_entity, ['xml_file' => $this->deleteTags($new_entity['metadata'])]);
+
                     if ($new_entity['type'] === 'idp') {
                         $new_entity = array_merge($new_entity, ['hfd' => true]);
+                        $new_entity['xml_file'] = HfdTag::create($new_entity['xml_file']);
                     }
-                    $new_entity = array_merge($new_entity, ['xml_file' => $this->deleteTags($new_entity['metadata'])]);
 
                     $entity = Entity::create($new_entity);
                     $entity->operators()->attach(Auth::id());

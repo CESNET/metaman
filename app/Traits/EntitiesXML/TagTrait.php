@@ -2,8 +2,12 @@
 
 namespace App\Traits\EntitiesXML;
 
+use App\Traits\ValidatorTrait;
+
 trait TagTrait
 {
+    use ValidatorTrait;
+
     public function hasChildElements(object $parent): bool
     {
         if (! $parent instanceof \DOMNode) {
@@ -17,6 +21,24 @@ trait TagTrait
         }
 
         return false;
+    }
+
+    // find attribute in XML document
+    public function hasXpathQueryInDocument(string $xml_document, string $xpathQuery): bool
+    {
+        try {
+            $dom = $this->createDOM($xml_document);
+            $xPath = $this->createXPath($dom);
+            $nodes = $xPath->query($xpathQuery);
+
+            if ($nodes === false) {
+                throw new \RuntimeException('Error executing XPath query');
+            }
+
+            return $nodes->length > 0;
+        } catch (\Exception $e) {
+            throw new \RuntimeException('An error occurred while checking for the tag: '.$e->getMessage());
+        }
     }
 
     private function deleteTag(object $tag): void

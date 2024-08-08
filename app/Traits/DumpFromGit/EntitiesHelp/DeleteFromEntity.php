@@ -52,7 +52,6 @@ trait DeleteFromEntity
         foreach ($tags as $tag) {
             $this->deleteTag($tag);
         }
-
     }
 
     private function deleteTags(string $metadata): string

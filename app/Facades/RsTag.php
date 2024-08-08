@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Facade;
  * @method static string create(Entity $entity)
  * @method static void delete(Entity $entity)
  * @method static void update(Entity $entity)
- * @method static bool hasResearchAndScholarshipTag(string $xml_document)
  * @method static void deleteByXpath( DOMXPath $xPath)
  */
 class RsTag extends Facade

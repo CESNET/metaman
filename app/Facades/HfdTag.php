@@ -10,11 +10,10 @@ use Illuminate\Support\Facades\Facade;
 /**
  * Class HfdTag facade
  *
- * @method static string create(Entity $entity)
+ * @method static string create(string $xml_document)
  * @method static void delete(Entity $entity)
- * @method static void update(Entity $entity)
- * @method static bool hasResearchAndScholarshipTag(string $xml_document)
  * @method static void deleteByXpath( DOMXPath $xPath)
+ * @method static false|string update(Entity $entity)
  */
 class HfdTag extends Facade
 {

@@ -13,13 +13,11 @@ class HfdTagService
 
     private string $value = 'http://refeds.org/category/hide-from-discovery';
 
-    public function create(Entity $entity): false|string
+    public function create(string $xml_document): false|string
     {
         $mdURI = config('xmlNameSpace.md');
         $mdattrURI = config('xmlNameSpace.mdattr');
         $samlURI = config('xmlNameSpace.saml');
-
-        $xml_document = $entity->xml_file;
 
         $dom = $this->createDOM($xml_document);
         $xPath = $this->createXPath($dom);
@@ -37,17 +35,45 @@ class HfdTagService
         return $dom->saveXML();
     }
 
-    public function delete(Entity $entity): void
+    public function delete(Entity $entity): false|string
     {
         $dom = $this->createDOM($entity->xml_file);
         $xPath = $this->createXPath($dom);
         $this->deleteByXpath($xPath);
+        $dom->normalize();
+
+        return $dom->saveXML();
+
     }
 
     public function deleteByXpath(DOMXPath $xPath): void
     {
         $xpathQuery = $this->buildXPathQuery();
         $this->DeleteAllTags($xpathQuery, $xPath);
+    }
+
+    public function update(Entity $entity): false|string
+    {
+        if ($entity->hfd) {
+
+            if (! $this->hasHideFromDiscovery($entity->xml_file)) {
+                return $this->create($entity->xml_file);
+            }
+
+        } else {
+            if ($this->hasHideFromDiscovery($entity->xml_file)) {
+                return $this->delete($entity);
+            }
+        }
+
+        return false;
+    }
+
+    private function hasHideFromDiscovery(string $xml_document): bool
+    {
+        $xpathQuery = $this->buildXPathQuery();
+
+        return $this->hasXpathQueryInDocument($xml_document, $xpathQuery);
     }
 
     private function getRootTag(DOMXPath $xPath): \DOMNode

@@ -6,6 +6,7 @@ use App\Models\Entity;
 use App\Traits\EntitiesXML\TagTrait;
 use App\Traits\ValidatorTrait;
 use DOMXPath;
+use Illuminate\Support\Facades\DB;
 
 class RsTagService
 {
@@ -44,6 +45,10 @@ class RsTagService
         $dom = $this->createDOM($entity->xml_file);
         $xPath = $this->createXPath($dom);
         $this->deleteByXpath($xPath);
+        $entity->xml_file = $dom->saveXML();
+        DB::transaction(function () use ($entity) {
+            $entity->update();
+        });
     }
 
     public function deleteByXpath(DOMXPath $xPath): void
@@ -70,21 +75,10 @@ class RsTagService
 
     private function hasResearchAndScholarshipTag(string $xml_document): bool
     {
-        try {
-            $dom = $this->createDOM($xml_document);
-            $xPath = $this->createXPath($dom);
-            $xpathQuery = "//saml:AttributeValue[text()='$this->value']";
+        $xpathQuery = $this->buildXPathQuery();
 
-            $nodes = $xPath->query($xpathQuery);
+        return $this->hasXpathQueryInDocument($xml_document, $xpathQuery);
 
-            if ($nodes === false) {
-                throw new \RuntimeException('Error executing XPath query');
-            }
-
-            return $nodes->length > 0;
-        } catch (\Exception $e) {
-            throw new \RuntimeException('An error occurred while checking for the tag: '.$e->getMessage());
-        }
     }
 
     private function buildXPathQuery(): string
