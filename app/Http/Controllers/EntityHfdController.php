@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Facades\HfdTag;
+use App\Mail\NewIdentityProvider;
 use App\Models\Entity;
+use App\Notifications\EntityAddedToHfd;
+use App\Notifications\EntityDeletedFromHfd;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class EntityHfdController extends Controller
 {
@@ -29,20 +34,15 @@ class EntityHfdController extends Controller
             return $entity;
         });
 
+        if ($entity->hfd) {
+            NotificationService::sendOperatorNotification($entity->operators, new EntityAddedToHfd($entity));
+        } else {
+            Mail::to(config('mail.ra.address'))->send(new NewIdentityProvider($entity));
+            NotificationService::sendOperatorNotification($entity->operators, new EntityDeletedFromHfd($entity));
+        }
+
         $status = $entity->hfd ? 'hfd' : 'no_hfd';
         $color = $entity->hfd ? 'red' : 'green';
-
-        //TODO change HfD status (not working)
-        /*                if ($entity->hfd) {
-                            GitAddToHfd::dispatch($entity, Auth::user());
-                            Notification::send($entity->operators, new EntityAddedToHfd($entity));
-                            Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityAddedToHfd($entity));
-                        } else {
-                            GitDeleteFromHfd::dispatch($entity, Auth::user());
-                            Mail::to(config('mail.ra.address'))->send(new NewIdentityProvider($entity));
-                            Notification::send($entity->operators, new EntityDeletedFromHfd($entity));
-                            Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromHfd($entity));
-                        }*/
 
         return redirect()
             ->route('entities.show', $entity)
