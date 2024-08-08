@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Facade;
  *
  * @method static string create(Entity $entity)
  * @method static void delete(Entity $entity)
- * @method static void update(Entity $entity)
+ * @method static false|string update(Entity $entity)
  * @method static void deleteByXpath( DOMXPath $xPath)
  */
 class RsTag extends Facade

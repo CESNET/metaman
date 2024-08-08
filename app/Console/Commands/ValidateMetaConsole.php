@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Facades\HfdTag;
+use App\Facades\RsTag;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Traits\DumpFromGit\EntitiesHelp\FixEntityTrait;
@@ -99,8 +99,10 @@ class ValidateMetaConsole extends Command
 
     public function handle()
     {
-        $ent = Entity::find(2);
-        HfdTag::delete($ent);
+        $ent = Entity::find(1);
+
+        $ent->xml_file = RsTag::create($ent);
+        $ent->update();
 
         /*        $federation = Federation::where('id', 1)->first();
                 $this->runMDA($federation);*/

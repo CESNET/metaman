@@ -6,7 +6,6 @@ use App\Models\Entity;
 use App\Traits\EntitiesXML\TagTrait;
 use App\Traits\ValidatorTrait;
 use DOMXPath;
-use Illuminate\Support\Facades\DB;
 
 class RsTagService
 {
@@ -39,16 +38,15 @@ class RsTagService
         return $dom->saveXML();
     }
 
-    public function delete(Entity $entity): void
+    public function delete(Entity $entity): false|string
     {
 
         $dom = $this->createDOM($entity->xml_file);
         $xPath = $this->createXPath($dom);
         $this->deleteByXpath($xPath);
-        $entity->xml_file = $dom->saveXML();
-        DB::transaction(function () use ($entity) {
-            $entity->update();
-        });
+        $dom->normalize();
+
+        return $dom->saveXML();
     }
 
     public function deleteByXpath(DOMXPath $xPath): void
@@ -57,20 +55,21 @@ class RsTagService
         $this->DeleteAllTags($xpathQuery, $xPath);
     }
 
-    public function update(Entity $entity): void
+    public function update(Entity $entity): false|string
     {
         if ($entity->rs) {
 
             if (! $this->hasResearchAndScholarshipTag($entity->xml_file)) {
-                $this->create($entity);
+                return $this->create($entity);
             }
 
         } else {
             if ($this->hasResearchAndScholarshipTag($entity->xml_file)) {
-                $this->delete($entity);
+                return $this->delete($entity);
             }
         }
 
+        return false;
     }
 
     private function hasResearchAndScholarshipTag(string $xml_document): bool

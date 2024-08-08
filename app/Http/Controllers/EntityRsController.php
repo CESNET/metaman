@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\RsTag;
 use App\Mail\AskRs;
 use App\Models\Entity;
+use App\Notifications\EntityAddedToRs;
+use App\Notifications\EntityDeletedFromRs;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -34,11 +38,21 @@ class EntityRsController extends Controller
         }
 
         $entity = DB::transaction(function () use ($entity) {
-            $entity->rs = $entity->rs ? false : true;
-            $entity->update();
+            $entity->rs = ! $entity->rs;
+            $xml_document = RsTag::update($entity);
+            if ($xml_document) {
+                $entity->xml_file = $xml_document;
+                $entity->update();
+            }
 
             return $entity;
         });
+
+        if ($entity->rs) {
+            NotificationService::sendOperatorNotification($entity->operators, new EntityAddedToRs($entity));
+        } else {
+            NotificationService::sendOperatorNotification($entity->operators, new EntityDeletedFromRs($entity));
+        }
 
         $status = $entity->rs ? 'rs' : 'no_rs';
         $color = $entity->rs ? 'green' : 'red';
