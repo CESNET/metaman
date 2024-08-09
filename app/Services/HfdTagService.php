@@ -13,7 +13,12 @@ class HfdTagService
 
     private string $value = 'http://refeds.org/category/hide-from-discovery';
 
-    public function create(string $xml_document): false|string
+    public function create(Entity $entity): false|string
+    {
+        return $this->createFromXml($entity->xml_file);
+    }
+
+    public function createFromXml(string $xml_document): false|string
     {
         $mdURI = config('xmlNameSpace.md');
         $mdattrURI = config('xmlNameSpace.mdattr');

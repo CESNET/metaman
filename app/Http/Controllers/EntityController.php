@@ -101,7 +101,7 @@ class EntityController extends Controller
 
                     if ($new_entity['type'] === 'idp') {
                         $new_entity = array_merge($new_entity, ['hfd' => true]);
-                        $new_entity['xml_file'] = HfdTag::create($new_entity['xml_file']);
+                        $new_entity['xml_file'] = HfdTag::createFromXml($new_entity['xml_file']);
                     }
 
                     $entity = Entity::create($new_entity);
