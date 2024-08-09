@@ -7,7 +7,7 @@ use App\Traits\EntitiesXML\TagTrait;
 use App\Traits\ValidatorTrait;
 use DOMXPath;
 
-class HfdTagService
+class HfdTagService extends TagService
 {
     use TagTrait,ValidatorTrait;
 
@@ -53,7 +53,7 @@ class HfdTagService
 
     public function deleteByXpath(DOMXPath $xPath): void
     {
-        $xpathQuery = $this->buildXPathQuery();
+        $xpathQuery = $this->buildXPathQuery($this->value);
         $this->DeleteAllTags($xpathQuery, $xPath);
     }
 
@@ -61,34 +61,17 @@ class HfdTagService
     {
         if ($entity->hfd) {
 
-            if (! $this->hasHideFromDiscovery($entity->xml_file)) {
+            if (! $this->hasTagInDocument($entity->xml_file, $this->value)) {
                 return $this->create($entity->xml_file);
             }
 
         } else {
-            if ($this->hasHideFromDiscovery($entity->xml_file)) {
+            if ($this->hasTagInDocument($entity->xml_file, $this->value)) {
                 return $this->delete($entity);
             }
         }
 
         return false;
-    }
-
-    private function hasHideFromDiscovery(string $xml_document): bool
-    {
-        $xpathQuery = $this->buildXPathQuery();
-
-        return $this->hasXpathQueryInDocument($xml_document, $xpathQuery);
-    }
-
-    private function getRootTag(DOMXPath $xPath): \DOMNode
-    {
-        $rootTag = $xPath->query("//*[local-name()='EntityDescriptor']")->item(0);
-        if (! $rootTag) {
-            throw new \RuntimeException('Root tag EntityDescriptor not found');
-        }
-
-        return $rootTag;
     }
 
     private function getOrCreateAttribute(DOMXPath $xPath, \DOMDocument $dom, \DOMNode $entityAttributes, string $samlURI): \DOMNode
@@ -104,36 +87,5 @@ class HfdTagService
         }
 
         return $attribute;
-    }
-
-    private function getOrCreateEntityAttributes(DOMXPath $xPath, \DOMDocument $dom, \DOMNode $extensions, string $mdattrURI): \DOMNode
-    {
-        $entityAttributes = $xPath->query('//mdattr:EntityAttributes');
-        if ($entityAttributes->length === 0) {
-            $entityAttributes = $dom->createElementNS($mdattrURI, 'mdattr:EntityAttributes');
-            $extensions->appendChild($entityAttributes);
-        } else {
-            $entityAttributes = $entityAttributes->item(0);
-        }
-
-        return $entityAttributes;
-    }
-
-    private function getOrCreateExtensions(DOMXPath $xPath, \DOMDocument $dom, \DOMNode $rootTag, string $mdURI): \DOMNode
-    {
-        $extensions = $xPath->query('//md:Extensions');
-        if ($extensions->length === 0) {
-            $extensions = $dom->createElementNS($mdURI, 'md:Extensions');
-            $rootTag->appendChild($extensions);
-        } else {
-            $extensions = $extensions->item(0);
-        }
-
-        return $extensions;
-    }
-
-    private function buildXPathQuery(): string
-    {
-        return "//saml:AttributeValue[text()='$this->value']";
     }
 }

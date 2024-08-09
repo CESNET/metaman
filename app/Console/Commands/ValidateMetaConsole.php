@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Facades\RsTag;
 use App\Models\Entity;
 use App\Models\Federation;
+use App\Services\CategoryTagService;
 use App\Traits\DumpFromGit\EntitiesHelp\FixEntityTrait;
 use App\Traits\ValidatorTrait;
 use Exception;
@@ -100,9 +100,8 @@ class ValidateMetaConsole extends Command
     public function handle()
     {
         $ent = Entity::find(1);
-
-        $ent->xml_file = RsTag::create($ent);
-        $ent->update();
+        $service = new CategoryTagService();
+        dump($service->create($ent));
 
         /*        $federation = Federation::where('id', 1)->first();
                 $this->runMDA($federation);*/

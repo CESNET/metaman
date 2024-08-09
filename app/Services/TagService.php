@@ -3,16 +3,17 @@
 namespace App\Services;
 
 use App\Models\Entity;
+use App\Traits\EntitiesXML\TagTrait;
 use DOMNode;
 use DOMXPath;
 
 abstract class TagService
 {
+    use TagTrait;
+
     abstract public function create(Entity $entity);
 
     abstract public function delete(Entity $entity);
-
-    abstract public function update(Entity $entity);
 
     protected function buildXPathQuery(string $value): string
     {
@@ -53,5 +54,12 @@ abstract class TagService
         }
 
         return $entityAttributes;
+    }
+
+    protected function hasTagInDocument(string $xml_document, string $value): bool
+    {
+        $xpathQuery = $this->buildXPathQuery($value);
+
+        return $this->hasXpathQueryInDocument($xml_document, $xpathQuery);
     }
 }

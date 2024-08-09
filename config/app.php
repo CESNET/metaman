@@ -232,6 +232,7 @@ return [
         'EntityFacade' => App\Facades\EntityFacade::class,
         'RsTag' => App\Facades\RsTag::class,
         'HfdTag' => App\Facades\HfdTag::class,
+        'CategoryTag' => App\Facades\CategoryTag::class,
     ],
 
 ];

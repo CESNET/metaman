@@ -59,25 +59,17 @@ class RsTagService extends TagService
     {
         if ($entity->rs) {
 
-            if (! $this->hasResearchAndScholarshipTag($entity->xml_file)) {
+            if (! $this->hasTagInDocument($entity->xml_file, $this->value)) {
                 return $this->create($entity);
             }
 
         } else {
-            if ($this->hasResearchAndScholarshipTag($entity->xml_file)) {
+            if ($this->hasTagInDocument($entity->xml_file, $this->value)) {
                 return $this->delete($entity);
             }
         }
 
         return false;
-    }
-
-    private function hasResearchAndScholarshipTag(string $xml_document): bool
-    {
-        $xpathQuery = $this->buildXPathQuery($this->value);
-
-        return $this->hasXpathQueryInDocument($xml_document, $xpathQuery);
-
     }
 
     protected function getOrCreateAttribute(\DOMXPath $xPath, \DOMDocument $dom, \DOMNode $entityAttributes, string $samlURI, bool $isIdp): \DOMNode
