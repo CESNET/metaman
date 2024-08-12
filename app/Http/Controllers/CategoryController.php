@@ -42,20 +42,6 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Category $category)
-    {
-        $this->authorize('do-everything');
-
-        return view('categories.edit', [
-            'category' => $category,
-        ]);
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

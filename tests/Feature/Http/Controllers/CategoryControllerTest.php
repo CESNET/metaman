@@ -40,19 +40,6 @@ class CategoryControllerTest extends TestCase
     }
 
     /** @test */
-    public function an_anonymouse_user_isnt_shown_a_form_to_edit_an_existing_category()
-    {
-        $category = Category::factory()->create();
-
-        $this
-            ->followingRedirects()
-            ->get(route('categories.edit', $category))
-            ->assertSeeText('login');
-
-        $this->assertEquals(route('login'), url()->current());
-    }
-
-    /** @test */
     public function an_anonymouse_user_cannot_edit_an_existing_category()
     {
         $categoryName = substr($this->faker->company(), 0, 32);
@@ -128,21 +115,6 @@ class CategoryControllerTest extends TestCase
             ->assertStatus(403);
 
         $this->assertEquals(route('categories.show', $category), url()->current());
-    }
-
-    /** @test */
-    public function a_user_isnt_shown_a_form_to_edit_an_existing_category()
-    {
-        $user = User::factory()->create();
-        $category = Category::factory()->create();
-
-        $this
-            ->actingAs($user)
-            ->get(route('categories.edit', $category))
-            ->assertStatus(403)
-            ->assertSeeText('This action is unauthorized.');
-
-        $this->assertEquals(route('categories.edit', $category), url()->current());
     }
 
     /** @test */
@@ -231,23 +203,6 @@ class CategoryControllerTest extends TestCase
             ->assertSeeText($category->tagfile);
 
         $this->assertEquals(route('categories.show', $category), url()->current());
-    }
-
-    /** @test */
-    public function an_admin_is_shown_a_form_to_edit_an_existing_category()
-    {
-        $admin = User::factory()->create(['admin' => true]);
-        $category = Category::factory()->create();
-
-        $this
-            ->actingAs($admin)
-            ->get(route('categories.edit', $category))
-            ->assertSeeText(__('categories.profile'))
-            ->assertSee($category->name)
-            ->assertSee($category->description)
-            ->assertSee($category->tagfile);
-
-        $this->assertEquals(route('categories.edit', $category), url()->current());
     }
 
     /** @test */

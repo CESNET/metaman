@@ -206,21 +206,6 @@ class GroupControllerTest extends TestCase
     }
 
     /** @test */
-    public function an_admin_is_shown_a_form_to_edit_an_existing_group()
-    {
-        $admin = User::factory()->create(['admin' => true]);
-        $group = Group::factory()->create();
-
-        $this
-            ->actingAs($admin)
-            ->get(route('groups.edit', $group))
-            ->assertSeeText(__('groups.profile'))
-            ->assertSee($group->name)
-            ->assertSee($group->description)
-            ->assertSee($group->tagfile);
-
-        $this->assertEquals(route('groups.edit', $group), url()->current());
-    }
 
     /** @test */
     public function an_admin_can_edit_an_existing_group()

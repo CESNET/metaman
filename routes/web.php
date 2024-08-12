@@ -133,7 +133,7 @@ Route::group(['prefix' => 'categories', 'as' => 'categories.', 'middleware' => [
     Route::get('refresh', [CategoryManagementController::class, 'update'])->name('refresh');
 
     Route::resource('/', CategoryController::class)->parameters(['' => 'category'])
-        ->except('store', 'create')
+        ->except('store', 'create', 'edit')
         ->withTrashed();
 });
 // Groups group
@@ -143,7 +143,7 @@ Route::group(['prefix' => 'groups', 'as' => 'groups.', 'middleware' => ['auth']]
     Route::get('refresh', [GroupManagementController::class, 'update'])->name('refresh');
 
     Route::resource('/', GroupController::class)->parameters(['' => 'group'])
-        ->except('store', 'create')
+        ->except('store', 'create', 'edit')
         ->withTrashed();
 });
 

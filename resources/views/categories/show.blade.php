@@ -51,7 +51,6 @@
 
 @section('control_buttons')
     <x-buttons.back/>
-    <x-buttons.edit href="{{ route('categories.edit', $category) }}"/>
 
     @if (count($category->entities) === 0)
         <form x-data="{ open: false }" class="inline-block" action="{{ route('categories.destroy', $category) }}"

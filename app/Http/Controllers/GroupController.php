@@ -42,20 +42,6 @@ class GroupController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Group $group)
-    {
-        $this->authorize('do-everything');
-
-        return view('groups.edit', [
-            'group' => $group,
-        ]);
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
