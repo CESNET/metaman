@@ -132,7 +132,9 @@ Route::group(['prefix' => 'categories', 'as' => 'categories.', 'middleware' => [
     Route::post('import', [CategoryManagementController::class, 'store'])->name('import');
     Route::get('refresh', [CategoryManagementController::class, 'update'])->name('refresh');
 
-    Route::resource('/', CategoryController::class)->parameters(['' => 'category'])->withTrashed();
+    Route::resource('/', CategoryController::class)->parameters(['' => 'category'])
+        ->except('store', 'create')
+        ->withTrashed();
 });
 // Groups group
 Route::group(['prefix' => 'groups', 'as' => 'groups.', 'middleware' => ['auth']], function () {
@@ -140,7 +142,9 @@ Route::group(['prefix' => 'groups', 'as' => 'groups.', 'middleware' => ['auth']]
     Route::post('import', [GroupManagementController::class, 'store'])->name('import');
     Route::get('refresh', [GroupManagementController::class, 'update'])->name('refresh');
 
-    Route::resource('/', GroupController::class)->parameters(['' => 'group'])->withTrashed();
+    Route::resource('/', GroupController::class)->parameters(['' => 'group'])
+        ->except('store', 'create')
+        ->withTrashed();
 });
 
 Route::resource('users', UserController::class)->except('edit', 'destroy');

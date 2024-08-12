@@ -7,10 +7,6 @@
     <x-buttons.subhead href="{{ route('categories.refresh') }}">{{ __('common.refresh') }}</x-buttons.subhead>
 @endsection
 
-@section('create')
-    <x-buttons.subhead href="{{ route('categories.create') }}">{{ __('common.add') }}</x-buttons.subhead>
-@endsection
-
 
 @section('content')
 

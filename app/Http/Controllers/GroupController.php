@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreGroup;
 use App\Http\Requests\UpdateGroup;
 use App\Models\Group;
 use App\Models\User;
-use App\Notifications\GroupCreated;
 use App\Notifications\GroupDeleted;
 use App\Notifications\GroupUpdated;
 use App\Traits\GitTrait;
@@ -16,11 +14,6 @@ use Illuminate\Support\Facades\Storage;
 class GroupController extends Controller
 {
     use GitTrait;
-
-    public function __construct()
-    {
-
-    }
 
     /**
      * Display a listing of the resource.
@@ -32,40 +25,6 @@ class GroupController extends Controller
         $this->authorize('do-everything');
 
         return view('groups.index');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $this->authorize('do-everything');
-
-        return view('groups.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreGroup $request)
-    {
-        $this->authorize('do-everything');
-
-        $validated = $request->validated();
-        $group = Group::create(array_merge(
-            $validated,
-            ['tagfile' => generateFederationID($validated['name']).'.tag'],
-        ));
-
-        Notification::send(User::activeAdmins()->select('id', 'email')->get(), new GroupCreated($group));
-
-        return redirect('groups')
-            ->with('status', __('groups.added', ['name' => $group->name]));
     }
 
     /**

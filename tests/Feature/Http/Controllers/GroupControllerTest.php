@@ -40,32 +40,6 @@ class GroupControllerTest extends TestCase
     }
 
     /** @test */
-    public function an_anonymouse_user_isnt_shown_a_form_to_add_a_new_group()
-    {
-        $this
-            ->followingRedirects()
-            ->get(route('groups.create'))
-            ->assertSeeText('login');
-
-        $this->assertEquals(route('login'), url()->current());
-    }
-
-    /** @test */
-    public function an_anonymouse_user_cannot_add_a_new_group()
-    {
-        $this
-            ->followingRedirects()
-            ->post(route('groups.store'), [
-                'name' => $name = substr($this->faker->company(), 0, 32),
-                'description' => $this->faker->catchPhrase(),
-                'tagfile' => generateFederationID($name).'.tag',
-            ])
-            ->assertSeeText('login');
-
-        $this->assertEquals(route('login'), url()->current());
-    }
-
-    /** @test */
     public function an_anonymouse_user_cannot_edit_an_existing_group()
     {
         $groupName = substr($this->faker->company(), 0, 32);
@@ -141,36 +115,6 @@ class GroupControllerTest extends TestCase
             ->assertStatus(403);
 
         $this->assertEquals(route('groups.show', $group), url()->current());
-    }
-
-    /** @test */
-    public function a_user_isnt_shown_a_form_to_add_a_new_group()
-    {
-        $user = User::factory()->create();
-
-        $this
-            ->actingAs($user)
-            ->get(route('groups.create'))
-            ->assertStatus(403);
-
-        $this->assertEquals(route('groups.create'), url()->current());
-    }
-
-    /** @test */
-    public function a_user_cannot_add_a_new_group()
-    {
-        $user = User::factory()->create();
-
-        $this
-            ->actingAs($user)
-            ->post(route('groups.store'), [
-                'name' => $name = substr($this->faker->company(), 0, 32),
-                'description' => $this->faker->catchPhrase(),
-                'tagfile' => generateFederationID($name).'.tag',
-            ])
-            ->assertStatus(403);
-
-        $this->assertEquals(route('groups.index'), url()->current());
     }
 
     /** @test */
@@ -262,19 +206,6 @@ class GroupControllerTest extends TestCase
     }
 
     /** @test */
-    public function an_admin_is_shown_a_form_to_add_a_new_group()
-    {
-        $admin = User::factory()->create(['admin' => true]);
-
-        $this
-            ->actingAs($admin)
-            ->get(route('groups.create'))
-            ->assertSeeText(__('groups.add'));
-
-        $this->assertEquals(route('groups.create'), url()->current());
-    }
-
-    /** @test */
     public function an_admin_is_shown_a_form_to_edit_an_existing_group()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -289,30 +220,6 @@ class GroupControllerTest extends TestCase
             ->assertSee($group->tagfile);
 
         $this->assertEquals(route('groups.edit', $group), url()->current());
-    }
-
-    /** @test */
-    public function an_admin_can_add_a_new_group()
-    {
-        Bus::fake();
-
-        $admin = User::factory()->create(['admin' => true]);
-
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->post(route('groups.store'), [
-                'name' => $groupName = substr($this->faker->company(), 0, 32),
-                'description' => $groupDescription = $this->faker->catchPhrase(),
-                'tagfile' => $groupTagfile = generateFederationID($groupName).'.tag',
-            ])
-            ->assertSeeText(__('groups.added', ['name' => $groupName]));
-
-        $group = Group::first();
-        $this->assertEquals($groupName, $group->name);
-        $this->assertEquals($groupDescription, $group->description);
-        $this->assertEquals($groupTagfile, $group->tagfile);
-
     }
 
     /** @test */

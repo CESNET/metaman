@@ -40,17 +40,6 @@ class CategoryControllerTest extends TestCase
     }
 
     /** @test */
-    public function an_anonymouse_user_isnt_shown_a_form_to_add_a_new_category()
-    {
-        $this
-            ->followingRedirects()
-            ->get(route('categories.create'))
-            ->assertSeeText('login');
-
-        $this->assertEquals(route('login'), url()->current());
-    }
-
-    /** @test */
     public function an_anonymouse_user_isnt_shown_a_form_to_edit_an_existing_category()
     {
         $category = Category::factory()->create();
@@ -58,21 +47,6 @@ class CategoryControllerTest extends TestCase
         $this
             ->followingRedirects()
             ->get(route('categories.edit', $category))
-            ->assertSeeText('login');
-
-        $this->assertEquals(route('login'), url()->current());
-    }
-
-    /** @test */
-    public function an_anonymouse_user_cannot_add_a_new_category()
-    {
-        $this
-            ->followingRedirects()
-            ->post(route('categories.store'), [
-                'name' => $name = substr($this->faker->company(), 0, 32),
-                'description' => $this->faker->catchPhrase(),
-                'tagfile' => generateFederationID($name).'.tag',
-            ])
             ->assertSeeText('login');
 
         $this->assertEquals(route('login'), url()->current());
@@ -157,19 +131,6 @@ class CategoryControllerTest extends TestCase
     }
 
     /** @test */
-    public function a_user_isnt_shown_a_form_to_add_a_new_category()
-    {
-        $user = User::factory()->create();
-
-        $this
-            ->actingAs($user)
-            ->get(route('categories.create'))
-            ->assertStatus(403);
-
-        $this->assertEquals(route('categories.create'), url()->current());
-    }
-
-    /** @test */
     public function a_user_isnt_shown_a_form_to_edit_an_existing_category()
     {
         $user = User::factory()->create();
@@ -182,23 +143,6 @@ class CategoryControllerTest extends TestCase
             ->assertSeeText('This action is unauthorized.');
 
         $this->assertEquals(route('categories.edit', $category), url()->current());
-    }
-
-    /** @test */
-    public function a_user_cannot_add_a_new_category()
-    {
-        $user = User::factory()->create();
-
-        $this
-            ->actingAs($user)
-            ->post(route('categories.store'), [
-                'name' => $name = substr($this->faker->company(), 0, 32),
-                'description' => $this->faker->catchPhrase(),
-                'tagfile' => generateFederationID($name).'.tag',
-            ])
-            ->assertStatus(403);
-
-        $this->assertEquals(route('categories.index'), url()->current());
     }
 
     /** @test */
@@ -290,19 +234,6 @@ class CategoryControllerTest extends TestCase
     }
 
     /** @test */
-    public function an_admin_is_shown_a_form_to_add_a_new_category()
-    {
-        $admin = User::factory()->create(['admin' => true]);
-
-        $this
-            ->actingAs($admin)
-            ->get(route('categories.create'))
-            ->assertSeeText(__('categories.add'));
-
-        $this->assertEquals(route('categories.create'), url()->current());
-    }
-
-    /** @test */
     public function an_admin_is_shown_a_form_to_edit_an_existing_category()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -317,30 +248,6 @@ class CategoryControllerTest extends TestCase
             ->assertSee($category->tagfile);
 
         $this->assertEquals(route('categories.edit', $category), url()->current());
-    }
-
-    /** @test */
-    public function an_admin_can_add_a_new_category()
-    {
-        Bus::fake();
-
-        $admin = User::factory()->create(['admin' => true]);
-
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->post(route('categories.store'), [
-                'name' => $categoryName = substr($this->faker->company(), 0, 32),
-                'description' => $categoryDescription = $this->faker->catchPhrase(),
-                'tagfile' => $categoryTagfile = generateFederationID($categoryName).'.tag',
-            ])
-            ->assertSeeText(__('categories.added', ['name' => $categoryName]));
-
-        $category = Category::first();
-        $this->assertEquals($categoryName, $category->name);
-        $this->assertEquals($categoryDescription, $category->description);
-        $this->assertEquals($categoryTagfile, $category->tagfile);
-
     }
 
     /** @test */

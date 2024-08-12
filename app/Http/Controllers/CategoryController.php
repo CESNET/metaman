@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreCategory;
 use App\Http\Requests\UpdateCategory;
 use App\Models\Category;
 use App\Models\User;
-use App\Notifications\CategoryCreated;
 use App\Notifications\CategoryDeleted;
 use App\Notifications\CategoryUpdated;
 use App\Traits\GitTrait;
@@ -16,11 +14,6 @@ use Illuminate\Support\Facades\Storage;
 class CategoryController extends Controller
 {
     use GitTrait;
-
-    public function __construct()
-    {
-
-    }
 
     /**
      * Display a listing of the resource.
@@ -32,41 +25,6 @@ class CategoryController extends Controller
         $this->authorize('do-everything');
 
         return view('categories.index');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $this->authorize('do-everything');
-
-        return view('categories.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreCategory $request)
-    {
-        $this->authorize('do-everything');
-
-        $validated = $request->validated();
-
-        $category = Category::create(array_merge(
-            $validated,
-            ['tagfile' => generateFederationID($validated['name']).'.tag'],
-        ));
-
-        Notification::send(User::activeAdmins()->select('id', 'email')->get(), new CategoryCreated($category));
-
-        return redirect('categories')
-            ->with('status', __('categories.added', ['name' => $category->name]));
     }
 
     /**
