@@ -2,8 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\GitUpdateFederation;
-use App\Jobs\Old_GitAddFederation;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
@@ -389,10 +387,6 @@ class FederationControllerTest extends TestCase
 
         $federation->refresh();
         $this->assertEquals($federationName, $federation->name);
-
-        /*        Bus::assertDispatched(GitUpdateFederation::class, function ($job) use ($federation) {
-                    return $job->federation->is($federation);
-                });*/
     }
 
     /** @test */
@@ -417,10 +411,6 @@ class FederationControllerTest extends TestCase
         $this->assertTrue($federation->trashed());
         $this->assertEquals(route('federations.show', $federation), url()->current());
 
-        /*        Bus::assertDispatched(GitDeleteFederation::class, function ($job) use ($federation) {
-                    return $job->federation->is($federation);
-                });*/
-
         $this
             ->followingRedirects()
             ->actingAs($user)
@@ -430,10 +420,6 @@ class FederationControllerTest extends TestCase
         $federation->refresh();
         $this->assertFalse($federation->trashed());
         $this->assertEquals(route('federations.show', $federation), url()->current());
-
-        /*        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
-                    return $job->federation->is($federation);
-                });*/
     }
 
     /** @test */
@@ -582,8 +568,6 @@ class FederationControllerTest extends TestCase
             ->assertSeeText('This action is unauthorized.');
 
         $this->assertEquals(route('federations.show', $federation), url()->current());
-
-        //        Bus::assertNotDispatched(GitUpdateFederation::class);
     }
 
     /** @test */
@@ -924,10 +908,6 @@ class FederationControllerTest extends TestCase
         $this->assertTrue($federation->trashed());
         $this->assertEquals(route('federations.show', $federation), url()->current());
 
-        /*        Bus::assertDispatched(GitDeleteFederation::class, function ($job) use ($federation) {
-                    return $job->federation->is($federation);
-                });*/
-
         $this
             ->followingRedirects()
             ->actingAs($admin)
@@ -937,10 +917,6 @@ class FederationControllerTest extends TestCase
         $federation->refresh();
         $this->assertFalse($federation->trashed());
         $this->assertEquals(route('federations.show', $federation), url()->current());
-
-        /*        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
-                    return $job->federation->is($federation);
-                });*/
     }
 
     /** @test */
@@ -1147,10 +1123,6 @@ class FederationControllerTest extends TestCase
             ->assertSeeText(__('federations.approved', ['name' => $federation->name]));
 
         $this->assertEquals(route('federations.show', $federation), url()->current());
-
-        /*        Bus::assertDispatched(Old_GitAddFederation::class, function ($job) use ($federation) {
-                    return $job->federation->is($federation);
-                });*/
     }
 
     /** @test */

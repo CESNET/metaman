@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
-use App\Models\Entity;
+use App\Models\Federation;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitDeleteFromHfd implements ShouldQueue
+class Old_GitAddFederation implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -26,7 +26,8 @@ class GitDeleteFromHfd implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public Entity $entity,
+        public Federation $federation,
+        public string $action,
         public User $user
     ) {
     }
@@ -38,20 +39,24 @@ class GitDeleteFromHfd implements ShouldQueue
      */
     public function handle()
     {
+        $content = "[{$this->federation->xml_id}]\n";
+        $content .= "filters = {$this->federation->filters}\n";
+        $content .= "name = {$this->federation->xml_name}";
+
         $git = $this->initializeGit();
 
-        $tagfile = config('git.hfd');
-        $content = Storage::get($tagfile);
-        $content = preg_replace('#'.$this->entity->entityid.'#', '', $content);
-        Storage::put($tagfile, $content);
-        $this->trimWhiteSpaces($tagfile);
+        Storage::put($this->federation->cfgfile, $content);
+        Storage::put($this->federation->tagfile, '');
 
         if ($git->hasChanges()) {
-            $git->addFile($tagfile);
+            $git->addFile($this->federation->cfgfile);
+            $git->addFile($this->federation->tagfile);
 
             $git->commit(
-                $this->committer().": $tagfile (update)\n\n"
-                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
+                $this->committer().": {$this->federation->xml_id} (add)\n\n"
+                    ."Requested by: {$this->federation->operators[0]->name} ({$this->federation->operators[0]->uniqueid})\n"
+                    .wordwrap("Explanation: {$this->federation->explanation}", 72)."\n\n"
+                    ."Approved by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
             $git->push();

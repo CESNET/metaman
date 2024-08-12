@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
-use App\Models\Category;
 use App\Models\Entity;
 use App\Models\User;
 use App\Traits\GitTrait;
@@ -17,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitDeleteFromCategory implements ShouldQueue
+class Old_GitDeleteFromHfd implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -27,7 +26,6 @@ class GitDeleteFromCategory implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public ?Category $category,
         public Entity $entity,
         public User $user
     ) {
@@ -40,24 +38,23 @@ class GitDeleteFromCategory implements ShouldQueue
      */
     public function handle()
     {
-        if (! is_null($this->category)) {
-            $git = $this->initializeGit();
+        $git = $this->initializeGit();
 
-            $tagfile = Storage::get($this->category->tagfile);
-            $tagfile = preg_replace('#'.$this->entity->entityid.'#', '', $tagfile);
-            Storage::put($this->category->tagfile, $tagfile);
-            $this->trimWhiteSpaces($this->category->tagfile);
+        $tagfile = config('git.hfd');
+        $content = Storage::get($tagfile);
+        $content = preg_replace('#'.$this->entity->entityid.'#', '', $content);
+        Storage::put($tagfile, $content);
+        $this->trimWhiteSpaces($tagfile);
 
-            if ($git->hasChanges()) {
-                $git->addFile($this->category->tagfile);
+        if ($git->hasChanges()) {
+            $git->addFile($tagfile);
 
-                $git->commit(
-                    $this->committer().": {$this->category->tagfile} (update)\n\n"
-                        ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
-                );
+            $git->commit(
+                $this->committer().": $tagfile (update)\n\n"
+                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
+            );
 
-                $git->push();
-            }
+            $git->push();
         }
     }
 

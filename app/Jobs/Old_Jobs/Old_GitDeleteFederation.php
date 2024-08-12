@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
-use App\Models\Entity;
+use App\Models\Federation;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
@@ -13,10 +13,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitAddToEdugain implements ShouldQueue
+class Old_GitDeleteFederation implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -26,7 +25,7 @@ class GitAddToEdugain implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public Entity $entity,
+        public Federation $federation,
         public User $user
     ) {
     }
@@ -40,16 +39,13 @@ class GitAddToEdugain implements ShouldQueue
     {
         $git = $this->initializeGit();
 
-        $tagfile = config('git.edugain_tag');
-        Storage::append($tagfile, $this->entity->entityid);
-        $this->trimWhiteSpaces($tagfile);
+        $git->removeFile($this->federation->cfgfile);
+        $git->removeFile($this->federation->tagfile);
 
         if ($git->hasChanges()) {
-            $git->addFile($tagfile);
-
             $git->commit(
-                $this->committer().": $tagfile (update)\n\n"
-                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
+                $this->committer().": {$this->federation->xml_id} (delete)\n\n"
+                    ."Deleted by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
             $git->push();

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
 use App\Models\Entity;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class Old_GitAddEntity implements ShouldQueue
+class Old_GitUpdateEntity implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -46,8 +46,8 @@ class Old_GitAddEntity implements ShouldQueue
             $git->addFile($this->entity->file);
 
             $git->commit(
-                $this->committer().": {$this->fqdn($this->entity->entityid)} (add)\n\n"
-                    ."Added by: {$this->user->name} ({$this->user->uniqueid})\n"
+                $this->committer().": {$this->fqdn($this->entity->entityid)} (update)\n\n"
+                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})"
             );
 
             $git->push();

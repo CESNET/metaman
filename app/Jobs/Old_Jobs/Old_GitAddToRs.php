@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
 use App\Models\Entity;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitRestoreToCategory implements ShouldQueue
+class Old_GitAddToRs implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -38,24 +38,23 @@ class GitRestoreToCategory implements ShouldQueue
      */
     public function handle()
     {
-        if (! $this->entity->category) {
-            return;
-        }
+        if ($this->entity->rs) {
+            $git = $this->initializeGit();
 
-        $git = $this->initializeGit();
+            $tagfile = config('git.ec_rs');
+            Storage::append($tagfile, $this->entity->entityid);
+            $this->trimWhiteSpaces($tagfile);
 
-        Storage::append($this->entity->category->tagfile, $this->entity->entityid);
-        $this->trimWhiteSpaces($this->entity->category->tagfile);
+            if ($git->hasChanges()) {
+                $git->addFile($tagfile);
 
-        if ($git->hasChanges()) {
-            $git->addFile($this->entity->category->tagfile);
+                $git->commit(
+                    $this->committer().": $tagfile (update)\n\n"
+                        ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
+                );
 
-            $git->commit(
-                $this->committer().": {$this->entity->category->tagfile} (update)\n\n"
-                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
-            );
-
-            $git->push();
+                $git->push();
+            }
         }
     }
 

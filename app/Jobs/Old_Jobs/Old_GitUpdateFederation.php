@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
-use App\Models\Entity;
+use App\Models\Federation;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitDeleteFromRs implements ShouldQueue
+class Old_GitUpdateFederation implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -26,7 +26,7 @@ class GitDeleteFromRs implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public Entity $entity,
+        public Federation $federation,
         public User $user
     ) {
     }
@@ -38,25 +38,23 @@ class GitDeleteFromRs implements ShouldQueue
      */
     public function handle()
     {
-        if (! $this->entity->rs) {
-            $git = $this->initializeGit();
+        $content = "[{$this->federation->xml_id}]\n";
+        $content .= "filters = {$this->federation->filters}\n";
+        $content .= "name = {$this->federation->xml_name}";
 
-            $tagfile = config('git.ec_rs');
-            $content = Storage::get($tagfile);
-            $content = preg_replace('#'.$this->entity->entityid.'#', '', $content);
-            Storage::put($tagfile, $content);
-            $this->trimWhiteSpaces($tagfile);
+        $git = $this->initializeGit();
 
-            if ($git->hasChanges()) {
-                $git->addFile($tagfile);
+        Storage::put($this->federation->cfgfile, $content);
 
-                $git->commit(
-                    $this->committer().": $tagfile (update)\n\n"
-                        ."Updated by {$this->user->name} ({$this->user->uniqueid})\n"
-                );
+        if ($git->hasChanges()) {
+            $git->addFile($this->federation->cfgfile);
 
-                $git->push();
-            }
+            $git->commit(
+                $this->committer().": {$this->federation->cfgfile} (update)\n\n"
+                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
+            );
+
+            $git->push();
         }
     }
 

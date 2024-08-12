@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
-use App\Models\Entity;
+use App\Models\Federation;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitRestoreToEdugain implements ShouldQueue
+class Old_GitAddMembers implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -26,7 +27,8 @@ class GitRestoreToEdugain implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public Entity $entity,
+        public Federation $federation,
+        public Collection $entities,
         public User $user
     ) {
     }
@@ -38,21 +40,19 @@ class GitRestoreToEdugain implements ShouldQueue
      */
     public function handle()
     {
-        if (! $this->entity->edugain) {
-            return;
-        }
-
         $git = $this->initializeGit();
 
-        $tagfile = config('git.edugain_tag');
-        Storage::append($tagfile, $this->entity->entityid);
-        $this->trimWhiteSpaces($tagfile);
+        foreach ($this->entities as $entity) {
+            Storage::append($this->federation->tagfile, $entity->entityid);
+        }
+
+        $this->trimWhiteSpaces($this->federation->tagfile);
 
         if ($git->hasChanges()) {
-            $git->addFile($tagfile);
+            $git->addFile($this->federation->tagfile);
 
             $git->commit(
-                $this->committer().": $tagfile (update)\n\n"
+                $this->committer().": {$this->federation->tagfile} (update)\n\n"
                     ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 

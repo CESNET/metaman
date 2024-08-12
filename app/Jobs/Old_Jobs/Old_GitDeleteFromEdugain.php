@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
-use App\Models\Membership;
+use App\Models\Entity;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class Old_GitAddMembership implements ShouldQueue
+class Old_GitDeleteFromEdugain implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -26,7 +26,7 @@ class Old_GitAddMembership implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public Membership $membership,
+        public Entity $entity,
         public User $user
     ) {
     }
@@ -40,17 +40,18 @@ class Old_GitAddMembership implements ShouldQueue
     {
         $git = $this->initializeGit();
 
-        Storage::append($this->membership->federation->tagfile, $this->membership->entity->entityid);
-        $this->trimWhiteSpaces($this->membership->federation->tagfile);
+        $tagfile = config('git.edugain_tag');
+        $content = Storage::get($tagfile);
+        $content = preg_replace('#'.$this->entity->entityid.'#', '', $content);
+        Storage::put($tagfile, $content);
+        $this->trimWhiteSpaces($tagfile);
 
         if ($git->hasChanges()) {
-            $git->addFile($this->membership->federation->tagfile);
+            $git->addFile($tagfile);
 
             $git->commit(
-                $this->committer().": {$this->membership->federation->tagfile} (update)\n\n"
-                    ."Requested by: {$this->membership->requester->name} ({$this->membership->requester->uniqueid})\n"
-                    .wordwrap("Explanation: {$this->membership->explanation}", 72)."\n\n"
-                    ."Approved by: {$this->user->name} ({$this->user->uniqueid})\n"
+                $this->committer().": $tagfile (update)\n\n"
+                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
             $git->push();

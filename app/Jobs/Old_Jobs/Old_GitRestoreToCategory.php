@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
 use App\Models\Entity;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitDeleteFromEdugain implements ShouldQueue
+class Old_GitRestoreToCategory implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -38,19 +38,20 @@ class GitDeleteFromEdugain implements ShouldQueue
      */
     public function handle()
     {
+        if (! $this->entity->category) {
+            return;
+        }
+
         $git = $this->initializeGit();
 
-        $tagfile = config('git.edugain_tag');
-        $content = Storage::get($tagfile);
-        $content = preg_replace('#'.$this->entity->entityid.'#', '', $content);
-        Storage::put($tagfile, $content);
-        $this->trimWhiteSpaces($tagfile);
+        Storage::append($this->entity->category->tagfile, $this->entity->entityid);
+        $this->trimWhiteSpaces($this->entity->category->tagfile);
 
         if ($git->hasChanges()) {
-            $git->addFile($tagfile);
+            $git->addFile($this->entity->category->tagfile);
 
             $git->commit(
-                $this->committer().": $tagfile (update)\n\n"
+                $this->committer().": {$this->entity->category->tagfile} (update)\n\n"
                     ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 

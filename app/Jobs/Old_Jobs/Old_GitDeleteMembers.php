@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
-use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class Old_GitAddMember implements ShouldQueue
+class Old_GitDeleteMembers implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -28,7 +28,7 @@ class Old_GitAddMember implements ShouldQueue
      */
     public function __construct(
         public Federation $federation,
-        public Entity $entity,
+        public Collection $entities,
         public User $user
     ) {
     }
@@ -42,7 +42,11 @@ class Old_GitAddMember implements ShouldQueue
     {
         $git = $this->initializeGit();
 
-        Storage::append($this->federation->tagfile, $this->entity->entityid);
+        $tagfile = Storage::get($this->federation->tagfile);
+        foreach ($this->entities as $entity) {
+            $tagfile = preg_replace('#'.$entity->entityid.'#', '', $tagfile);
+        }
+        Storage::put($this->federation->tagfile, $tagfile);
         $this->trimWhiteSpaces($this->federation->tagfile);
 
         if ($git->hasChanges()) {

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
+use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
 use App\Traits\GitTrait;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class Old_GitUpdateFederation implements ShouldQueue
+class Old_GitDeleteFromFederation implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -26,6 +27,7 @@ class Old_GitUpdateFederation implements ShouldQueue
      * @return void
      */
     public function __construct(
+        public Entity $entity,
         public Federation $federation,
         public User $user
     ) {
@@ -38,19 +40,19 @@ class Old_GitUpdateFederation implements ShouldQueue
      */
     public function handle()
     {
-        $content = "[{$this->federation->xml_id}]\n";
-        $content .= "filters = {$this->federation->filters}\n";
-        $content .= "name = {$this->federation->xml_name}";
-
         $git = $this->initializeGit();
 
-        Storage::put($this->federation->cfgfile, $content);
+        $tagfile = $this->federation->tagfile;
+        $content = Storage::get($tagfile);
+        $content = preg_replace('#'.$this->entity->entityid.'#', '', $content);
+        Storage::put($tagfile, $content);
+        $this->trimWhiteSpaces($tagfile);
 
         if ($git->hasChanges()) {
-            $git->addFile($this->federation->cfgfile);
+            $git->addFile($tagfile);
 
             $git->commit(
-                $this->committer().": {$this->federation->cfgfile} (update)\n\n"
+                $this->committer().": $tagfile (update)\n\n"
                     ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
