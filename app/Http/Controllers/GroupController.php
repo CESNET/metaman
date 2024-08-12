@@ -4,16 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreGroup;
 use App\Http\Requests\UpdateGroup;
-use App\Jobs\GitAddGroup;
-use App\Jobs\GitDeleteGroup;
-use App\Jobs\GitUpdateGroup;
 use App\Models\Group;
 use App\Models\User;
 use App\Notifications\GroupCreated;
 use App\Notifications\GroupDeleted;
 use App\Notifications\GroupUpdated;
 use App\Traits\GitTrait;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
@@ -66,7 +62,6 @@ class GroupController extends Controller
             ['tagfile' => generateFederationID($validated['name']).'.tag'],
         ));
 
-        GitAddGroup::dispatch($group, Auth::user());
         Notification::send(User::activeAdmins()->select('id', 'email')->get(), new GroupCreated($group));
 
         return redirect('groups')
@@ -119,7 +114,6 @@ class GroupController extends Controller
                 ->route('groups.show', $group);
         }
 
-        GitUpdateGroup::dispatch($old_group, $group, Auth::user());
         Notification::send(User::activeAdmins()->select('id', 'email')->get(), new GroupUpdated($group));
 
         return redirect()
@@ -146,7 +140,6 @@ class GroupController extends Controller
         $name = $group->tagfile;
         $group->delete();
 
-        GitDeleteGroup::dispatch($name, Auth::user());
         Notification::send(User::activeAdmins()->select('id', 'email')->get(), new GroupDeleted($name));
 
         return redirect('groups')

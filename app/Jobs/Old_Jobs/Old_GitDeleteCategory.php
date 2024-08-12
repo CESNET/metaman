@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
-use App\Models\Group;
 use App\Models\User;
 use App\Traits\GitTrait;
 use Illuminate\Bus\Queueable;
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
 
-class GitUpdateGroup implements ShouldQueue
+class Old_GitDeleteCategory implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -25,8 +24,7 @@ class GitUpdateGroup implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public string $old_group,
-        public Group $group,
+        public string $category,
         public User $user
     ) {
     }
@@ -40,14 +38,12 @@ class GitUpdateGroup implements ShouldQueue
     {
         $git = $this->initializeGit();
 
-        if ($this->old_group !== $this->group->tagfile) {
-            $git->renameFile($this->old_group, $this->group->tagfile);
-        }
+        $git->removeFile($this->category);
 
         if ($git->hasChanges()) {
             $git->commit(
-                $this->committer().": {$this->group->tagfile} (update)\n\n"
-                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
+                $this->committer().": {$this->category} (delete)\n\n"
+                    ."Deleted by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
             $git->push();

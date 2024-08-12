@@ -4,16 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCategory;
 use App\Http\Requests\UpdateCategory;
-use App\Jobs\GitAddCategory;
-use App\Jobs\GitDeleteCategory;
-use App\Jobs\GitUpdateCategory;
 use App\Models\Category;
 use App\Models\User;
 use App\Notifications\CategoryCreated;
 use App\Notifications\CategoryDeleted;
 use App\Notifications\CategoryUpdated;
 use App\Traits\GitTrait;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
@@ -67,7 +63,6 @@ class CategoryController extends Controller
             ['tagfile' => generateFederationID($validated['name']).'.tag'],
         ));
 
-        GitAddCategory::dispatch($category, Auth::user());
         Notification::send(User::activeAdmins()->select('id', 'email')->get(), new CategoryCreated($category));
 
         return redirect('categories')
@@ -120,7 +115,6 @@ class CategoryController extends Controller
                 ->route('categories.show', $category);
         }
 
-        GitUpdateCategory::dispatch($old_category, $category, Auth::user());
         Notification::send(User::activeAdmins()->select('id', 'email')->get(), new CategoryUpdated($category));
 
         return redirect()
@@ -147,7 +141,6 @@ class CategoryController extends Controller
         $name = $category->tagfile;
         $category->delete();
 
-        GitDeleteCategory::dispatch($name, Auth::user());
         Notification::send(User::activeAdmins()->select('id', 'email')->get(), new CategoryDeleted($name));
 
         return redirect('categories')

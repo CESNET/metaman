@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
 use App\Models\User;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
 
-class GitDeleteCategory implements ShouldQueue
+class Old_GitDeleteGroup implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -24,7 +24,7 @@ class GitDeleteCategory implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public string $category,
+        public string $group,
         public User $user
     ) {
     }
@@ -38,11 +38,11 @@ class GitDeleteCategory implements ShouldQueue
     {
         $git = $this->initializeGit();
 
-        $git->removeFile($this->category);
+        $git->removeFile($this->group);
 
         if ($git->hasChanges()) {
             $git->commit(
-                $this->committer().": {$this->category} (delete)\n\n"
+                $this->committer().": {$this->group} (delete)\n\n"
                     ."Deleted by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 

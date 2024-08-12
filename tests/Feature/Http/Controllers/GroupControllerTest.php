@@ -2,9 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\GitAddGroup;
-use App\Jobs\GitDeleteGroup;
-use App\Jobs\GitUpdateGroup;
 use App\Models\Entity;
 use App\Models\Group;
 use App\Models\User;
@@ -316,9 +313,6 @@ class GroupControllerTest extends TestCase
         $this->assertEquals($groupDescription, $group->description);
         $this->assertEquals($groupTagfile, $group->tagfile);
 
-        Bus::assertDispatched(GitAddGroup::class, function ($job) use ($group) {
-            return $job->group->is($group);
-        });
     }
 
     /** @test */
@@ -371,9 +365,6 @@ class GroupControllerTest extends TestCase
         $this->assertEquals($groupDescription, $group->description);
         $this->assertEquals($groupTagfile, $group->tagfile);
 
-        Bus::assertDispatched(GitUpdateGroup::class, function ($job) use ($group) {
-            return $job->group->is($group);
-        });
     }
 
     /** @test */
@@ -395,9 +386,6 @@ class GroupControllerTest extends TestCase
 
         $this->assertEquals(0, Group::count());
 
-        Bus::assertDispatched(GitDeleteGroup::class, function ($job) use ($group) {
-            return $job->group === $group->tagfile;
-        });
     }
 
     /** @test */

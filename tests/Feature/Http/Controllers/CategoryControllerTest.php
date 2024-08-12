@@ -2,9 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Jobs\GitAddCategory;
-use App\Jobs\GitDeleteCategory;
-use App\Jobs\GitUpdateCategory;
 use App\Models\Category;
 use App\Models\Entity;
 use App\Models\User;
@@ -344,9 +341,6 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals($categoryDescription, $category->description);
         $this->assertEquals($categoryTagfile, $category->tagfile);
 
-        Bus::assertDispatched(GitAddCategory::class, function ($job) use ($category) {
-            return $job->category->is($category);
-        });
     }
 
     /** @test */
@@ -399,9 +393,6 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals($categoryDescription, $category->description);
         $this->assertEquals($categoryTagfile, $category->tagfile);
 
-        Bus::assertDispatched(GitUpdateCategory::class, function ($job) use ($category) {
-            return $job->category->is($category);
-        });
     }
 
     /** @test */
@@ -423,9 +414,6 @@ class CategoryControllerTest extends TestCase
 
         $this->assertEquals(0, Category::count());
 
-        Bus::assertDispatched(GitDeleteCategory::class, function ($job) use ($category) {
-            return $job->category === $category->tagfile;
-        });
     }
 
     /** @test */

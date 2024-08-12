@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Old_Jobs;
 
 use App\Mail\ExceptionOccured;
 use App\Models\Category;
@@ -13,9 +13,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GitUpdateCategory implements ShouldQueue
+class Old_GitAddCategory implements ShouldQueue
 {
     use Dispatchable, GitTrait, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -25,7 +26,6 @@ class GitUpdateCategory implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public string $old_category,
         public Category $category,
         public User $user
     ) {
@@ -40,14 +40,14 @@ class GitUpdateCategory implements ShouldQueue
     {
         $git = $this->initializeGit();
 
-        if ($this->old_category !== $this->category->tagfile) {
-            $git->renameFile($this->old_category, $this->category->tagfile);
-        }
+        Storage::put($this->category->tagfile, '');
 
         if ($git->hasChanges()) {
+            $git->addFile($this->category->tagfile);
+
             $git->commit(
-                $this->committer().": {$this->category->tagfile} (update)\n\n"
-                    ."Updated by: {$this->user->name} ({$this->user->uniqueid})\n"
+                $this->committer().": {$this->category->tagfile} (add)\n\n"
+                    ."Added by: {$this->user->name} ({$this->user->uniqueid})\n"
             );
 
             $git->push();
