@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Facade;
  * Class CategoryTag facade
  *
  * @method static false|string create(Entity $entity)
- * @method static void delete(Entity $entity)
+ * @method static false|string delete(Entity $entity)
  */
 class CategoryTag extends Facade
 {

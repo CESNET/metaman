@@ -223,7 +223,7 @@ class EntityController extends Controller
                 $xml_file = $this->deleteTags($updated_entity['metadata']);
 
                 DB::transaction(function () use ($entity, $updated_entity, $xml_file) {
-                    $entity->update([
+                    $updateData = [
                         'name_en' => $updated_entity['name_en'],
                         'name_cs' => $updated_entity['name_cs'],
                         'description_en' => $updated_entity['description_en'],
@@ -232,11 +232,13 @@ class EntityController extends Controller
                         'sirtfi' => $updated_entity['sirtfi'],
                         'metadata' => $updated_entity['metadata'],
                         'xml_file' => $xml_file,
-                    ]);
+                    ];
 
                     if ($entity->type->value === 'idp') {
-                        $entity->update(['rs' => $updated_entity['rs']]);
+                        $updateData['rs'] = $updated_entity['rs'];
                     }
+
+                    $entity->update($updateData);
                 });
 
                 if (! $entity->wasChanged()) {

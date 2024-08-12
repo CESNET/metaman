@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\CategoryTag;
 use App\Models\Category;
 use App\Models\Entity;
+use App\Models\User;
+use App\Notifications\IdpCategoryChanged;
+use Illuminate\Support\Facades\Notification;
 
 class EntityCategoryController extends Controller
 {
@@ -19,17 +23,16 @@ class EntityCategoryController extends Controller
         }
 
         $category = Category::findOrFail(request('category'));
+
+        $xml_file = CategoryTag::delete($entity);
+        if ($xml_file) {
+            $entity->xml_file = $xml_file;
+        }
         $entity->category()->associate($category);
+        $entity->xml_file = CategoryTag::create($entity);
         $entity->save();
-        // TODO work with category (not  ready)
-        /*                Bus::chain([
-                            new GitDeleteFromCategory($old_category, $entity, Auth::user()),
-                            new GitAddToCategory($category, $entity, Auth::user()),
-                            function () use ($entity, $category) {
-                                $admins = User::activeAdmins()->select('id', 'email')->get();
-                                Notification::send($admins, new IdpCategoryChanged($entity, $category));
-                            },
-                        ])->dispatch();*/
+        $admins = User::activeAdmins()->select('id', 'email')->get();
+        Notification::send($admins, new IdpCategoryChanged($entity, $category));
 
         if (! $entity->wasChanged()) {
             return redirect()
