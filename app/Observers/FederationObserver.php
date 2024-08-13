@@ -10,7 +10,6 @@ use App\Services\FederationService;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class FederationObserver
 {
@@ -37,29 +36,33 @@ class FederationObserver
      */
     public function deleted(Federation $federation): void
     {
-        if ($federation->approved) {
-            DeleteFederation::dispatch($federation);
+        if (! $federation->isForceDeleting()) {
+            if ($federation->approved) {
+                DeleteFederation::dispatch($federation);
+            }
         }
+
     }
 
     /**
      * Handle the Federation "restored" event.
+     *
+     * @throws \Exception|\Throwable no folder
      */
     public function restored(Federation $federation): void
     {
+        FederationService::createFederationFolder($federation);
         $memberships = $federation->memberships;
         if ($memberships->count() == 0) {
             return;
         }
-
         $jobs = [];
         $diskName = config('storageCfg.name');
-        $pathToDirectory = Storage::disk($diskName)->path($federation->name);
+        $pathToDirectory = FederationService::getFederationFolder($federation);
 
         foreach ($memberships as $membership) {
             $jobs[] = new RestoreFederation($membership);
         }
-        FederationService::createFederationFolder($federation);
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
         $lock = Cache::lock($lockKey, 120);
 
