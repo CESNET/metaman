@@ -14,299 +14,290 @@ use Tests\TestCase;
 
 class EntityControllerTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+  use RefreshDatabase, WithFaker;
 
-    /** @test */
-    public function an_anonymouse_user_isnt_shown_an_entities_list()
-    {
-        $this
-            ->followingRedirects()
-            ->get(route('federations.index'))
-            ->assertSeeText('login');
+  /** @test */
+  public function an_anonymouse_user_isnt_shown_an_entities_list()
+  {
+    $this
+      ->followingRedirects()
+      ->get(route('federations.index'))
+      ->assertSeeText('login');
 
-        $this->assertEquals(route('login'), url()->current());
-    }
+    $this->assertEquals(route('login'), url()->current());
+  }
 
-    /** @test */
-    public function an_anonymouse_user_isnt_shown_an_entities_details()
-    {
-        Queue::fake();
-        $entity = Entity::factory()->create();
+  /** @test */
+  public function an_anonymouse_user_isnt_shown_an_entities_details()
+  {
+    Queue::fake();
+    $entity = Entity::factory()->create();
 
-        $this
-            ->followingRedirects()
-            ->get(route('entities.show', $entity))
-            ->assertSeeText('login');
+    $this
+      ->followingRedirects()
+      ->get(route('entities.show', $entity))
+      ->assertSeeText('login');
 
-        $this->assertEquals(route('login'), url()->current());
+    $this->assertEquals(route('login'), url()->current());
+  }
 
-    }
+  /** @test */
+  public function an_anonymouse_user_isnt_shown_a_form_to_add_a_new_entity()
+  {
+    $this
+      ->followingRedirects()
+      ->get(route('entities.create'))
+      ->assertSeeText('login');
 
-    /** @test */
-    public function an_anonymouse_user_isnt_shown_a_form_to_add_a_new_entity()
-    {
-        $this
-            ->followingRedirects()
-            ->get(route('entities.create'))
-            ->assertSeeText('login');
+    $this->assertEquals(route('login'), url()->current());
+  }
 
-        $this->assertEquals(route('login'), url()->current());
-    }
+  /** @test */
+  public function an_anonymouse_user_cannot_add_a_new_entity()
+  {
+    // metadata URL
+    $this
+      ->followingRedirects()
+      ->post(route('entities.store'), [
+        'url' => "https://{$this->faker->domainName()}/{$this->faker->unique()->slug(3)}",
+        'federation' => Federation::factory()->create()->id,
+        'explanation' => $this->faker->catchPhrase(),
+      ])
+      ->assertSeeText('login');
 
-    /** @test */
-    public function an_anonymouse_user_cannot_add_a_new_entity()
-    {
-        // metadata URL
-        $this
-            ->followingRedirects()
-            ->post(route('entities.store'), [
-                'url' => "https://{$this->faker->domainName()}/{$this->faker->unique()->slug(3)}",
-                'federation' => Federation::factory()->create()->id,
-                'explanation' => $this->faker->catchPhrase(),
-            ])
-            ->assertSeeText('login');
+    $this->assertEquals(route('login'), url()->current());
 
-        $this->assertEquals(route('login'), url()->current());
+    // metadata file
+  }
 
-        // metadata file
-    }
+  /** @test */
+  public function an_anonymouse_user_cannot_see_entities_edit_page()
+  {
+    Queue::fake();
+    $entity = Entity::factory()->create();
 
-    /** @test */
-    public function an_anonymouse_user_cannot_see_entities_edit_page()
-    {
-        Queue::fake();
-        $entity = Entity::factory()->create();
+    $this
+      ->followingRedirects()
+      ->get(route('entities.edit', $entity))
+      ->assertSeeText('login');
 
-        $this
-            ->followingRedirects()
-            ->get(route('entities.edit', $entity))
-            ->assertSeeText('login');
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(route('login'), url()->current());
+  }
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(route('login'), url()->current());
+  /** @test */
+  public function an_anonymouse_user_cannot_edit_an_existing_entity()
+  {
+    Queue::fake();
+    $entity = Entity::factory()->create();
 
-    }
+    $this
+      ->followingRedirects()
+      ->patch(route('entities.update', $entity), ['action' => 'update'])
+      ->assertSeeText('login');
 
-    /** @test */
-    public function an_anonymouse_user_cannot_edit_an_existing_entity()
-    {
-        Queue::fake();
-        $entity = Entity::factory()->create();
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(route('login'), url()->current());
+  }
 
-        $this
-            ->followingRedirects()
-            ->patch(route('entities.update', $entity), ['action' => 'update'])
-            ->assertSeeText('login');
+  /** @test */
+  public function an_anonymouse_user_cannot_change_an_existing_entities_state()
+  {
+    Queue::fake();
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(route('login'), url()->current());
+    $entity = Entity::factory()->create();
 
-    }
+    $this->assertFalse($entity->trashed());
 
-    /** @test */
-    public function an_anonymouse_user_cannot_change_an_existing_entities_state()
-    {
-        Queue::fake();
+    $this
+      ->followingRedirects()
+      ->patch(route('entities.update', $entity), ['action' => 'state'])
+      ->assertSeeText('login');
 
-        $entity = Entity::factory()->create();
+    $this->assertFalse($entity->trashed());
+    $this->assertEquals(route('login'), url()->current());
+  }
 
-        $this->assertFalse($entity->trashed());
+  /** @test */
+  public function an_anonymouse_user_cannot_change_an_existing_entities_operators()
+  {
+    Queue::fake();
+    $entity = Entity::factory()->create();
+    $entity->operators()->attach(User::factory()->create());
+    $this->assertEquals(1, $entity->operators()->count());
 
-        $this
-            ->followingRedirects()
-            ->patch(route('entities.update', $entity), ['action' => 'state'])
-            ->assertSeeText('login');
+    $user = User::factory()->create();
 
-        $this->assertFalse($entity->trashed());
-        $this->assertEquals(route('login'), url()->current());
+    $this
+      ->followingRedirects()
+      ->patch(route('entities.update', $entity), [
+        'action' => 'add_operators',
+        'operators' => [$user->id],
+      ])
+      ->assertSeeText('login');
 
-    }
+    $this->assertEquals(1, $entity->operators()->count());
+    $this->assertEquals(route('login'), url()->current());
 
-    /** @test */
-    public function an_anonymouse_user_cannot_change_an_existing_entities_operators()
-    {
-        Queue::fake();
-        $entity = Entity::factory()->create();
-        $entity->operators()->attach(User::factory()->create());
-        $this->assertEquals(1, $entity->operators()->count());
+    $this
+      ->followingRedirects()
+      ->patch(route('entities.update', $entity), [
+        'action' => 'delete_operators',
+        'operators' => [User::find(1)->id],
+      ])
+      ->assertSeeText('login');
 
-        $user = User::factory()->create();
+    $this->assertEquals(1, $entity->operators()->count());
+    $this->assertEquals(route('login'), url()->current());
+  }
 
-        $this
-            ->followingRedirects()
-            ->patch(route('entities.update', $entity), [
-                'action' => 'add_operators',
-                'operators' => [$user->id],
-            ])
-            ->assertSeeText('login');
+  /** @test */
+  public function an_anonymouse_user_cannot_change_an_existing_entities_federation_membership()
+  {
+    Queue::fake();
+    $entity = Entity::factory()->create();
 
-        $this->assertEquals(1, $entity->operators()->count());
-        $this->assertEquals(route('login'), url()->current());
+    $this
+      ->followingRedirects()
+      ->post(route('entities.join', $entity))
+      ->assertSeeText('login');
 
-        $this
-            ->followingRedirects()
-            ->patch(route('entities.update', $entity), [
-                'action' => 'delete_operators',
-                'operators' => [User::find(1)->id],
-            ])
-            ->assertSeeText('login');
+    $this
+      ->followingRedirects()
+      ->post(route('entities.leave', $entity))
+      ->assertSeeText('login');
+  }
 
-        $this->assertEquals(1, $entity->operators()->count());
-        $this->assertEquals(route('login'), url()->current());
+  /** @test */
+  public function an_anonymouse_user_cannot_purge_an_existing_entity()
+  {
+    Queue::fake();
+    $entity = Entity::factory()->create([
+      'deleted_at' => now(),
+    ]);
 
-    }
+    $this
+      ->followingRedirects()
+      ->delete(route('entities.destroy', $entity))
+      ->assertSeeText('login');
 
-    /** @test */
-    public function an_anonymouse_user_cannot_change_an_existing_entities_federation_membership()
-    {
-        Queue::fake();
-        $entity = Entity::factory()->create();
+    $this->assertEquals(route('login'), url()->current());
+  }
 
-        $this
-            ->followingRedirects()
-            ->post(route('entities.join', $entity))
-            ->assertSeeText('login');
+  /** @test */
+  public function an_anonymouse_user_cannot_reject_a_new_entity_request()
+  {
+    $user = User::factory()->create();
+    $federation = Federation::factory()->create();
+    $entity = Entity::factory()->create(['approved' => false]);
+    $entity->federations()->attach($federation, [
+      'requested_by' => $user->id,
+      'explanation' => $this->faker->catchPhrase(),
+    ]);
+    $membership = Membership::find(1);
 
-        $this
-            ->followingRedirects()
-            ->post(route('entities.leave', $entity))
-            ->assertSeeText('login');
+    $this
+      ->followingRedirects()
+      ->delete(route('memberships.destroy', $membership))
+      ->assertSeeText('login');
+  }
 
-    }
+  /** @test */
+  public function an_anonymouse_user_cannot_approve_a_new_entity_request()
+  {
+    $user = User::factory()->create();
+    $federation = Federation::factory()->create();
+    $entity = Entity::factory()->create(['approved' => false]);
+    $entity->federations()->attach($federation, [
+      'requested_by' => $user->id,
+      'explanation' => $this->faker->catchPhrase(),
+    ]);
+    $membership = Membership::find(1);
 
-    /** @test */
-    public function an_anonymouse_user_cannot_purge_an_existing_entity()
-    {
-        Queue::fake();
-        $entity = Entity::factory()->create([
-            'deleted_at' => now(),
-        ]);
+    $this
+      ->followingRedirects()
+      ->patch(route('memberships.update', $membership))
+      ->assertSeeText('login');
+  }
 
-        $this
-            ->followingRedirects()
-            ->delete(route('entities.destroy', $entity))
-            ->assertSeeText('login');
+  /** @test */
+  public function a_user_is_shown_a_entities_list()
+  {
+    $this->assertEquals(0, Entity::count());
 
-        $this->assertEquals(route('login'), url()->current());
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create();
 
-    }
+    $this
+      ->actingAs($user)
+      ->get(route('entities.index'))
+      ->assertSeeText($entity->name)
+      ->assertSeeText($entity->description)
+      ->assertSeeText(__('common.active'));
 
-    /** @test */
-    public function an_anonymouse_user_cannot_reject_a_new_entity_request()
-    {
-        $user = User::factory()->create();
-        $federation = Federation::factory()->create();
-        $entity = Entity::factory()->create(['approved' => false]);
-        $entity->federations()->attach($federation, [
-            'requested_by' => $user->id,
-            'explanation' => $this->faker->catchPhrase(),
-        ]);
-        $membership = Membership::find(1);
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(route('entities.index'), url()->current());
+  }
 
-        $this
-            ->followingRedirects()
-            ->delete(route('memberships.destroy', $membership))
-            ->assertSeeText('login');
-    }
+  /** @test */
+  public function a_user_is_shown_a_entities_details()
+  {
+    $this->assertEquals(0, Entity::count());
 
-    /** @test */
-    public function an_anonymouse_user_cannot_approve_a_new_entity_request()
-    {
-        $user = User::factory()->create();
-        $federation = Federation::factory()->create();
-        $entity = Entity::factory()->create(['approved' => false]);
-        $entity->federations()->attach($federation, [
-            'requested_by' => $user->id,
-            'explanation' => $this->faker->catchPhrase(),
-        ]);
-        $membership = Membership::find(1);
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create();
 
-        $this
-            ->followingRedirects()
-            ->patch(route('memberships.update', $membership))
-            ->assertSeeText('login');
-    }
+    $this
+      ->actingAs($user)
+      ->get(route('entities.show', $entity))
+      ->assertSeeText($entity->name)
+      ->assertSeeText($entity->description)
+      ->assertSeeText($entity->entityid)
+      ->assertSeeText($entity->type->name);
 
-    /** @test */
-    public function a_user_is_shown_a_entities_list()
-    {
-        $this->assertEquals(0, Entity::count());
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(route('entities.show', $entity), url()->current());
+  }
 
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create();
+  /** @test */
+  public function a_user_is_shown_a_form_to_add_a_new_entity()
+  {
+    $user = User::factory()->create();
 
-        $this
-            ->actingAs($user)
-            ->get(route('entities.index'))
-            ->assertSeeText($entity->name)
-            ->assertSeeText($entity->description)
-            ->assertSeeText(__('common.active'));
+    $this
+      ->actingAs($user)
+      ->get(route('entities.create'))
+      ->assertSeeText(__('entities.add'));
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(route('entities.index'), url()->current());
+    $this->assertEquals(route('entities.create'), url()->current());
+  }
 
-    }
+  /** @test */
+  public function a_user_cannot_add_metadata_using_invalid_url()
+  {
+    $user = User::factory()->create(['active' => true]);
+    $federation = Federation::factory()->create();
 
-    /** @test */
-    public function a_user_is_shown_a_entities_details()
-    {
-        $this->assertEquals(0, Entity::count());
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->post(route('entities.store', [
+        'metadata' => 'http://example.com',
+        'federation' => $federation->id,
+        'explanation' => $this->faker()->catchPhrase(),
+      ]))
+      ->assertSeeText(__('entities.no_metadata'));
+  }
 
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create();
+  /** @test */
+  public function a_user_can_add_a_new_entity()
+  {
+    $user = User::factory()->create();
+    $federation = Federation::factory()->create();
 
-        $this
-            ->actingAs($user)
-            ->get(route('entities.show', $entity))
-            ->assertSeeText($entity->name)
-            ->assertSeeText($entity->description)
-            ->assertSeeText($entity->entityid)
-            ->assertSeeText($entity->type->name);
-
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
-
-    }
-
-    /** @test */
-    public function a_user_is_shown_a_form_to_add_a_new_entity()
-    {
-        $user = User::factory()->create();
-
-        $this
-            ->actingAs($user)
-            ->get(route('entities.create'))
-            ->assertSeeText(__('entities.add'));
-
-        $this->assertEquals(route('entities.create'), url()->current());
-    }
-
-    /** @test */
-    public function a_user_cannot_add_metadata_using_invalid_url()
-    {
-        $user = User::factory()->create(['active' => true]);
-        $federation = Federation::factory()->create();
-
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->post(route('entities.store', [
-                'metadata' => 'http://example.com',
-                'federation' => $federation->id,
-                'explanation' => $this->faker()->catchPhrase(),
-            ]))
-            ->assertSeeText(__('entities.no_metadata'));
-    }
-
-    /** @test */
-    public function a_user_can_add_a_new_entity()
-    {
-        $user = User::factory()->create();
-        $federation = Federation::factory()->create();
-
-        $whoami = '<?xml version="1.0" encoding="UTF-8"?>
+    $whoami = '<?xml version="1.0" encoding="UTF-8"?>
 
         <!-- Do not edit manualy! This file is managed by Ansible. -->
 
@@ -337,7 +328,7 @@ class EntityControllerTest extends TestCase
                 <mdui:Description xml:lang="cs">Poskytovatel identity (IdP) pro zaměstnance CESNETu.</mdui:Description>
                 <mdui:InformationURL xml:lang="en">https://www.ces.net/</mdui:InformationURL>
                 <mdui:InformationURL xml:lang="cs">https://www.cesnet.cz/</mdui:InformationURL>
-                <mdui:Logo height="40" width="99">https://whoami.cesnet.cz/idp/images/cesnet-logo-40.png</mdui:Logo>
+                <mdui:Logo height="40" width="99">https://whoami.cesnet.cz/idp/images/whoami.cesnet.cz.png</mdui:Logo>
               </mdui:UIInfo>
             </Extensions>
 
@@ -443,76 +434,75 @@ class EntityControllerTest extends TestCase
 
         </EntityDescriptor>';
 
-        // add an entity using wrong metadata content
-        // $this
-        //     ->followingRedirects()
-        //     ->actingAs($user)
-        //     ->post(route('entities.store', [
-        //         'metadata' => '',
-        //         'federation' => $federation->id,
-        //         'explanation' => $this->faker->catchPhrase(),
-        //     ]))
-        //     ->assertSeeText(__('entities.no_metadata'));
+    // add an entity using wrong metadata content
+    // $this
+    //     ->followingRedirects()
+    //     ->actingAs($user)
+    //     ->post(route('entities.store', [
+    //         'metadata' => '',
+    //         'federation' => $federation->id,
+    //         'explanation' => $this->faker->catchPhrase(),
+    //     ]))
+    //     ->assertSeeText(__('entities.no_metadata'));
 
-        $this->assertEquals(0, Entity::count());
+    $this->assertEquals(0, Entity::count());
 
-        // add an entity using corrent metadata content
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->post(route('entities.store', [
-                'metadata' => $whoami,
-                'federation' => $federation->id,
-                'explanation' => $this->faker->catchPhrase(),
-            ]))
-            ->assertSeeText(__('entities.entity_requested', ['name' => 'https://whoami.cesnet.cz/idp/shibboleth']));
+    // add an entity using corrent metadata content
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->post(route('entities.store', [
+        'metadata' => $whoami,
+        'federation' => $federation->id,
+        'explanation' => $this->faker->catchPhrase(),
+      ]))
+      ->assertSeeText(__('entities.entity_requested', ['name' => 'https://whoami.cesnet.cz/idp/shibboleth']));
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(route('entities.index'), url()->current());
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(route('entities.index'), url()->current());
 
-        // add already existing entity
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->post(route('entities.store', [
-                'metadata' => $whoami,
-                'federation' => $federation->id,
-                'explanation' => $this->faker->catchPhrase(),
-            ]))
-            ->assertSeeText(__('entities.existing_already'));
+    // add already existing entity
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->post(route('entities.store', [
+        'metadata' => $whoami,
+        'federation' => $federation->id,
+        'explanation' => $this->faker->catchPhrase(),
+      ]))
+      ->assertSeeText(__('entities.existing_already'));
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(route('entities.show', Entity::find(1)), url()->current());
-    }
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(route('entities.show', Entity::find(1)), url()->current());
+  }
 
-    /** @test */
-    public function a_user_with_operator_permission_can_see_entities_edit_page()
-    {
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create();
-        $user->entities()->attach($entity);
+  /** @test */
+  public function a_user_with_operator_permission_can_see_entities_edit_page()
+  {
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create();
+    $user->entities()->attach($entity);
 
-        $this
-            ->actingAs($user)
-            ->get(route('entities.edit', $entity))
-            ->assertSeeText(__('entities.edit', ['name' => $entity->name_en]))
-            ->assertSeeText(__('entities.profile'));
+    $this
+      ->actingAs($user)
+      ->get(route('entities.edit', $entity))
+      ->assertSeeText(__('entities.edit', ['name' => $entity->name_en]))
+      ->assertSeeText(__('entities.profile'));
 
-        $this->assertEquals(route('entities.edit', $entity), url()->current());
+    $this->assertEquals(route('entities.edit', $entity), url()->current());
+  }
 
-    }
+  /** @test */
+  public function a_user_with_operator_permission_can_edit_an_existing_entity()
+  {
+    Bus::fake();
 
-    /** @test */
-    public function a_user_with_operator_permission_can_edit_an_existing_entity()
-    {
-        Bus::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create(['entityid' => 'https://whoami.cesnet.cz/idp/shibboleth']);
+    $user->entities()->attach($entity);
 
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create(['entityid' => 'https://whoami.cesnet.cz/idp/shibboleth']);
-        $user->entities()->attach($entity);
-
-        $whoami = '<?xml version="1.0" encoding="UTF-8"?>
+    $whoami = '<?xml version="1.0" encoding="UTF-8"?>
 
         <!-- Do not edit manualy! This file is managed by Ansible. -->
 
@@ -543,7 +533,7 @@ class EntityControllerTest extends TestCase
                 <mdui:Description xml:lang="cs">Poskytovatel identity (IdP) pro zaměstnance CESNETu.</mdui:Description>
                 <mdui:InformationURL xml:lang="en">https://www.ces.net/</mdui:InformationURL>
                 <mdui:InformationURL xml:lang="cs">https://www.cesnet.cz/</mdui:InformationURL>
-                <mdui:Logo height="40" width="99">https://whoami.cesnet.cz/idp/images/cesnet-logo-40.png</mdui:Logo>
+                <mdui:Logo height="40" width="99">https://whoami.cesnet.cz/idp/images/whoami.cesnet.cz.png</mdui:Logo>
               </mdui:UIInfo>
             </Extensions>
 
@@ -649,331 +639,321 @@ class EntityControllerTest extends TestCase
 
         </EntityDescriptor>';
 
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->patch(route('entities.update', $entity), [
-                'action' => 'update',
-                'metadata' => $whoami,
-            ])
-            ->assertSeeText(__('entities.entity_updated'));
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->patch(route('entities.update', $entity), [
+        'action' => 'update',
+        'metadata' => $whoami,
+      ])
+      ->assertSeeText(__('entities.entity_updated'));
 
-        $this->assertEquals(route('entities.show', $entity), url()->current());
+    $this->assertEquals(route('entities.show', $entity), url()->current());
 
-        /*        Bus::assertDispatched(GitUpdateEntity::class, function ($job) use ($entity) {
+    /*        Bus::assertDispatched(GitUpdateEntity::class, function ($job) use ($entity) {
                     return $job->entity->is($entity);
                 });*/
-    }
+  }
 
-    /** @test */
-    public function a_user_with_operator_permission_can_change_an_existing_entities_state()
-    {
-        Bus::fake();
+  /** @test */
+  public function a_user_with_operator_permission_can_change_an_existing_entities_state()
+  {
+    Bus::fake();
 
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create();
-        $user->entities()->attach($entity);
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create();
+    $user->entities()->attach($entity);
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertFalse($entity->trashed());
+    $this->assertEquals(1, Entity::count());
+    $this->assertFalse($entity->trashed());
 
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->patch(route('entities.state', $entity))
-            ->assertSeeText(__('entities.deleted', ['name' => $entity->name_en]));
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->patch(route('entities.state', $entity))
+      ->assertSeeText(__('entities.deleted', ['name' => $entity->name_en]));
 
-        $entity->refresh();
-        $this->assertTrue($entity->trashed());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
+    $entity->refresh();
+    $this->assertTrue($entity->trashed());
+    $this->assertEquals(route('entities.show', $entity), url()->current());
 
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->patch(route('entities.state', $entity))
-            ->assertSeeText(__('entities.restored', ['name' => $entity->name_en]));
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->patch(route('entities.state', $entity))
+      ->assertSeeText(__('entities.restored', ['name' => $entity->name_en]));
 
-        $entity->refresh();
-        $this->assertFalse($entity->trashed());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
-    }
+    $entity->refresh();
+    $this->assertFalse($entity->trashed());
+    $this->assertEquals(route('entities.show', $entity), url()->current());
+  }
 
-    /** @test */
-    public function a_user_with_operator_permission_can_change_an_existing_entities_operators()
-    {
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create();
-        $user->entities()->attach($entity);
-        $new_operator = User::factory()->create();
+  /** @test */
+  public function a_user_with_operator_permission_can_change_an_existing_entities_operators()
+  {
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create();
+    $user->entities()->attach($entity);
+    $new_operator = User::factory()->create();
 
-        $this->assertEquals(1, $entity->operators()->count());
+    $this->assertEquals(1, $entity->operators()->count());
 
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->post(route('entities.operators.store', $entity), [
-                'operators' => [$new_operator->id],
-            ])
-            ->assertSeeText(__('entities.operators_added'));
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->post(route('entities.operators.store', $entity), [
+        'operators' => [$new_operator->id],
+      ])
+      ->assertSeeText(__('entities.operators_added'));
 
-        $entity->refresh();
-        $this->assertEquals(2, $entity->operators()->count());
-        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
+    $entity->refresh();
+    $this->assertEquals(2, $entity->operators()->count());
+    $this->assertEquals(route('entities.operators.index', $entity), url()->current());
 
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->delete(route('entities.operators.destroy', $entity), [
-                'operators' => [$new_operator->id],
-            ])
-            ->assertSeeText(__('entities.operators_deleted'));
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->delete(route('entities.operators.destroy', $entity), [
+        'operators' => [$new_operator->id],
+      ])
+      ->assertSeeText(__('entities.operators_deleted'));
 
-        $entity->refresh();
-        $this->assertEquals(1, $entity->operators()->count());
-        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
+    $entity->refresh();
+    $this->assertEquals(1, $entity->operators()->count());
+    $this->assertEquals(route('entities.operators.index', $entity), url()->current());
+  }
 
-    }
+  /** @test */
+  public function a_user_with_operator_permission_can_change_an_existing_entities_federation_membership()
+  {
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create();
+    $user->entities()->attach($entity);
+    $federation = Federation::factory()->create();
 
-    /** @test */
-    public function a_user_with_operator_permission_can_change_an_existing_entities_federation_membership()
-    {
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create();
-        $user->entities()->attach($entity);
-        $federation = Federation::factory()->create();
+    $this->assertEquals(1, $user->entities()->count());
+    $this->assertEquals(0, Membership::whereApproved(false)->count());
 
-        $this->assertEquals(1, $user->entities()->count());
-        $this->assertEquals(0, Membership::whereApproved(false)->count());
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->post(route('entities.join', $entity), [
+        'federation' => $federation->id,
+        'explanation' => $this->faker->sentence(),
+      ])
+      ->assertSeeText(__('entities.join_requested', ['name' => $federation->name]));
 
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->post(route('entities.join', $entity), [
-                'federation' => $federation->id,
-                'explanation' => $this->faker->sentence(),
-            ])
-            ->assertSeeText(__('entities.join_requested', ['name' => $federation->name]));
+    $this->assertEquals(1, Membership::whereApproved(false)->count());
+  }
 
-        $this->assertEquals(1, Membership::whereApproved(false)->count());
+  /** @test */
+  public function a_user_without_operator_permission_cannot_see_entities_edit_page()
+  {
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create();
 
-    }
+    $this
+      ->actingAs($user)
+      ->get(route('entities.edit', $entity))
+      ->assertForbidden();
+  }
 
-    /** @test */
-    public function a_user_without_operator_permission_cannot_see_entities_edit_page()
-    {
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create();
+  /** @test */
+  public function a_user_without_operator_permission_cannot_edit_an_existing_entity()
+  {
+    Queue::fake();
+    $entity = Entity::factory()->create(['entityid' => 'https://whoami.cesnet.cz/idp/shibboleth']);
 
-        $this
-            ->actingAs($user)
-            ->get(route('entities.edit', $entity))
-            ->assertForbidden();
+    $this
+      ->followingRedirects()
+      ->patch(route('entities.update', $entity), [
+        'action' => 'update',
+        'url' => 'https://whoami.cesnet.cz/idp/shibboleth',
+      ])
+      ->assertSeeText('login');
+  }
 
-    }
+  /** @test */
+  public function a_user_without_operator_permission_cannot_change_an_existing_entities_state()
+  {
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create();
 
-    /** @test */
-    public function a_user_without_operator_permission_cannot_edit_an_existing_entity()
-    {
-        Queue::fake();
-        $entity = Entity::factory()->create(['entityid' => 'https://whoami.cesnet.cz/idp/shibboleth']);
+    $this->assertEquals(1, Entity::count());
 
-        $this
-            ->followingRedirects()
-            ->patch(route('entities.update', $entity), [
-                'action' => 'update',
-                'url' => 'https://whoami.cesnet.cz/idp/shibboleth',
-            ])
-            ->assertSeeText('login');
+    $this
+      ->actingAs($user)
+      ->patch(route('entities.state', $entity))
+      ->assertForbidden();
+  }
 
-    }
+  /** @test */
+  public function a_user_without_operator_permission_cannot_change_an_existing_entities_operators()
+  {
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create();
+    $new_operator = User::factory()->create();
 
-    /** @test */
-    public function a_user_without_operator_permission_cannot_change_an_existing_entities_state()
-    {
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create();
+    $this
+      ->actingAs($user)
+      ->post(route('entities.operators.store', $entity), [
+        'operators' => [$new_operator->id],
+      ])
+      ->assertForbidden();
 
-        $this->assertEquals(1, Entity::count());
+    $entity->refresh();
+    $this->assertEquals(0, $entity->operators()->count());
 
-        $this
-            ->actingAs($user)
-            ->patch(route('entities.state', $entity))
-            ->assertForbidden();
+    $this
+      ->actingAs($user)
+      ->delete(route('entities.operators.destroy', $entity), [
+        'operators' => [$new_operator->id],
+      ])
+      ->assertForbidden();
+  }
 
-    }
+  /** @test */
+  public function a_user_without_operator_permission_cannot_change_an_existing_entities_federation_membership()
+  {
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create();
+    $federation = Federation::factory()->create();
 
-    /** @test */
-    public function a_user_without_operator_permission_cannot_change_an_existing_entities_operators()
-    {
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create();
-        $new_operator = User::factory()->create();
+    $this->assertEquals(0, $user->entities()->count());
+    $this->assertEquals(0, Membership::whereApproved(false)->count());
 
-        $this
-            ->actingAs($user)
-            ->post(route('entities.operators.store', $entity), [
-                'operators' => [$new_operator->id],
-            ])
-            ->assertForbidden();
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->post(route('entities.join', $entity), [
+        'federation' => $federation->id,
+        'explanation' => $this->faker->sentence(),
+      ])
+      ->assertForbidden();
 
-        $entity->refresh();
-        $this->assertEquals(0, $entity->operators()->count());
+    $this->assertEquals(0, Membership::whereApproved(false)->count());
+  }
 
-        $this
-            ->actingAs($user)
-            ->delete(route('entities.operators.destroy', $entity), [
-                'operators' => [$new_operator->id],
-            ])
-            ->assertForbidden();
+  /** @test */
+  public function a_user_cannot_purge_an_existing_entity()
+  {
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create([
+      'deleted_at' => now(),
+    ]);
 
-    }
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->delete(route('entities.destroy', $entity))
+      ->assertForbidden();
+  }
 
-    /** @test */
-    public function a_user_without_operator_permission_cannot_change_an_existing_entities_federation_membership()
-    {
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create();
-        $federation = Federation::factory()->create();
+  /** @test */
+  public function a_user_cannot_reject_a_new_entity_request()
+  {
+    $user = User::factory()->create();
+    $operator = User::factory()->create();
+    $federation = Federation::factory()->create();
+    $entity = Entity::factory()->create(['approved' => false]);
+    $entity->federations()->attach($federation, [
+      'requested_by' => $operator->id,
+      'explanation' => $this->faker->catchPhrase(),
+    ]);
+    $membership = Membership::find(1);
 
-        $this->assertEquals(0, $user->entities()->count());
-        $this->assertEquals(0, Membership::whereApproved(false)->count());
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->delete(route('memberships.destroy', $membership))
+      ->assertForbidden();
+  }
 
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->post(route('entities.join', $entity), [
-                'federation' => $federation->id,
-                'explanation' => $this->faker->sentence(),
-            ])
-            ->assertForbidden();
+  /** @test */
+  public function a_user_cannot_approve_a_new_entity_request()
+  {
+    $user = User::factory()->create();
+    $operator = User::factory()->create();
+    $federation = Federation::factory()->create();
+    $entity = Entity::factory()->create(['approved' => false]);
+    $operator->entities()->attach($entity);
+    $entity->federations()->attach($federation, [
+      'requested_by' => $operator->id,
+      'explanation' => $this->faker->catchPhrase(),
+    ]);
+    $membership = Membership::find(1);
 
-        $this->assertEquals(0, Membership::whereApproved(false)->count());
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->patch(route('memberships.update', $membership))
+      ->assertForbidden();
+  }
 
-    }
+  /** @test */
+  public function an_admin_is_shown_a_entities_list()
+  {
+    Queue::fake();
+    $admin = User::factory()->create(['admin' => true]);
+    $entity = Entity::factory()->create();
 
-    /** @test */
-    public function a_user_cannot_purge_an_existing_entity()
-    {
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create([
-            'deleted_at' => now(),
-        ]);
+    $this
+      ->actingAs($admin)
+      ->get(route('entities.index'))
+      ->assertSeeText($entity->name)
+      ->assertSeeText($entity->description)
+      ->assertSeeText(__('common.active'));
 
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->delete(route('entities.destroy', $entity))
-            ->assertForbidden();
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(route('entities.index'), url()->current());
+  }
 
-    }
+  /** @test */
+  public function an_admin_is_shown_a_entities_details()
+  {
+    Queue::fake();
+    $admin = User::factory()->create(['admin' => true]);
+    $entity = Entity::factory()->create();
 
-    /** @test */
-    public function a_user_cannot_reject_a_new_entity_request()
-    {
-        $user = User::factory()->create();
-        $operator = User::factory()->create();
-        $federation = Federation::factory()->create();
-        $entity = Entity::factory()->create(['approved' => false]);
-        $entity->federations()->attach($federation, [
-            'requested_by' => $operator->id,
-            'explanation' => $this->faker->catchPhrase(),
-        ]);
-        $membership = Membership::find(1);
+    $this
+      ->actingAs($admin)
+      ->get(route('entities.show', $entity))
+      ->assertSeeText($entity->name)
+      ->assertSeeText($entity->description)
+      ->assertSeeText($entity->entityid)
+      ->assertSeeText($entity->type->name);
 
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->delete(route('memberships.destroy', $membership))
-            ->assertForbidden();
-    }
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(route('entities.show', $entity), url()->current());
+  }
 
-    /** @test */
-    public function a_user_cannot_approve_a_new_entity_request()
-    {
-        $user = User::factory()->create();
-        $operator = User::factory()->create();
-        $federation = Federation::factory()->create();
-        $entity = Entity::factory()->create(['approved' => false]);
-        $operator->entities()->attach($entity);
-        $entity->federations()->attach($federation, [
-            'requested_by' => $operator->id,
-            'explanation' => $this->faker->catchPhrase(),
-        ]);
-        $membership = Membership::find(1);
+  /** @test */
+  public function an_admin_is_shown_a_form_to_add_a_new_entity()
+  {
+    $admin = User::factory()->create(['admin' => true]);
 
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->patch(route('memberships.update', $membership))
-            ->assertForbidden();
-    }
+    $this
+      ->actingAs($admin)
+      ->get(route('entities.create'))
+      ->assertSeeText(__('entities.add'));
 
-    /** @test */
-    public function an_admin_is_shown_a_entities_list()
-    {
-        Queue::fake();
-        $admin = User::factory()->create(['admin' => true]);
-        $entity = Entity::factory()->create();
+    $this->assertEquals(route('entities.create'), url()->current());
+  }
 
-        $this
-            ->actingAs($admin)
-            ->get(route('entities.index'))
-            ->assertSeeText($entity->name)
-            ->assertSeeText($entity->description)
-            ->assertSeeText(__('common.active'));
+  /** @test */
+  public function an_admin_can_add_a_new_entity()
+  {
+    $admin = User::factory()->create(['admin' => true]);
+    $federation = Federation::factory()->create();
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(route('entities.index'), url()->current());
-
-    }
-
-    /** @test */
-    public function an_admin_is_shown_a_entities_details()
-    {
-        Queue::fake();
-        $admin = User::factory()->create(['admin' => true]);
-        $entity = Entity::factory()->create();
-
-        $this
-            ->actingAs($admin)
-            ->get(route('entities.show', $entity))
-            ->assertSeeText($entity->name)
-            ->assertSeeText($entity->description)
-            ->assertSeeText($entity->entityid)
-            ->assertSeeText($entity->type->name);
-
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
-
-    }
-
-    /** @test */
-    public function an_admin_is_shown_a_form_to_add_a_new_entity()
-    {
-        $admin = User::factory()->create(['admin' => true]);
-
-        $this
-            ->actingAs($admin)
-            ->get(route('entities.create'))
-            ->assertSeeText(__('entities.add'));
-
-        $this->assertEquals(route('entities.create'), url()->current());
-    }
-
-    /** @test */
-    public function an_admin_can_add_a_new_entity()
-    {
-        $admin = User::factory()->create(['admin' => true]);
-        $federation = Federation::factory()->create();
-
-        $whoami = '<?xml version="1.0" encoding="UTF-8"?>
+    $whoami = '<?xml version="1.0" encoding="UTF-8"?>
 
         <!-- Do not edit manualy! This file is managed by Ansible. -->
 
@@ -1004,7 +984,7 @@ class EntityControllerTest extends TestCase
                 <mdui:Description xml:lang="cs">Poskytovatel identity (IdP) pro zaměstnance CESNETu.</mdui:Description>
                 <mdui:InformationURL xml:lang="en">https://www.ces.net/</mdui:InformationURL>
                 <mdui:InformationURL xml:lang="cs">https://www.cesnet.cz/</mdui:InformationURL>
-                <mdui:Logo height="40" width="99">https://whoami.cesnet.cz/idp/images/cesnet-logo-40.png</mdui:Logo>
+                <mdui:Logo height="40" width="99">https://whoami.cesnet.cz/idp/images/whoami.cesnet.cz.png</mdui:Logo>
               </mdui:UIInfo>
             </Extensions>
 
@@ -1110,63 +1090,62 @@ class EntityControllerTest extends TestCase
 
         </EntityDescriptor>';
 
-        // add an entity using wrong metadata content
-        // add an entity using correct metadata content
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->post(route('entities.store', [
-                'metadata' => $whoami,
-                'federation' => $federation->id,
-                'explanation' => $this->faker->catchPhrase(),
-            ]))
-            ->assertSeeText(__('entities.entity_requested', ['name' => 'https://whoami.cesnet.cz/idp/shibboleth']));
+    // add an entity using wrong metadata content
+    // add an entity using correct metadata content
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->post(route('entities.store', [
+        'metadata' => $whoami,
+        'federation' => $federation->id,
+        'explanation' => $this->faker->catchPhrase(),
+      ]))
+      ->assertSeeText(__('entities.entity_requested', ['name' => 'https://whoami.cesnet.cz/idp/shibboleth']));
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(route('entities.index'), url()->current());
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(route('entities.index'), url()->current());
 
-        // add already existing entity
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->post(route('entities.store', [
-                'metadata' => $whoami,
-                'federation' => $federation->id,
-                'explanation' => $this->faker->catchPhrase(),
-            ]))
-            ->assertSeeText(__('entities.existing_already'));
+    // add already existing entity
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->post(route('entities.store', [
+        'metadata' => $whoami,
+        'federation' => $federation->id,
+        'explanation' => $this->faker->catchPhrase(),
+      ]))
+      ->assertSeeText(__('entities.existing_already'));
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(route('entities.show', Entity::find(1)), url()->current());
-    }
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(route('entities.show', Entity::find(1)), url()->current());
+  }
 
-    /** @test */
-    public function an_admin_can_see_entities_edit_page()
-    {
-        Queue::fake();
-        $admin = User::factory()->create(['admin' => true]);
-        $entity = Entity::factory()->create();
+  /** @test */
+  public function an_admin_can_see_entities_edit_page()
+  {
+    Queue::fake();
+    $admin = User::factory()->create(['admin' => true]);
+    $entity = Entity::factory()->create();
 
-        $this
-            ->actingAs($admin)
-            ->get(route('entities.edit', $entity))
-            ->assertSeeText(__('entities.edit', ['name' => $entity->name_en]))
-            ->assertSeeText(__('entities.profile'));
+    $this
+      ->actingAs($admin)
+      ->get(route('entities.edit', $entity))
+      ->assertSeeText(__('entities.edit', ['name' => $entity->name_en]))
+      ->assertSeeText(__('entities.profile'));
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(route('entities.edit', $entity), url()->current());
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(route('entities.edit', $entity), url()->current());
+  }
 
-    }
+  /** @test */
+  public function an_admin_can_edit_an_existing_entity()
+  {
+    Bus::fake();
 
-    /** @test */
-    public function an_admin_can_edit_an_existing_entity()
-    {
-        Bus::fake();
+    $admin = User::factory()->create(['admin' => true]);
+    $entity = Entity::factory()->create(['entityid' => 'https://whoami.cesnet.cz/idp/shibboleth']);
 
-        $admin = User::factory()->create(['admin' => true]);
-        $entity = Entity::factory()->create(['entityid' => 'https://whoami.cesnet.cz/idp/shibboleth']);
-
-        $whoami = '<?xml version="1.0" encoding="UTF-8"?>
+    $whoami = '<?xml version="1.0" encoding="UTF-8"?>
 
         <!-- Do not edit manualy! This file is managed by Ansible. -->
 
@@ -1197,7 +1176,7 @@ class EntityControllerTest extends TestCase
                 <mdui:Description xml:lang="cs">Poskytovatel identity (IdP) pro zaměstnance CESNETu.</mdui:Description>
                 <mdui:InformationURL xml:lang="en">https://www.ces.net/</mdui:InformationURL>
                 <mdui:InformationURL xml:lang="cs">https://www.cesnet.cz/</mdui:InformationURL>
-                <mdui:Logo height="40" width="99">https://whoami.cesnet.cz/idp/images/cesnet-logo-40.png</mdui:Logo>
+                <mdui:Logo height="40" width="99">https://whoami.cesnet.cz/idp/images/whoami.cesnet.cz.png</mdui:Logo>
               </mdui:UIInfo>
             </Extensions>
 
@@ -1303,262 +1282,255 @@ class EntityControllerTest extends TestCase
 
         </EntityDescriptor>';
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->patch(route('entities.update', $entity), [
-                'action' => 'update',
-                'metadata' => $whoami,
-            ])
-            ->assertSeeText(__('entities.entity_updated'));
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->patch(route('entities.update', $entity), [
+        'action' => 'update',
+        'metadata' => $whoami,
+      ])
+      ->assertSeeText(__('entities.entity_updated'));
 
-        $this->assertEquals(route('entities.show', $entity), url()->current());
-        /*        Bus::assertDispatched(GitUpdateEntity::class, function ($job) use ($entity) {
+    $this->assertEquals(route('entities.show', $entity), url()->current());
+    /*        Bus::assertDispatched(GitUpdateEntity::class, function ($job) use ($entity) {
                     return $job->entity->is($entity);
                 });*/
-    }
+  }
 
-    /** @test */
-    public function an_admin_can_change_an_existing_entities_state()
-    {
-        Bus::fake();
+  /** @test */
+  public function an_admin_can_change_an_existing_entities_state()
+  {
+    Bus::fake();
 
-        $admin = User::factory()->create(['admin' => true]);
-        $entity = Entity::factory()->create();
+    $admin = User::factory()->create(['admin' => true]);
+    $entity = Entity::factory()->create();
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertFalse($entity->trashed());
+    $this->assertEquals(1, Entity::count());
+    $this->assertFalse($entity->trashed());
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->patch(route('entities.state', $entity))
-            ->assertSeeText(__('entities.deleted', ['name' => $entity->name_en]));
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->patch(route('entities.state', $entity))
+      ->assertSeeText(__('entities.deleted', ['name' => $entity->name_en]));
 
-        $entity->refresh();
-        $this->assertTrue($entity->trashed());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
+    $entity->refresh();
+    $this->assertTrue($entity->trashed());
+    $this->assertEquals(route('entities.show', $entity), url()->current());
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->patch(route('entities.state', $entity))
-            ->assertSeeText(__('entities.restored', ['name' => $entity->name_en]));
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->patch(route('entities.state', $entity))
+      ->assertSeeText(__('entities.restored', ['name' => $entity->name_en]));
 
-        $entity->refresh();
-        $this->assertFalse($entity->trashed());
-        $this->assertEquals(route('entities.show', $entity), url()->current());
-    }
+    $entity->refresh();
+    $this->assertFalse($entity->trashed());
+    $this->assertEquals(route('entities.show', $entity), url()->current());
+  }
 
-    /** @test */
-    public function an_admin_can_change_an_existing_entities_operators()
-    {
-        Queue::fake();
-        $admin = User::factory()->create(['admin' => true]);
-        $entity = Entity::factory()->create();
-        $new_operator = User::factory()->create();
+  /** @test */
+  public function an_admin_can_change_an_existing_entities_operators()
+  {
+    Queue::fake();
+    $admin = User::factory()->create(['admin' => true]);
+    $entity = Entity::factory()->create();
+    $new_operator = User::factory()->create();
 
-        $this->assertEquals(1, Entity::count());
-        $this->assertEquals(2, User::count());
-        $this->assertEquals(0, $entity->operators()->count());
+    $this->assertEquals(1, Entity::count());
+    $this->assertEquals(2, User::count());
+    $this->assertEquals(0, $entity->operators()->count());
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->post(route('entities.operators.store', $entity))
-            ->assertSeeText(__('entities.add_empty_operators'));
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->post(route('entities.operators.store', $entity))
+      ->assertSeeText(__('entities.add_empty_operators'));
 
-        $entity->refresh();
-        $this->assertEquals(0, $entity->operators()->count());
-        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
+    $entity->refresh();
+    $this->assertEquals(0, $entity->operators()->count());
+    $this->assertEquals(route('entities.operators.index', $entity), url()->current());
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->post(route('entities.operators.store', $entity), [
-                'operators' => [$new_operator->id],
-            ])
-            ->assertSeeText(__('entities.operators_added'));
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->post(route('entities.operators.store', $entity), [
+        'operators' => [$new_operator->id],
+      ])
+      ->assertSeeText(__('entities.operators_added'));
 
-        $entity->refresh();
-        $this->assertEquals(1, $entity->operators()->count());
-        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
+    $entity->refresh();
+    $this->assertEquals(1, $entity->operators()->count());
+    $this->assertEquals(route('entities.operators.index', $entity), url()->current());
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->delete(route('entities.operators.destroy', $entity))
-            ->assertSeeText(__('entities.delete_empty_operators'));
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->delete(route('entities.operators.destroy', $entity))
+      ->assertSeeText(__('entities.delete_empty_operators'));
 
-        $entity->refresh();
-        $this->assertEquals(1, $entity->operators()->count());
-        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
+    $entity->refresh();
+    $this->assertEquals(1, $entity->operators()->count());
+    $this->assertEquals(route('entities.operators.index', $entity), url()->current());
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->delete(route('entities.operators.destroy', $entity), [
-                'operators' => [$new_operator->id],
-            ])
-            ->assertSeeText(__('entities.operators_deleted'));
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->delete(route('entities.operators.destroy', $entity), [
+        'operators' => [$new_operator->id],
+      ])
+      ->assertSeeText(__('entities.operators_deleted'));
 
-        $entity->refresh();
-        $this->assertEquals(0, $entity->operators()->count());
-        $this->assertEquals(route('entities.operators.index', $entity), url()->current());
+    $entity->refresh();
+    $this->assertEquals(0, $entity->operators()->count());
+    $this->assertEquals(route('entities.operators.index', $entity), url()->current());
+  }
 
-    }
+  /** @test */
+  public function an_admin_can_change_an_existing_entities_federation_membership()
+  {
+    $this->withoutExceptionHandling();
+    Queue::fake();
 
-    /** @test */
-    public function an_admin_can_change_an_existing_entities_federation_membership()
-    {
-        $this->withoutExceptionHandling();
-        Queue::fake();
+    $admin = User::factory()->create(['admin' => true]);
+    $entity = Entity::factory()->create();
+    $federation = Federation::factory()->create();
 
-        $admin = User::factory()->create(['admin' => true]);
-        $entity = Entity::factory()->create();
-        $federation = Federation::factory()->create();
+    $this->assertEquals(0, Membership::whereApproved(false)->count());
 
-        $this->assertEquals(0, Membership::whereApproved(false)->count());
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->post(route('entities.join', $entity), [
+        'federation' => $federation->id,
+        'explanation' => $this->faker->sentence(),
+      ])
+      ->assertSeeText(__('entities.join_requested', ['name' => $federation->name]));
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->post(route('entities.join', $entity), [
-                'federation' => $federation->id,
-                'explanation' => $this->faker->sentence(),
-            ])
-            ->assertSeeText(__('entities.join_requested', ['name' => $federation->name]));
+    $this->assertEquals(1, Membership::whereApproved(false)->count());
+  }
 
-        $this->assertEquals(1, Membership::whereApproved(false)->count());
+  /** @test */
+  public function an_admin_can_purge_an_existing_entity()
+  {
 
-    }
+    Queue::fake();
 
-    /** @test */
-    public function an_admin_can_purge_an_existing_entity()
-    {
+    $admin = User::factory()->create(['admin' => true]);
+    $entity = Entity::factory()->create([
+      'deleted_at' => now(),
+    ]);
+    $name = $entity->name_en;
 
-        Queue::fake();
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->delete(route('entities.destroy', $entity))
+      ->assertSeeText(__('entities.destroyed', ['name' => $name]));
+  }
 
-        $admin = User::factory()->create(['admin' => true]);
-        $entity = Entity::factory()->create([
-            'deleted_at' => now(),
-        ]);
-        $name = $entity->name_en;
+  /** @test */
+  public function an_admin_can_reject_a_new_entity_request()
+  {
+    Queue::fake();
+    $admin = User::factory()->create(['admin' => true]);
+    $federation = Federation::factory()->create();
+    $entity = Entity::factory()->create(['approved' => false]);
+    $entity->federations()->attach($federation, [
+      'requested_by' => $admin->id,
+      'explanation' => $this->faker->catchPhrase(),
+    ]);
+    $membership = Membership::find(1);
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->delete(route('entities.destroy', $entity))
-            ->assertSeeText(__('entities.destroyed', ['name' => $name]));
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->delete(route('memberships.destroy', $membership))
+      ->assertSeeText(__('federations.membership_rejected', ['entity' => $entity->name_en]));
+  }
 
-    }
+  /** @test */
+  public function an_admin_can_approve_a_new_entity_request()
+  {
+    Bus::fake();
 
-    /** @test */
-    public function an_admin_can_reject_a_new_entity_request()
-    {
-        Queue::fake();
-        $admin = User::factory()->create(['admin' => true]);
-        $federation = Federation::factory()->create();
-        $entity = Entity::factory()->create(['approved' => false]);
-        $entity->federations()->attach($federation, [
-            'requested_by' => $admin->id,
-            'explanation' => $this->faker->catchPhrase(),
-        ]);
-        $membership = Membership::find(1);
+    $admin = User::factory()->create(['admin' => true]);
+    $federation = Federation::factory()->create();
+    $entity = Entity::factory()->create(['approved' => false]);
+    $entity->federations()->attach($federation, [
+      'requested_by' => $admin->id,
+      'explanation' => $this->faker->catchPhrase(),
+    ]);
+    $membership = Membership::find(1);
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->delete(route('memberships.destroy', $membership))
-            ->assertSeeText(__('federations.membership_rejected', ['entity' => $entity->name_en]));
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->patch(route('memberships.update', $membership))
+      ->assertSeeText(__('federations.membership_accepted', ['entity' => $entity->entityid]));
+  }
 
-    }
+  /** @test */
+  public function not_even_an_admin_can_run_update_function_without_definig_action()
+  {
+    Queue::fake();
+    $admin = User::factory()->create(['admin' => true]);
+    $entity = Entity::factory()->create();
 
-    /** @test */
-    public function an_admin_can_approve_a_new_entity_request()
-    {
-        Bus::fake();
+    $this
+      ->followingRedirects()
+      ->actingAs($admin)
+      ->put(route('entities.update', $entity));
 
-        $admin = User::factory()->create(['admin' => true]);
-        $federation = Federation::factory()->create();
-        $entity = Entity::factory()->create(['approved' => false]);
-        $entity->federations()->attach($federation, [
-            'requested_by' => $admin->id,
-            'explanation' => $this->faker->catchPhrase(),
-        ]);
-        $membership = Membership::find(1);
+    $this->assertEquals(route('home'), url()->current());
+  }
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->patch(route('memberships.update', $membership))
-            ->assertSeeText(__('federations.membership_accepted', ['entity' => $entity->entityid]));
-    }
+  /** @test */
+  public function ask_rs_isnt_shown_for_sp_entities_not_in_rs_federation()
+  {
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create(['type' => 'sp']);
+    $user->entities()->attach($entity);
 
-    /** @test */
-    public function not_even_an_admin_can_run_update_function_without_definig_action()
-    {
-        Queue::fake();
-        $admin = User::factory()->create(['admin' => true]);
-        $entity = Entity::factory()->create();
+    $this
+      ->actingAs($user)
+      ->get(route('entities.show', $entity))
+      ->assertDontSeeText(__('entities.ask_rs'));
 
-        $this
-            ->followingRedirects()
-            ->actingAs($admin)
-            ->put(route('entities.update', $entity));
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->post(route('entities.rs.store', $entity))
+      ->assertStatus(403)
+      ->assertSeeText(__('entities.rs_only_for_eduidcz_members'));
+  }
 
-        $this->assertEquals(route('home'), url()->current());
+  /** @test */
+  public function ask_rs_is_shown_for_sp_entities_in_rs_federation()
+  {
+    Queue::fake();
+    $user = User::factory()->create();
+    $entity = Entity::factory()->create(['type' => 'sp', 'rs' => false]);
+    $user->entities()->attach($entity);
+    $federation = Federation::factory()->create(['xml_name' => config('git.rs_federation')]);
+    $federation->entities()->attach($entity, [
+      'requested_by' => $user->id,
+      'approved_by' => $user->id,
+      'approved' => true,
+      'explanation' => 'Test',
+    ]);
 
-    }
+    $this
+      ->actingAs($user)
+      ->get(route('entities.show', $entity))
+      ->assertSeeText(__('entities.ask_rs'));
 
-    /** @test */
-    public function ask_rs_isnt_shown_for_sp_entities_not_in_rs_federation()
-    {
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create(['type' => 'sp']);
-        $user->entities()->attach($entity);
-
-        $this
-            ->actingAs($user)
-            ->get(route('entities.show', $entity))
-            ->assertDontSeeText(__('entities.ask_rs'));
-
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->post(route('entities.rs.store', $entity))
-            ->assertStatus(403)
-            ->assertSeeText(__('entities.rs_only_for_eduidcz_members'));
-
-    }
-
-    /** @test */
-    public function ask_rs_is_shown_for_sp_entities_in_rs_federation()
-    {
-        Queue::fake();
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create(['type' => 'sp', 'rs' => false]);
-        $user->entities()->attach($entity);
-        $federation = Federation::factory()->create(['xml_name' => config('git.rs_federation')]);
-        $federation->entities()->attach($entity, [
-            'requested_by' => $user->id,
-            'approved_by' => $user->id,
-            'approved' => true,
-            'explanation' => 'Test',
-        ]);
-
-        $this
-            ->actingAs($user)
-            ->get(route('entities.show', $entity))
-            ->assertSeeText(__('entities.ask_rs'));
-
-        $this
-            ->followingRedirects()
-            ->actingAs($user)
-            ->post(route('entities.rs.store', $entity))
-            ->assertStatus(200)
-            ->assertSeeText(__('entities.rs_asked'));
-
-    }
+    $this
+      ->followingRedirects()
+      ->actingAs($user)
+      ->post(route('entities.rs.store', $entity))
+      ->assertStatus(200)
+      ->assertSeeText(__('entities.rs_asked'));
+  }
 }
