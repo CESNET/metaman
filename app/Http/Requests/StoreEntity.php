@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class StoreEntity extends FormRequest
 {
@@ -31,15 +32,17 @@ class StoreEntity extends FormRequest
         ];
     }
 
-    public function withValidator($validator)
+    public function after(): array
     {
-        $validator->after(function ($validator) {
-            $data = $validator->safe();
+        return [
+            function (Validator $validator) {
+                $data = $validator->safe();
 
-            if (! empty($data['file']) && ! empty($data['metadata'])) {
-                $validator->errors()->add('file', 'You cannot provide both a file and metadata. Please choose one.');
-                $validator->errors()->add('metadata', 'You cannot provide both metadata and a file. Please choose one.');
-            }
-        });
+                if ($data['file'] && $data['metadata']) {
+                    $validator->errors()->add('file', 'You cannot provide both a file and metadata. Please choose one.');
+                    $validator->errors()->add('metadata', 'You cannot provide both a file and metadata. Please choose one.');
+                }
+            },
+        ];
     }
 }
