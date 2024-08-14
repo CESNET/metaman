@@ -38,7 +38,7 @@ class StoreEntity extends FormRequest
             function (Validator $validator) {
                 $data = $validator->safe();
 
-                if ($data['file'] && $data['metadata']) {
+                if (!empty($data['file']) && !empty($data['metadata'])) {
                     $validator->errors()->add('file', 'You cannot provide both a file and metadata. Please choose one.');
                     $validator->errors()->add('metadata', 'You cannot provide both a file and metadata. Please choose one.');
                 }
