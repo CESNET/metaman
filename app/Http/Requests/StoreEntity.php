@@ -30,4 +30,16 @@ class StoreEntity extends FormRequest
             'explanation' => 'required|max:255',
         ];
     }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $data = $validator->safe();
+
+            if (! empty($data['file']) && ! empty($data['metadata'])) {
+                $validator->errors()->add('file', 'You cannot provide both a file and metadata. Please choose one.');
+                $validator->errors()->add('metadata', 'You cannot provide both metadata and a file. Please choose one.');
+            }
+        });
+    }
 }
