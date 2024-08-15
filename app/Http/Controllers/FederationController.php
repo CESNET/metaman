@@ -11,7 +11,6 @@ use App\Notifications\FederationRequested;
 use App\Notifications\FederationUpdated;
 use App\Services\NotificationService;
 use App\Traits\GitTrait;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -20,10 +19,6 @@ use Illuminate\Support\Facades\Storage;
 class FederationController extends Controller
 {
     use GitTrait;
-
-    public function __construct()
-    {
-    }
 
     /**
      * Display a listing of the resource.
@@ -76,10 +71,6 @@ class FederationController extends Controller
 
         $admins = User::activeAdmins()->select('id', 'email')->get();
         Notification::sendNow($admins, new FederationRequested($federation));
-
-        if (App::environment(['local', 'testing'])) {
-            session()->flash('federationId', $federation->id);
-        }
 
         return redirect('federations')
             ->with('status', __('federations.requested', ['name' => $federation->name]));

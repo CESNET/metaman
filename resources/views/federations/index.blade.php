@@ -15,10 +15,4 @@
 
     @livewire('search-federations')
 
-    @if (App::environment(['local', 'testing']))
-        @if (session()->has('federationId'))
-            <input type="hidden" name="federation_id" value="{{ session('federationId') }}">
-        @endif
-    @endif
-
 @endsection
