@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Jobs\RunMdaScript;
 use App\Services\CategoryTagService;
+use App\Services\FederationService;
 use App\Services\HfdTagService;
 use App\Services\RsTagService;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -47,13 +48,11 @@ class AppServiceProvider extends ServiceProvider
             // Mail::alwaysTo('foo@example.org');
             Model::preventLazyLoading();
         }
-        //TODO comment this for testing part
-        /*        RateLimiter::for('mda-run-limit', function (RunMdaScript $job) {
-                    $diskName = config('storageCfg.name');
-                    $pathToDirectory = Storage::disk($diskName)->path($job->federation->name);
+                RateLimiter::for('mda-run-limit', function (RunMdaScript $job) {
+                    $pathToDirectory = FederationService::getFederationFolder($job->federation);
                     $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
                     return Limit::perMinute(1)->by($lockKey);
-                });*/
+                });
 
     }
 }

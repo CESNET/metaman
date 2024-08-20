@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Federation;
+use App\Services\FederationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -71,11 +72,11 @@ class RunMdaScript implements ShouldQueue
      * Get the middleware the job should pass through.
      *
      * @return array<int, object>
+     * @throws \Exception
      */
     public function middleware(): array
     {
-        $diskName = config('storageCfg.name');
-        $pathToDirectory = Storage::disk($diskName)->path($this->federation->name);
+        $pathToDirectory = FederationService::getFederationFolder($this->federation);
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
 
         return [
