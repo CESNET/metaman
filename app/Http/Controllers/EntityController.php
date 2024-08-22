@@ -12,14 +12,12 @@ use App\Models\Federation;
 use App\Models\User;
 use App\Notifications\EntityDestroyed;
 use App\Notifications\EntityRequested;
-use App\Notifications\EntityUpdated;
 use App\Traits\DumpFromGit\EntitiesHelp\DeleteFromEntity;
 use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
 use App\Traits\GitTrait;
 use App\Traits\ValidatorTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -59,7 +57,7 @@ class EntityController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreEntity $request)
     {
@@ -181,7 +179,7 @@ class EntityController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, Entity $entity)
     {
@@ -246,16 +244,6 @@ class EntityController extends Controller
                         ->back()
                         ->with('status', __('entities.not_changed'));
                 }
-
-                // TODO entityUpdated (functional)
-                /*                        Bus::chain([
-                                            new GitUpdateEntity($entity, Auth::user()),
-                                            function () use ($entity) {
-                                                $admins = User::activeAdmins()->select('id', 'email')->get();
-                                                Notification::send($entity->operators, new EntityUpdated($entity));
-                                                Notification::send($admins, new EntityUpdated($entity));
-                                            },
-                                        ])->dispatch();*/
 
                 return redirect()
                     ->route('entities.show', $entity)

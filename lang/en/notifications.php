@@ -92,4 +92,6 @@ return [
     'entity_added_to_rs_body' => ':name is now member of R&S entity category.',
     'entity_deleted_from_rs_subject' => 'Entity deleted from R&S',
     'entity_deleted_from_rs_body' => ':name is not member of R&S entity category anymore.',
+    'too_many_requests_body' => 'multiple attempts to modify the file were made by the user :user',
+    'too_many_requests_subject' => 'suspicious activity',
 ];

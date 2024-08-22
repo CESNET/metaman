@@ -92,4 +92,6 @@ return [
     'entity_added_to_rs_body' => 'Entita :name je nyní součástí kategorie entit R&S.',
     'entity_deleted_from_rs_subject' => 'Entita není součástí R&S',
     'entity_deleted_from_rs_body' => 'Entita :name již není součástí kategorie entit R&S.',
+    'too_many_requests_body' => 'Bylo provedeno příliž mnoho pokusů o změnu souboru uživatelem :user',
+    'too_many_requests_subject' => 'podezřelá aktivita',
 ];

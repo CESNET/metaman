@@ -3,13 +3,18 @@
 namespace App\Providers;
 
 use App\Jobs\RunMdaScript;
+use App\Models\User;
+use App\Notifications\TooManyRequests;
 use App\Services\CategoryTagService;
 use App\Services\FederationService;
 use App\Services\HfdTagService;
 use App\Services\RsTagService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -52,6 +57,23 @@ class AppServiceProvider extends ServiceProvider
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
 
             return Limit::perMinute(1)->by($lockKey);
+        });
+
+        // AntiSpamFilter based on UserId
+        RateLimiter::for('anti-ddos-limit', function () {
+            $key = Auth::id();
+
+            return Limit::perMinute(100)
+                ->by($key)
+                ->response(function () use ($key) {
+                    Log::info('Rate limit exceeded, redirecting...');
+                    $admins = User::activeAdmins()->select('id', 'email')->get();
+                    Notification::sendNow($admins, new TooManyRequests(User::find($key)));
+
+                    return redirect()->back()
+                        ->with('status', 'error')
+                        ->with('color', 'red');
+                });
         });
 
     }
