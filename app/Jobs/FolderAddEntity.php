@@ -10,6 +10,7 @@ use App\Notifications\EntityStateChanged;
 use App\Notifications\EntityUpdated;
 use App\Services\FederationService;
 use App\Services\NotificationService;
+use App\Services\QueueService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -78,7 +79,12 @@ class FolderAddEntity implements ShouldQueue
                     }
                 }
 
-                RunMdaScript::dispatch($federation, $lock->owner());
+                $jobExists = QueueService::jobExists(FolderAddEntity::class, $this->entity->id);
+
+                if ($jobExists) {
+                    RunMdaScript::dispatch($federation, $lock->owner());
+                }
+
             } catch (Exception $e) {
                 $this->fail($e);
             } finally {
@@ -97,6 +103,8 @@ class FolderAddEntity implements ShouldQueue
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping($this->entity->id))->dontRelease()];
+        return [
+            (new WithoutOverlapping($this->entity->id)
+        )];
     }
 }
