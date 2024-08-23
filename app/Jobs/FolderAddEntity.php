@@ -10,7 +10,6 @@ use App\Notifications\EntityStateChanged;
 use App\Notifications\EntityUpdated;
 use App\Services\FederationService;
 use App\Services\NotificationService;
-use App\Services\QueueService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -78,12 +77,7 @@ class FolderAddEntity implements ShouldQueue
                         NotificationService::sendModelNotification($this->entity, new EntityUpdated($this->entity));
                     }
                 }
-
-                $jobExists = QueueService::jobExists(FolderAddEntity::class, $this->entity->id);
-
-                if ($jobExists) {
-                    RunMdaScript::dispatch($federation, $lock->owner());
-                }
+                RunMdaScript::dispatch($federation, $lock->owner());
 
             } catch (Exception $e) {
                 $this->fail($e);

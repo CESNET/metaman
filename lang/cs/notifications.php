@@ -94,4 +94,5 @@ return [
     'entity_deleted_from_rs_body' => 'Entita :name již není součástí kategorie entit R&S.',
     'too_many_requests_body' => 'Bylo provedeno příliž mnoho pokusů o změnu souboru uživatelem :user',
     'too_many_requests_subject' => 'podezřelá aktivita',
+    'too_many_requests_subject_notification' => 'Bylo provedeno příliž mnoho pokusů o změnu entity, počkejte minutu zkuste znovu',
 ];

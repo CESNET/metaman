@@ -94,4 +94,5 @@ return [
     'entity_deleted_from_rs_body' => ':name is not member of R&S entity category anymore.',
     'too_many_requests_body' => 'multiple attempts to modify the file were made by the user :user',
     'too_many_requests_subject' => 'suspicious activity',
+    'too_many_requests_subject_notification' => 'multiple attempts to modify the entity were made, please wait a minute and try again.',
 ];

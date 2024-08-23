@@ -71,7 +71,7 @@ class AppServiceProvider extends ServiceProvider
                     Notification::sendNow($admins, new TooManyRequests(User::find($key)));
 
                     return redirect()->back()
-                        ->with('status', 'error')
+                        ->with('status', __('notifications.too_many_requests_subject_notification'))
                         ->with('color', 'red');
                 });
         });
