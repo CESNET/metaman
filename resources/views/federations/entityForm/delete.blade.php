@@ -56,10 +56,6 @@
                 <x-modal>
                     <x-slot:title>{{ __('common.confirm_delete_members') }}</x-slot:title>
                     {{ __('common.confirm_delete_members_body') }}
-                    <div class="mt-4">
-                        <x-button color="red" type="submit">{{ __('common.confirm') }}</x-button>
-                        <x-button @click.prevent="open = false">{{ __('common.cancel') }}</x-button>
-                    </div>
                 </x-modal>
             </div>
         @endif

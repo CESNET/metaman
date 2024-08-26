@@ -42,20 +42,4 @@ class MembershipObserver
         }
 
     }
-
-    /**
-     * Handle the Membership "restored" event.
-     */
-    public function restored(Membership $membership): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Membership "force deleted" event.
-     */
-    public function forceDeleted(Membership $membership): void
-    {
-
-    }
 }
