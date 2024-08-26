@@ -6,7 +6,6 @@ use App\Facades\EntityFacade;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\Membership;
-use App\Notifications\EntityAddedToHfd;
 use App\Notifications\MembershipAccepted;
 use App\Services\FederationService;
 use App\Services\NotificationService;
@@ -17,7 +16,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Mockery\Exception;
 
 class FolderAddMembership implements ShouldQueue
@@ -40,7 +38,6 @@ class FolderAddMembership implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::info('MEMBERSHIP START');
         $federation = Federation::find($this->membership->federation_id);
         $entity = Entity::find($this->membership->entity_id);
 
@@ -60,10 +57,6 @@ class FolderAddMembership implements ShouldQueue
             EntityFacade::saveMetadataToFederationFolder($entity->id, $federation->id);
 
             NotificationService::sendModelNotification($entity, new MembershipAccepted($this->membership));
-
-            /*            if($this->membership->entity->hfd) {
-                            NotificationService::sendEntityNotification($entity, new EntityAddedToHfd($this->membership->entity));
-                        }*/
 
             RunMdaScript::dispatch($federation, $lock->owner());
         } catch (Exception $e) {

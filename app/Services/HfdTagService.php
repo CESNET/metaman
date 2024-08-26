@@ -62,7 +62,7 @@ class HfdTagService extends TagService
         if ($entity->hfd) {
 
             if (! $this->hasTagInDocument($entity->xml_file, $this->value)) {
-                return $this->create($entity->xml_file);
+                return $this->create($entity);
             }
 
         } else {
