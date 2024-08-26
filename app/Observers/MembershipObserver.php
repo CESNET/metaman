@@ -33,9 +33,14 @@ class MembershipObserver
      */
     public function deleted(Membership $membership): void
     {
-        $entity = $membership->entity;
-        $federation = $membership->federation;
-        FolderDeleteMembership::dispatch($entity, $federation);
+        if (! $membership->entity->approved) {
+            $membership->entity->forceDelete();
+        } else {
+            $entity = $membership->entity;
+            $federation = $membership->federation;
+            FolderDeleteMembership::dispatch($entity, $federation);
+        }
+
     }
 
     /**

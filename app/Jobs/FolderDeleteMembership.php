@@ -15,7 +15,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
@@ -42,7 +41,6 @@ class FolderDeleteMembership implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::info('MEMBERSHIP DELETE START');
         $federation = $this->federation;
         $entity = $this->entity;
         $diskName = config('storageCfg.name');
@@ -56,7 +54,7 @@ class FolderDeleteMembership implements ShouldQueue
             return;
         }
         $pathToFile = $federation->xml_id.'/'.$entity->file;
-        Log::info($pathToFile);
+
         if (! Storage::disk($diskName)->exists($pathToFile)) {
             NotificationService::sendModelNotification($entity, new MembershipRejected($entity->entityid, $federation->name));
 

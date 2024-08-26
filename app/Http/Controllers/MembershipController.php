@@ -45,18 +45,8 @@ class MembershipController extends Controller
     public function destroy(Membership $membership)
     {
         $this->authorize('delete', $membership);
-
-        $entity = $membership->entity->entityid;
-
         $locale = app()->getLocale();
-
-        $federation = $membership->federation->name;
         $entity = $membership->entity->{"name_$locale"} ?? $membership->entity->entityid;
-        $operators = $membership->entity->operators;
-
-        if (! $membership->entity->approved) {
-            $membership->entity->forceDelete();
-        }
 
         $membership->delete();
 
