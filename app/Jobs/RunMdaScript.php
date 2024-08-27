@@ -14,15 +14,12 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
 class RunMdaScript implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
     use HandlesJobsFailuresTrait;
-
 
     public Federation $federation;
 
@@ -47,6 +44,7 @@ class RunMdaScript implements ShouldQueue
             $pathToDirectory = FederationService::getFederationFolder($this->federation);
         } catch (\Exception $e) {
             $this->fail($e);
+
             return;
         }
 
