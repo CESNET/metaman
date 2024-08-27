@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Federation;
 use App\Services\FederationService;
+use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -19,6 +20,9 @@ use Mockery\Exception;
 class RunMdaScript implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    use HandlesJobsFailuresTrait;
+
 
     public Federation $federation;
 
@@ -39,8 +43,13 @@ class RunMdaScript implements ShouldQueue
     public function handle(): void
     {
 
-        $diskName = config('storageCfg.name');
-        $pathToDirectory = Storage::disk($diskName)->path($this->federation->name);
+        try {
+            $pathToDirectory = FederationService::getFederationFolder($this->federation);
+        } catch (\Exception $e) {
+            $this->fail($e);
+            return;
+        }
+
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
 
         $filterArray = explode(', ', $this->federation->filters);
