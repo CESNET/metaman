@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use App\Facades\RsTag;
 use App\Mail\AskRs;
 use App\Models\Entity;
-use App\Notifications\EntityAddedToRs;
-use App\Notifications\EntityDeletedFromRs;
-use App\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -47,8 +44,6 @@ class EntityRsController extends Controller
 
             return $entity;
         });
-
-
 
         $status = $entity->rs ? 'rs' : 'no_rs';
         $color = $entity->rs ? 'green' : 'red';

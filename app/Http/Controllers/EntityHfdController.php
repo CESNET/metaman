@@ -3,13 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Facades\HfdTag;
-use App\Mail\NewIdentityProvider;
 use App\Models\Entity;
-use App\Notifications\EntityAddedToHfd;
-use App\Notifications\EntityDeletedFromHfd;
-use App\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 class EntityHfdController extends Controller
 {
@@ -33,7 +28,6 @@ class EntityHfdController extends Controller
 
             return $entity;
         });
-
 
         $status = $entity->hfd ? 'hfd' : 'no_hfd';
         $color = $entity->hfd ? 'red' : 'green';
