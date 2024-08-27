@@ -44,7 +44,6 @@ class DeleteFederation implements ShouldQueue
 
             return;
         }
-        dump($pathToDirectory);
 
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
         $lock = Cache::lock($lockKey, 61);

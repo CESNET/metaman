@@ -13,14 +13,6 @@ use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 class EntityObserver implements ShouldHandleEventsAfterCommit
 {
     /**
-     * Handle the Entity "created" event.
-     */
-    public function created(Entity $entity): void
-    {
-        //
-    }
-
-    /**
      * Handle the Entity "updated" event.
      */
     public function updated(Entity $entity): void
@@ -49,8 +41,11 @@ class EntityObserver implements ShouldHandleEventsAfterCommit
      */
     public function deleted(Entity $entity): void
     {
-        if (! $entity->isForceDeleting()) {
-            FolderDeleteEntity::dispatch($entity);
+        $ent = Entity::withTrashed()->find($entity->id);
+        if ($ent) {
+            $federationIDs = $entity->federations->pluck('id')->toArray();
+
+            FolderDeleteEntity::dispatch($entity->id, $federationIDs, $entity->file);
 
             if ($entity->edugain == 1) {
                 EduGainDeleteEntity::dispatch($entity);
@@ -70,13 +65,5 @@ class EntityObserver implements ShouldHandleEventsAfterCommit
                 EduGainAddEntity::dispatch($entity);
             }
         }
-    }
-
-    /**
-     * Handle the Entity "force deleted" event.
-     */
-    public function forceDeleted(Entity $entity): void
-    {
-        //
     }
 }
