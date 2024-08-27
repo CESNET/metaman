@@ -48,11 +48,7 @@ class EntityRsController extends Controller
             return $entity;
         });
 
-        if ($entity->rs) {
-            NotificationService::sendOperatorNotification($entity->operators, new EntityAddedToRs($entity));
-        } else {
-            NotificationService::sendOperatorNotification($entity->operators, new EntityDeletedFromRs($entity));
-        }
+
 
         $status = $entity->rs ? 'rs' : 'no_rs';
         $color = $entity->rs ? 'green' : 'red';

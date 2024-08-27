@@ -34,12 +34,6 @@ class EntityHfdController extends Controller
             return $entity;
         });
 
-        if ($entity->hfd) {
-            NotificationService::sendOperatorNotification($entity->operators, new EntityAddedToHfd($entity));
-        } else {
-            Mail::to(config('mail.ra.address'))->send(new NewIdentityProvider($entity));
-            NotificationService::sendOperatorNotification($entity->operators, new EntityDeletedFromHfd($entity));
-        }
 
         $status = $entity->hfd ? 'hfd' : 'no_hfd';
         $color = $entity->hfd ? 'red' : 'green';

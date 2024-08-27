@@ -59,9 +59,6 @@ class FolderDeleteEntity implements ShouldQueue
                 EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
 
                 NotificationService::sendModelNotification($entity, new EntityStateChanged($entity));
-                if ($entity->hfd) {
-                    NotificationService::sendUpdateNotification($entity);
-                }
 
                 RunMdaScript::dispatch($federation, $lock->owner());
             } catch (Exception $e) {

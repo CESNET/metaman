@@ -68,14 +68,13 @@ class FolderAddEntity implements ShouldQueue
                 $lock->block(61);
                 EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
 
-                if ($this->entity->wasChanged('deleted_at') && is_null($this->entity->deleted_at)) {
+                if (
+                    ($this->entity->wasChanged('deleted_at') && is_null($this->entity->deleted_at)) ||
+                    ($this->entity->wasChanged('approved') && $this->entity->approved == 1)
+                ) {
                     NotificationService::sendModelNotification($this->entity, new EntityStateChanged($this->entity));
                 } else {
-                    if ($this->entity->wasChanged('approved') && $this->entity->approved == 1) {
-                        NotificationService::sendModelNotification($this->entity, new EntityStateChanged($this->entity));
-                    } else {
-                        NotificationService::sendModelNotification($this->entity, new EntityUpdated($this->entity));
-                    }
+                    NotificationService::sendModelNotification($this->entity, new EntityUpdated($this->entity));
                 }
                 RunMdaScript::dispatch($federation, $lock->owner());
 
