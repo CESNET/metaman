@@ -29,22 +29,25 @@ class FederationService
         }
     }
 
-    public static function deleteFederationFolder(Federation $federation): void
+    public static function deleteFederationFolderByXmlId(string $xmlId): void
     {
-
-        $diskName = config('storageCfg.name');
-        $folderName = $federation->xml_id;
-
-        Storage::disk($diskName)->deleteDirectory($folderName);
+        Storage::disk(config('storageCfg.name'))->deleteDirectory($xmlId);
     }
 
+    /**
+     * @throws \Exception no folder found
+     */
     public static function getFederationFolder(Federation $federation): string
     {
-        $disk = Storage::disk(config('storageCfg.name'));
-        $folderPath = $disk->path($federation['xml_id']);
+        return self::getFederationFolderByXmlId($federation->xml_id);
+    }
 
-        if ($disk->exists($federation['xml_id'])) {
-            return $folderPath;
+    public static function getFederationFolderByXmlId(string $xmlId): string
+    {
+        $disk = Storage::disk(config('storageCfg.name'));
+
+        if ($disk->exists($xmlId)) {
+            return $disk->path($xmlId);
         } else {
             throw new \Exception('Directory does not exist.');
         }

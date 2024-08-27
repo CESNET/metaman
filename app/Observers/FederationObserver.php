@@ -14,14 +14,6 @@ use Illuminate\Support\Facades\Log;
 class FederationObserver
 {
     /**
-     * Handle the Federation "created" event.
-     */
-    public function created(Federation $federation): void
-    {
-        //
-    }
-
-    /**
      * Handle the Federation "updated" event.
      */
     public function updated(Federation $federation): void
@@ -36,12 +28,12 @@ class FederationObserver
      */
     public function deleted(Federation $federation): void
     {
-        if (! $federation->isForceDeleting()) {
+        $fed = Federation::withTrashed()->find($federation->id);
+        if ($fed) {
             if ($federation->approved) {
-                DeleteFederation::dispatch($federation);
+                DeleteFederation::dispatch($fed->xml_id);
             }
         }
-
     }
 
     /**
@@ -57,7 +49,6 @@ class FederationObserver
             return;
         }
         $jobs = [];
-        $diskName = config('storageCfg.name');
         $pathToDirectory = FederationService::getFederationFolder($federation);
 
         foreach ($memberships as $membership) {
@@ -81,13 +72,5 @@ class FederationObserver
             }
         }
 
-    }
-
-    /**
-     * Handle the Federation "force deleted" event.
-     */
-    public function forceDeleted(Federation $federation): void
-    {
-        //
     }
 }

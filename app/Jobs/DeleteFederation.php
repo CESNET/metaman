@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\Federation;
 use App\Services\FederationService;
 use App\Traits\HandlesJobsFailuresTrait;
 use Illuminate\Bus\Queueable;
@@ -22,14 +21,14 @@ class DeleteFederation implements ShouldQueue
      */
     use HandlesJobsFailuresTrait;
 
-    public Federation $federation;
+    public string $folderName;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(Federation $federation)
+    public function __construct(string $folderName)
     {
-        $this->federation = $federation;
+        $this->folderName = $folderName;
     }
 
     /**
@@ -39,18 +38,19 @@ class DeleteFederation implements ShouldQueue
     {
 
         try {
-            $pathToDirectory = FederationService::getFederationFolder($this->federation);
+            $pathToDirectory = FederationService::getFederationFolderByXmlId($this->folderName);
         } catch (\Exception $e) {
             $this->fail($e);
 
             return;
         }
+        dump($pathToDirectory);
 
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
         $lock = Cache::lock($lockKey, 61);
         try {
             $lock->block(61);
-            FederationService::deleteFederationFolder($this->federation);
+            FederationService::deleteFederationFolderByXmlId($this->folderName);
 
         } catch (Exception $e) {
             $this->fail($e);
