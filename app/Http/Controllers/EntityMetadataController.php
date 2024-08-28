@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entity;
-use Illuminate\Support\Facades\Storage;
 
 class EntityMetadataController extends Controller
 {
@@ -23,7 +22,9 @@ class EntityMetadataController extends Controller
                 ->with('color', 'red');
         }
 
-        return Storage::disk(config('storageCfg.name'))->download("{$folderName}/{$entity->file}");
+        return response($entity->xml_file)
+            ->header('Content-Type', 'application/xml')
+            ->header('Content-Disposition', 'attachment; filename="'.$entity->file.'"');
     }
 
     public function show(Entity $entity)
@@ -42,6 +43,7 @@ class EntityMetadataController extends Controller
                 ->with('color', 'red');
         }
 
-        return response()->file(Storage::disk(config('storageCfg.name'))->path("{$folderName}/{$entity->file}"));
+        return response($entity->xml_file)
+            ->header('Content-Type', 'application/xml');
     }
 }
