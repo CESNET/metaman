@@ -38,19 +38,6 @@
 
     @can('do-everything')
         <x-forms.section.form-body-section
-            name="federations.xml_id"
-            label="xml_id"
-        >
-            <x-forms.element.input err="xml_id">
-                type="text" name="xml_id" id="xml_id" maxlength="32"
-                placeholder="{{ __('federations.name_placeholder') }}"
-                value="{{ $federation->xml_id }}" required
-            </x-forms.element.input>
-
-        </x-forms.section.form-body-section>
-
-
-        <x-forms.section.form-body-section
             name="common.add_sp_idp"
             label="add_sp_and_idp_section"
         >
