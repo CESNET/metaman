@@ -42,6 +42,22 @@ class FederationService
         return self::getFederationFolderByXmlId($federation->xml_id);
     }
 
+    /**
+     * @throws \Exception
+     */
+    public static function getFederationFolderById(int $federationId): string
+    {
+        $federation = Federation::withTrashed()->find($federationId);
+        if (! $federation) {
+            throw new \Exception('Federation does not exist');
+        }
+
+        return self::getFederationFolderByXmlId($federation->xml_id);
+    }
+
+    /**
+     * @throws \Exception
+     */
     public static function getFederationFolderByXmlId(string $xmlId): string
     {
         $disk = Storage::disk(config('storageCfg.name'));

@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\RunMdaScript;
 use App\Models\Entity;
 use App\Models\Federation;
-use App\Services\CategoryTagService;
 use App\Traits\DumpFromGit\EntitiesHelp\FixEntityTrait;
 use App\Traits\ValidatorTrait;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 
 class ValidateMetaConsole extends Command
 {
@@ -99,9 +100,11 @@ class ValidateMetaConsole extends Command
 
     public function handle()
     {
-        $ent = Entity::find(1);
-        $service = new CategoryTagService();
-        dump($service->create($ent));
+
+        $lockKey = 'directory-'.md5('aboba').'-lock';
+        $lock = Cache::lock($lockKey, 61);
+        RunMdaScript::dispatch(2, $lock->owner());
+        $lock->release();
 
         /*        $federation = Federation::where('id', 1)->first();
                 $this->runMDA($federation);*/

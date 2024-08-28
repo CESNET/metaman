@@ -65,7 +65,7 @@ class FolderDeleteEntity implements ShouldQueue
                     NotificationService::sendModelNotification($entity, new EntityStateChanged($entity));
                 }
 
-                RunMdaScript::dispatch($federation, $lock->owner());
+                RunMdaScript::dispatch($federation->id, $lock->owner());
             } catch (Exception $e) {
                 $this->fail($e);
             } finally {

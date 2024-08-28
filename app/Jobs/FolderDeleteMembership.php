@@ -67,7 +67,7 @@ class FolderDeleteMembership implements ShouldQueue
         try {
             $lock->block(61);
             EntityFacade::deleteEntityMetadataFromFolder($entity->file, $federation->xml_id);
-            RunMdaScript::dispatch($federation, $lock->owner());
+            RunMdaScript::dispatch($federation->id, $lock->owner());
         } catch (Exception $e) {
             $this->fail($e);
         } finally {

@@ -58,7 +58,7 @@ class FolderAddMembership implements ShouldQueue
 
             NotificationService::sendModelNotification($entity, new MembershipAccepted($this->membership));
 
-            RunMdaScript::dispatch($federation, $lock->owner());
+            RunMdaScript::dispatch($federation->id, $lock->owner());
         } catch (Exception $e) {
             $this->fail($e);
         } finally {

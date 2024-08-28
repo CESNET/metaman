@@ -21,16 +21,16 @@ class RunMdaScript implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HandlesJobsFailuresTrait;
 
-    public Federation $federation;
+    public int $federationId;
 
     public string $owner;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(Federation $federation, string $owner)
+    public function __construct(int $federationId, string $owner)
     {
-        $this->federation = $federation;
+        $this->federationId = $federationId;
         $this->owner = $owner;
     }
 
@@ -39,9 +39,15 @@ class RunMdaScript implements ShouldQueue
      */
     public function handle(): void
     {
+        $federation = Federation::withTrashed()->find($this->federationId);
+        if (! $federation) {
+            $this->fail("Federation with id {$this->federationId} not found");
+
+            return;
+        }
 
         try {
-            $pathToDirectory = FederationService::getFederationFolder($this->federation);
+            $pathToDirectory = FederationService::getFederationFolder($federation);
         } catch (\Exception $e) {
             $this->fail($e);
 
@@ -50,7 +56,7 @@ class RunMdaScript implements ShouldQueue
 
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
 
-        $filterArray = explode(', ', $this->federation->filters);
+        $filterArray = explode(', ', $federation->filters);
         $scriptPath = config('storageCfg.mdaScript');
 
         $realScriptPath = realpath($scriptPath);
@@ -84,7 +90,7 @@ class RunMdaScript implements ShouldQueue
      */
     public function middleware(): array
     {
-        $pathToDirectory = FederationService::getFederationFolder($this->federation);
+        $pathToDirectory = FederationService::getFederationFolderById($this->federationId);
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
 
         return [

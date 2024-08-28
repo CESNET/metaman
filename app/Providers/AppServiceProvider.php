@@ -53,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
             Model::preventLazyLoading();
         }
         RateLimiter::for('mda-run-limit', function (RunMdaScript $job) {
-            $pathToDirectory = FederationService::getFederationFolder($job->federation);
+            $pathToDirectory = FederationService::getFederationFolderById($job->federationId);
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
 
             return Limit::perMinute(1)->by($lockKey);

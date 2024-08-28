@@ -62,7 +62,7 @@ class FederationObserver
             $lock->block(120);
             Bus::batch($jobs)->then(function () use ($federation, $lock) {
                 Log::info('Federation restored');
-                RunMdaScript::dispatch($federation, $lock->owner());
+                RunMdaScript::dispatch($federation->id, $lock->owner());
             })->dispatch();
         } catch (\Exception $e) {
             Log::error($e->getMessage());

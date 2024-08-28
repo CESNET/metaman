@@ -76,7 +76,7 @@ class FolderAddEntity implements ShouldQueue
                 } else {
                     NotificationService::sendModelNotification($this->entity, new EntityUpdated($this->entity));
                 }
-                RunMdaScript::dispatch($federation, $lock->owner());
+                RunMdaScript::dispatch($federation->id, $lock->owner());
 
             } catch (Exception $e) {
                 $this->fail($e);
