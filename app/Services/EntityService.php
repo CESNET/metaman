@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Entity;
 use App\Models\Federation;
 use Exception;
-use http\Exception\InvalidArgumentException;
 use Illuminate\Support\Facades\Storage;
 
 class EntityService
@@ -20,7 +19,7 @@ class EntityService
         $federation = Federation::find($federation_id);
 
         if (! $federation) {
-            throw new Exception("Federation $federation_id not found");
+            throw new \Exception("Federation $federation_id not found");
         }
         $this->saveEntityMetadataToFolder($entity_id, $federation->xml_id);
     }
@@ -36,7 +35,7 @@ class EntityService
 
         $entity = Entity::find($entity_id);
         if (! $entity) {
-            throw new Exception("Entity not found with id $entity_id");
+            throw new \Exception("Entity not found with id $entity_id");
         }
         $fileName = $entity->file;
         if (! Storage::disk($diskName)->exists($folderName)) {
@@ -56,11 +55,11 @@ class EntityService
         if (Storage::disk($diskName)->exists($pathToFile)) {
             try {
                 Storage::disk($diskName)->delete($pathToFile);
-            } catch (Exception $e) {
-                throw new InvalidArgumentException("Unable to delete file $pathToFile");
+            } catch (\Exception $e) {
+                throw new \InvalidArgumentException("Unable to delete file $pathToFile");
             }
         } else {
-            throw new InvalidArgumentException("Unable to delete file $pathToFile");
+            throw new \InvalidArgumentException("Unable to delete file $pathToFile");
         }
 
     }

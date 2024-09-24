@@ -12,14 +12,13 @@ use App\Notifications\EntityUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Notification;
-use InvalidArgumentException;
 
 class NotificationService
 {
     public static function sendModelNotification(Model $model, $notification): void
     {
         if (! method_exists($model, 'operators')) {
-            throw new InvalidArgumentException('The given model does not have an operators relationship.');
+            throw new \InvalidArgumentException('The given model does not have an operators relationship.');
         }
 
         $operators = $model->operators;
