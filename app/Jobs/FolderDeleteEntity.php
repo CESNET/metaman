@@ -15,6 +15,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Mockery\Exception;
 
 class FolderDeleteEntity implements ShouldQueue
@@ -29,10 +30,32 @@ class FolderDeleteEntity implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public int $entityId,
-        public array $federationsIDs,
-        public string $file)
+    private int $entityId;
+
+    private array $federationsIDs;
+
+    private string $file;
+
+    public function __construct(int $entityId, array $federationsIDs, string $file)
     {
+        $this->entityId = $entityId;
+        $this->federationsIDs = $federationsIDs;
+        $this->file = $file;
+    }
+
+    public function getEntityId(): int
+    {
+        return $this->entityId;
+    }
+
+    public function getFederationsIDs(): array
+    {
+        return $this->federationsIDs;
+    }
+
+    public function getFile(): string
+    {
+        return $this->file;
     }
 
     /**
@@ -41,7 +64,7 @@ class FolderDeleteEntity implements ShouldQueue
     public function handle(): void
     {
 
-        foreach ($this->federationsIDs as $federationId) {
+        foreach ($this->getFederationsIDs() as $federationId) {
 
             $federation = Federation::withTrashed()->find($federationId);
             if (! $federation) {
@@ -50,19 +73,25 @@ class FolderDeleteEntity implements ShouldQueue
             try {
                 $pathToDirectory = FederationService::getFederationFolder($federation);
             } catch (\Exception $e) {
-                $this->fail($e->getMessage());
+                $this->fail($e);
 
                 return;
             }
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
-            $lock = Cache::lock($lockKey, 61);
+            $lock = Cache::lock($lockKey, config('constants.lock_constant'));
             try {
-                $lock->block(61);
-                EntityFacade::deleteEntityMetadataFromFolder($this->file, $federation->xml_id);
+                $lock->block(config('constants.lock_constant'));
+                EntityFacade::deleteEntityMetadataFromFolder($this->getFile(), $federation->xml_id);
 
-                $entity = Entity::withTrashed()->find($this->entityId);
+                $entity = Entity::withTrashed()->find($this->getEntityId());
                 if ($entity) {
                     NotificationService::sendModelNotification($entity, new EntityStateChanged($entity));
+                }
+
+                if ($lock->owner() === null) {
+                    Log::warning("Lock owner is null for key: $lockKey");
+
+                    return;
                 }
 
                 RunMdaScript::dispatch($federation->id, $lock->owner());
@@ -71,6 +100,8 @@ class FolderDeleteEntity implements ShouldQueue
             } finally {
                 if ($lock->isOwnedByCurrentProcess()) {
                     $lock->release();
+                } else {
+                    Log::warning("Lock not owned by current process or lock lost for key: $lockKey");
                 }
             }
 
