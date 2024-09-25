@@ -100,11 +100,12 @@ class ValidateMetaConsole extends Command
 
     public function handle()
     {
+        dump(config('constants.lock_constant'));
 
-        $lockKey = 'directory-'.md5('aboba').'-lock';
-        $lock = Cache::lock($lockKey, 61);
-        RunMdaScript::dispatch(2, $lock->owner());
-        $lock->release();
+        /*        $lockKey = 'directory-'.md5('aboba').'-lock';
+                $lock = Cache::lock($lockKey, 61);
+                RunMdaScript::dispatch(2, $lock->owner());
+                $lock->release();*/
 
         /*        $federation = Federation::where('id', 1)->first();
                 $this->runMDA($federation);*/

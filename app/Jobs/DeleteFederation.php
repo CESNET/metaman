@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Mockery\Exception;
 
 class DeleteFederation implements ShouldQueue
@@ -21,7 +22,7 @@ class DeleteFederation implements ShouldQueue
      */
     use HandlesJobsFailuresTrait;
 
-    public string $folderName;
+    private string $folderName;
 
     /**
      * Create a new job instance.
@@ -31,6 +32,11 @@ class DeleteFederation implements ShouldQueue
         $this->folderName = $folderName;
     }
 
+    public function getFolderName(): string
+    {
+        return $this->folderName;
+    }
+
     /**
      * Execute the job.
      */
@@ -38,7 +44,7 @@ class DeleteFederation implements ShouldQueue
     {
 
         try {
-            $pathToDirectory = FederationService::getFederationFolderByXmlId($this->folderName);
+            $pathToDirectory = FederationService::getFederationFolderByXmlId($this->getFolderName());
         } catch (\Exception $e) {
             $this->fail($e);
 
@@ -46,16 +52,18 @@ class DeleteFederation implements ShouldQueue
         }
 
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
-        $lock = Cache::lock($lockKey, 61);
+        $lock = Cache::lock($lockKey, config('constants.lock_constant'));
         try {
-            $lock->block(61);
-            FederationService::deleteFederationFolderByXmlId($this->folderName);
+            $lock->block(config('constants.lock_constant'));
+            FederationService::deleteFederationFolderByXmlId($this->getFolderName());
 
         } catch (Exception $e) {
             $this->fail($e);
         } finally {
             if ($lock->isOwnedByCurrentProcess()) {
                 $lock->release();
+            } else {
+                Log::warning("Lock not owned by current process or lock lost for key: $lockKey");
             }
         }
 

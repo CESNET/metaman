@@ -27,7 +27,7 @@ class EduGainDeleteEntity implements ShouldQueue
      */
     use EdugainTrait,HandlesJobsFailuresTrait;
 
-    public Entity $entity;
+    private Entity $entity;
 
     /**
      * Create a new job instance.
@@ -35,6 +35,11 @@ class EduGainDeleteEntity implements ShouldQueue
     public function __construct(Entity $entity)
     {
         $this->entity = $entity;
+    }
+
+    public function getEntity(): Entity
+    {
+        return $this->entity;
     }
 
     /**
@@ -53,17 +58,26 @@ class EduGainDeleteEntity implements ShouldQueue
 
         $pathToDirectory = Storage::disk($diskName)->path($folderName);
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
-        $lock = Cache::lock($lockKey, 61);
+        $lock = Cache::lock($lockKey, config('constants.lock_constant'));
         try {
-            $lock->block(61);
-            EntityFacade::deleteEntityMetadataFromFolder($this->entity->file, $folderName);
-            NotificationService::sendModelNotification($this->entity, new EntityEdugainStatusChanged($this->entity));
+            $lock->block(config('constants.lock_constant'));
+            EntityFacade::deleteEntityMetadataFromFolder($this->getEntity()->file, $folderName);
+            NotificationService::sendModelNotification($this->getEntity(), new EntityEdugainStatusChanged($this->getEntity()));
+
+            if ($lock->owner() === null) {
+                Log::warning("Lock owner is null for key: $lockKey");
+
+                return;
+            }
+
             EduGainRunMdaScript::dispatch($lock->owner());
         } catch (Exception $e) {
             Log::error($e->getMessage());
         } finally {
             if ($lock->isOwnedByCurrentProcess()) {
                 $lock->release();
+            } else {
+                Log::warning("Lock not owned by current process or lock lost for key: $lockKey");
             }
         }
     }

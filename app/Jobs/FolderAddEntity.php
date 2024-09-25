@@ -18,6 +18,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Mockery\Exception;
 
 class FolderAddEntity implements ShouldQueue
@@ -29,7 +30,7 @@ class FolderAddEntity implements ShouldQueue
      */
     use HandlesJobsFailuresTrait;
 
-    public Entity $entity;
+    private Entity $entity;
 
     /**
      * Create a new job instance.
@@ -39,13 +40,18 @@ class FolderAddEntity implements ShouldQueue
         $this->entity = $entity;
     }
 
+    public function getEntity(): Entity
+    {
+        return $this->entity;
+    }
+
     /**
      * Execute the job.
      */
     public function handle(): void
     {
         $federationMembershipId = Membership::select('federation_id')
-            ->where('entity_id', $this->entity->id)
+            ->where('entity_id', $this->getEntity()->id)
             ->where('approved', 1)
             ->get();
 
@@ -62,19 +68,25 @@ class FolderAddEntity implements ShouldQueue
             }
 
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
-            $lock = Cache::lock($lockKey, 61);
+            $lock = Cache::lock($lockKey, config('constants.lock_constant'));
 
             try {
-                $lock->block(61);
-                EntityFacade::saveMetadataToFederationFolder($this->entity->id, $fedId->federation_id);
+                $lock->block(config('constants.lock_constant'));
+                EntityFacade::saveMetadataToFederationFolder($this->getEntity()->id, $fedId->federation_id);
 
                 if (
-                    ($this->entity->wasChanged('deleted_at') && is_null($this->entity->deleted_at)) ||
-                    ($this->entity->wasChanged('approved') && $this->entity->approved == 1)
+                    ($this->getEntity()->wasChanged('deleted_at') && is_null($this->getEntity()->deleted_at)) ||
+                    ($this->getEntity()->wasChanged('approved') && $this->getEntity()->approved == 1)
                 ) {
-                    NotificationService::sendModelNotification($this->entity, new EntityStateChanged($this->entity));
+                    NotificationService::sendModelNotification($this->getEntity(), new EntityStateChanged($this->getEntity()));
                 } else {
-                    NotificationService::sendModelNotification($this->entity, new EntityUpdated($this->entity));
+                    NotificationService::sendModelNotification($this->getEntity(), new EntityUpdated($this->getEntity()));
+                }
+
+                if ($lock->owner() === null) {
+                    Log::warning("Lock owner is null for key: $lockKey");
+
+                    return;
                 }
                 RunMdaScript::dispatch($federation->id, $lock->owner());
 
@@ -83,6 +95,8 @@ class FolderAddEntity implements ShouldQueue
             } finally {
                 if ($lock->isOwnedByCurrentProcess()) {
                     $lock->release();
+                } else {
+                    Log::warning("Lock not owned by current process or lock lost for key: $lockKey");
                 }
             }
 
@@ -97,7 +111,7 @@ class FolderAddEntity implements ShouldQueue
     public function middleware(): array
     {
         return [
-            (new WithoutOverlapping($this->entity->id)
+            (new WithoutOverlapping($this->getEntity()->id)
         )];
     }
 }
