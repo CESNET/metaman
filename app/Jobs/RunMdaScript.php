@@ -67,11 +67,15 @@ class RunMdaScript implements ShouldQueue
                 $file = config('storageCfg.mdaConfigFolder').'/'.escapeshellarg($filter).'.xml';
                 $pipeline = 'main';
                 $command = 'sh '.escapeshellarg($realScriptPath).' '.$file.' '.$pipeline;
-                shell_exec($command);
+                $output = shell_exec($command);
+
+                if ($output === false || str_contains($output, 'ERROR') || str_contains($output, 'WARN')) {
+                    Log::error('Script execution error '.$command.' Message: '.$output);
+                }
             }
 
         } catch (Exception $e) {
-            Log::error($e->getMessage());
+            Log::error($e);
         } finally {
             Cache::restoreLock($lockKey, $this->owner)->release();
 
@@ -92,7 +96,7 @@ class RunMdaScript implements ShouldQueue
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
 
         return [
-            new RateLimited('mda-run-limit'),
+            // new RateLimited('mda-run-limit'),
             (new WithoutOverlapping($lockKey))->dontRelease(),
         ];
 
