@@ -64,12 +64,10 @@ class RunMdaScript implements ShouldQueue
         try {
 
             foreach ($filterArray as $filter) {
-                $file = escapeshellarg($filter).'.xml';
+                $file = config('storageCfg.mdaConfigFolder').'/'.escapeshellarg($filter).'.xml';
                 $pipeline = 'main';
                 $command = 'sh '.escapeshellarg($realScriptPath).' '.$file.' '.$pipeline;
-
-                $res = shell_exec($command);
-                dump($res);
+                shell_exec($command);
             }
 
         } catch (Exception $e) {

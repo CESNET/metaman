@@ -21,6 +21,8 @@ services:
         volumes:
             - '.:/var/www/html'
             - '/home/artem/Desktop/cesnet/metadata/testdata/mda:/home/artem/Desktop/cesnet/metadata/testdata/mda'
+            - '/home/artem/Desktop/cesnet/mda:/home/artem/Desktop/cesnet/mda'
+            - '/home/artem/Desktop/cesnet/metadata:/home/artem/Desktop/cesnet/metadata'
         networks:
             - sail
         depends_on:

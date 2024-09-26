@@ -58,6 +58,13 @@ RUN chown -R sail /home/sail/.ssh \
     && chmod go= /home/sail/.ssh/id_ed25519*
 RUN chmod +x /usr/local/bin/start-container
 
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk && \
+    apt-get clean;
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH $JAVA_HOME/bin:$PATH
+RUN java -version
+
 EXPOSE 8000
 
 ENTRYPOINT ["start-container"]
