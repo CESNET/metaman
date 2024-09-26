@@ -41,7 +41,7 @@ class EduGainRunMdaScript implements ShouldQueue
         $realScriptPath = realpath($scriptPath);
 
         try {
-            $file =  config('storageCfg.mdaConfigFolder').'/'. escapeshellarg($folderName).'.xml';
+            $file = config('storageCfg.mdaConfigFolder').'/'.escapeshellarg($folderName).'.xml';
             $pipeline = 'main';
             $command = 'sh '.escapeshellarg($realScriptPath).' '.$file.' '.$pipeline;
 
