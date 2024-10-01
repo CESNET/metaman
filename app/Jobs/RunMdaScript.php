@@ -96,7 +96,7 @@ class RunMdaScript implements ShouldQueue
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
 
         return [
-            // new RateLimited('mda-run-limit'),
+            new RateLimited('mda-run-limit'),
             (new WithoutOverlapping($lockKey))->dontRelease(),
         ];
 
