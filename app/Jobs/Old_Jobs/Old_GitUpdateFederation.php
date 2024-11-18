@@ -28,8 +28,7 @@ class Old_GitUpdateFederation implements ShouldQueue
     public function __construct(
         public Federation $federation,
         public User $user
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

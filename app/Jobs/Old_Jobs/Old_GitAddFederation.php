@@ -29,8 +29,7 @@ class Old_GitAddFederation implements ShouldQueue
         public Federation $federation,
         public string $action,
         public User $user
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

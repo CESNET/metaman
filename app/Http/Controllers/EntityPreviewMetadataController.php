@@ -6,10 +6,7 @@ use App\Models\Entity;
 
 class EntityPreviewMetadataController extends Controller
 {
-    public function __construct()
-    {
-
-    }
+    public function __construct() {}
 
     public function show(Entity $entity)
     {

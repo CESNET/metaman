@@ -18,9 +18,7 @@ class NewIdentityProvider extends Mailable
      *
      * @return void
      */
-    public function __construct(public Entity $entity)
-    {
-    }
+    public function __construct(public Entity $entity) {}
 
     /**
      * Get the message envelope.

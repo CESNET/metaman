@@ -17,8 +17,7 @@ class CategoryDeleted extends Notification
      */
     public function __construct(
         public string $category
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.

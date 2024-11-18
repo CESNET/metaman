@@ -12,10 +12,7 @@ class EntityOrganizationController extends Controller
 {
     use ValidatorTrait;
 
-    public function __construct()
-    {
-
-    }
+    public function __construct() {}
 
     public function update(Entity $entity, AssignOrganization $request)
     {

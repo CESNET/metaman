@@ -28,8 +28,7 @@ class Old_GitUpdateGroup implements ShouldQueue
         public string $old_group,
         public Group $group,
         public User $user
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

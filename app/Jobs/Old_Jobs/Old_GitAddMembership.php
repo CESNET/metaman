@@ -28,8 +28,7 @@ class Old_GitAddMembership implements ShouldQueue
     public function __construct(
         public Membership $membership,
         public User $user
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

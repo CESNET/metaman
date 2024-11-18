@@ -30,8 +30,7 @@ class Old_GitDeleteFromFederation implements ShouldQueue
         public Entity $entity,
         public Federation $federation,
         public User $user
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

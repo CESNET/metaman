@@ -28,8 +28,7 @@ class Old_GitAddCategory implements ShouldQueue
     public function __construct(
         public Category $category,
         public User $user
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

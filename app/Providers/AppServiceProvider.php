@@ -28,15 +28,15 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(RsTagService::class, function () {
-            return new RsTagService();
+            return new RsTagService;
         });
 
         $this->app->singleton(HfdTagService::class, function () {
-            return new HfdTagService();
+            return new HfdTagService;
         });
 
         $this->app->singleton(CategoryTagService::class, function () {
-            return new CategoryTagService();
+            return new CategoryTagService;
         });
 
     }
