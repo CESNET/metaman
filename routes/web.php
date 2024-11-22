@@ -143,7 +143,7 @@ Route::group(['prefix' => 'categories', 'as' => 'categories.', 'middleware' => [
 });
 
 Route::middleware('auth')->group(function () {
-    Route::resource('groups', GroupController::class)->only('index', 'show')->withTrashed();
+    Route::resource('groups', GroupController::class)->only('index', 'show');
 });
 
 Route::resource('users', UserController::class)->except('edit', 'destroy');
