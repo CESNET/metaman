@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EduidczStatisticController;
 use App\Http\Controllers\EntityCategoryController;
 use App\Http\Controllers\EntityController;
@@ -62,8 +61,6 @@ if (App::environment(['local', 'testing'])) {
     Route::post('fakelogin', [FakeController::class, 'store'])->name('fakelogin');
     Route::get('fakelogout', [FakeController::class, 'destroy'])->name('fakelogout');
 }
-
-Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 // Federation group
 Route::group(['prefix' => 'federations', 'as' => 'federations.', 'middleware' => ['auth']], function () {
@@ -131,6 +128,7 @@ Route::group(['prefix' => 'entities', 'as' => 'entities.', 'middleware' => ['aut
 });
 
 Route::middleware('auth')->group(function () {
+    Route::view('dashboard', 'dashboard')->name('dashboard');
     Route::resource('categories', CategoryController::class)->only('index', 'show');
     Route::resource('groups', GroupController::class)->only('index', 'show');
     Route::resource('users', UserController::class)->except('edit', 'destroy');
