@@ -21,8 +21,7 @@ class EntityOperatorsChanged extends Notification
         public Entity $entity,
         public Collection $operators,
         public string $action
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.

@@ -28,8 +28,7 @@ class Old_GitRestoreToCategory implements ShouldQueue
     public function __construct(
         public Entity $entity,
         public User $user
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

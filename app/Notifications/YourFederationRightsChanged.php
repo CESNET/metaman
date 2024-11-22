@@ -19,8 +19,7 @@ class YourFederationRightsChanged extends Notification
     public function __construct(
         public Federation $federation,
         public string $action
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.

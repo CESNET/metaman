@@ -18,8 +18,7 @@ class CategoryUpdated extends Notification
      */
     public function __construct(
         public Category $category
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.

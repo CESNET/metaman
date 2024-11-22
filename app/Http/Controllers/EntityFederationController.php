@@ -17,9 +17,7 @@ class EntityFederationController extends Controller
 {
     use GitTrait;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function index(Entity $entity)
     {

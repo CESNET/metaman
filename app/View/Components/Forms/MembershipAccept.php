@@ -12,9 +12,7 @@ class MembershipAccept extends Component
      *
      * @return void
      */
-    public function __construct(public Membership $membership)
-    {
-    }
+    public function __construct(public Membership $membership) {}
 
     /**
      * Get the view / contents that represent the component.
