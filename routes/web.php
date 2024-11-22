@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CategoryManagementController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EduidczStatisticController;
 use App\Http\Controllers\EntityCategoryController;
@@ -131,18 +130,8 @@ Route::group(['prefix' => 'entities', 'as' => 'entities.', 'middleware' => ['aut
     Route::delete('{entity}', [EntityController::class, 'destroy'])->name('destroy')->withTrashed();
 });
 
-// Categories group
-Route::group(['prefix' => 'categories', 'as' => 'categories.', 'middleware' => ['auth']], function () {
-    Route::get('import', [CategoryManagementController::class, 'index'])->name('unknown');
-    Route::post('import', [CategoryManagementController::class, 'store'])->name('import');
-    Route::get('refresh', [CategoryManagementController::class, 'update'])->name('refresh');
-
-    Route::resource('/', CategoryController::class)->parameters(['' => 'category'])
-        ->except('store', 'create', 'edit')
-        ->withTrashed();
-});
-
 Route::middleware('auth')->group(function () {
+    Route::resource('categories', CategoryController::class)->only('index', 'show');
     Route::resource('groups', GroupController::class)->only('index', 'show');
     Route::resource('users', UserController::class)->except('edit', 'destroy');
     Route::resource('memberships', MembershipController::class)->only('update', 'destroy');

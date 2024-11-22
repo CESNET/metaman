@@ -3,7 +3,7 @@
 @section('profile', __('categories.profile'))
 
 
-@section('name',$category->name)
+@section('name', $category->name)
 
 @section('specific_fields')
 
@@ -38,7 +38,7 @@
             <ul class="list-decimal list-inside">
                 @forelse ($category->entities as $entity)
                     <li><a class="hover:underline text-blue-500"
-                           href="{{ route('entities.show', $entity) }}">{{ $entity->{"name_$locale"} ?: $entity->entityid }}</a>
+                            href="{{ route('entities.show', $entity) }}">{{ $entity->{"name_$locale"} ?: $entity->entityid }}</a>
                     </li>
                 @empty
                     {{ __('categories.no_entities') }}
@@ -50,24 +50,5 @@
 @endsection
 
 @section('control_buttons')
-    <x-buttons.back/>
-
-    @if (count($category->entities) === 0)
-        <form x-data="{ open: false }" class="inline-block" action="{{ route('categories.destroy', $category) }}"
-              method="POST">
-            @csrf
-            @method('delete')
-
-            <x-button color="red" @click.prevent="open = !open">{{ __('common.destroy') }}</x-button>
-
-            <x-modal>
-                <x-slot:title>{{ __('common.destroy_model', ['name' => $category->name]) }}</x-slot:title>
-                {{ __('common.destroy_model_body', ['name' => $category->name, 'type' => 'category']) }}
-            </x-modal>
-        </form>
-    @endif
-
+    <x-buttons.back />
 @endsection
-
-
-

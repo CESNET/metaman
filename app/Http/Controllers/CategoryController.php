@@ -2,19 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateCategory;
 use App\Models\Category;
-use App\Models\User;
-use App\Notifications\CategoryDeleted;
-use App\Notifications\CategoryUpdated;
-use App\Traits\GitTrait;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
-    use GitTrait;
-
     /**
      * Display a listing of the resource.
      *
@@ -36,58 +27,6 @@ class CategoryController extends Controller
     {
         $this->authorize('do-everything');
 
-        return view('categories.show', [
-            'category' => $category,
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateCategory $request, Category $category)
-    {
-        $this->authorize('do-everything');
-
-        $old_category = $category->tagfile;
-        $category->update($request->validated());
-
-        if (! $category->wasChanged()) {
-            return redirect()
-                ->route('categories.show', $category);
-        }
-
-        Notification::send(User::activeAdmins()->select('id', 'email')->get(), new CategoryUpdated($category));
-
-        return redirect()
-            ->route('categories.show', $category)
-            ->with('status', __('categories.updated', ['name' => $old_category]));
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Category $category)
-    {
-        $this->authorize('do-everything');
-
-        if ($category->entities->count() !== 0) {
-            return redirect()
-                ->route('categories.show', $category)
-                ->with('status', __('categories.delete_empty'))
-                ->with('color', 'red');
-        }
-
-        $name = $category->tagfile;
-        $category->delete();
-
-        Notification::send(User::activeAdmins()->select('id', 'email')->get(), new CategoryDeleted($name));
-
-        return redirect('categories')
-            ->with('status', __('categories.deleted', ['name' => $name]));
+        return view('categories.show', compact('category'));
     }
 }
