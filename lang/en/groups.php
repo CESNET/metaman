@@ -1,27 +1,10 @@
 <?php
 
 return [
-    'add' => 'Add group',
-    'added' => 'Group :name successfully added.',
-    'delete_empty' => 'Deleting a group with member entities is forbidden.',
-    'deleted' => ':name group has been successfully deleted.',
-    'description_placeholder' => "Enter group's description",
-    'edit' => 'Edit :name group',
-    'empty_import' => 'No groups to import selected.',
     'empty' => 'No groups available.',
-    'file_placeholder' => "Enter group's file",
-    'import' => 'Groups import',
-    'imported' => '{0} No group has been imported.|{1} One group has been imported.|[2,*] :count groups have been imported.',
     'loading_groups_please_wait' => 'Loading groups, please wait...',
-    'name_placeholder' => "Enter group's name",
     'no_entities' => 'No entities',
-    'no_group_selected' => 'No group selected.',
-    'no_groups' => 'There are no groups. Import or create them first.',
-    'nothing_to_import' => 'There are no groups to import.',
     'profile' => "Group's profile",
-    'refreshed' => 'Groups have been refreshed.',
     'searchbox' => 'Search groups by name, description or tagfile...',
     'show' => ':name Group',
-    'update' => 'Update group',
-    'updated' => ':name group has been successfully updated.',
 ];

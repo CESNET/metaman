@@ -2,7 +2,7 @@
 @section('title', __('groups.show', ['name' => $group->name]))
 @section('profile', __('groups.profile'))
 
-@section('name',$group->name)
+@section('name', $group->name)
 
 @section('specific_fields')
 
@@ -40,7 +40,7 @@
                 @forelse ($group->entities as $entity)
                     <li>
                         <a class="hover:underline text-blue-500"
-                           href="{{ route('entities.show', $entity) }}">{{ $entity->{"name_$locale"} ?: $entity->entityid }}</a>
+                            href="{{ route('entities.show', $entity) }}">{{ $entity->{"name_$locale"} ?: $entity->entityid }}</a>
                     </li>
                 @empty
                     {{ __('groups.no_entities') }}
@@ -53,21 +53,5 @@
 @endsection
 
 @section('control_buttons')
-    <x-buttons.back/>
-
-    @if (count($group->entities) === 0)
-        <form x-data="{ open: false }" class="inline-block" action="{{ route('groups.destroy', $group) }}"
-              method="POST">
-            @csrf
-            @method('delete')
-
-            <x-button color="red" @click.prevent="open = !open">{{ __('common.destroy') }}</x-button>
-
-            <x-modal>
-                <x-slot:title>{{ __('common.destroy_model', ['name' => $group->name]) }}</x-slot:title>
-                {{ __('common.destroy_model_body', ['name' => $group->name, 'type' => 'group']) }}
-            </x-modal>
-        </form>
-    @endif
+    <x-buttons.back />
 @endsection
-

@@ -25,7 +25,6 @@ use App\Http\Controllers\FederationManagementController;
 use App\Http\Controllers\FederationOperatorController;
 use App\Http\Controllers\FederationStateController;
 use App\Http\Controllers\GroupController;
-use App\Http\Controllers\GroupManagementController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\ShibbolethController;
 use App\Http\Controllers\UserController;
@@ -142,15 +141,9 @@ Route::group(['prefix' => 'categories', 'as' => 'categories.', 'middleware' => [
         ->except('store', 'create', 'edit')
         ->withTrashed();
 });
-// Groups group
-Route::group(['prefix' => 'groups', 'as' => 'groups.', 'middleware' => ['auth']], function () {
-    Route::get('import', [GroupManagementController::class, 'index'])->name('unknown');
-    Route::post('import', [GroupManagementController::class, 'store'])->name('import');
-    Route::get('refresh', [GroupManagementController::class, 'update'])->name('refresh');
 
-    Route::resource('/', GroupController::class)->parameters(['' => 'group'])
-        ->except('store', 'create', 'edit')
-        ->withTrashed();
+Route::middleware('auth')->group(function () {
+    Route::resource('groups', GroupController::class)->only('index', 'show')->withTrashed();
 });
 
 Route::resource('users', UserController::class)->except('edit', 'destroy');
