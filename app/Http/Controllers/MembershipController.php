@@ -8,11 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class MembershipController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     /**
      * Update the specified resource in storage.
      *

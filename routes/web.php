@@ -144,11 +144,9 @@ Route::group(['prefix' => 'categories', 'as' => 'categories.', 'middleware' => [
 
 Route::middleware('auth')->group(function () {
     Route::resource('groups', GroupController::class)->only('index', 'show');
+    Route::resource('users', UserController::class)->except('edit', 'destroy');
+    Route::resource('memberships', MembershipController::class)->only('update', 'destroy');
 });
-
-Route::resource('users', UserController::class)->except('edit', 'destroy');
-
-Route::resource('memberships', MembershipController::class)->only('update', 'destroy');
 
 Route::get('statistics', EduidczStatisticController::class);
 
