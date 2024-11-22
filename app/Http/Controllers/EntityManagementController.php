@@ -15,8 +15,6 @@ class EntityManagementController extends Controller
 {
     use GitTrait, ValidatorTrait;
 
-    public function __construct() {}
-
     public function index()
     {
         $this->authorize('do-everything');

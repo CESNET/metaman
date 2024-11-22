@@ -7,8 +7,6 @@ use App\Models\Membership;
 
 class FederationJoinController extends Controller
 {
-    public function __construct() {}
-
     public function index(Federation $federation)
     {
         $this->authorize('update', $federation);
