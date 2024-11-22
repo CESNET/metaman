@@ -17,7 +17,8 @@ class GroupDeleted extends Notification
      */
     public function __construct(
         public string $group
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.

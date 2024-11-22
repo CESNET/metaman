@@ -18,7 +18,8 @@ class GroupCreated extends Notification
      */
     public function __construct(
         public Group $group
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.

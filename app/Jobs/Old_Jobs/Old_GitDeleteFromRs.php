@@ -28,7 +28,8 @@ class Old_GitDeleteFromRs implements ShouldQueue
     public function __construct(
         public Entity $entity,
         public User $user
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.

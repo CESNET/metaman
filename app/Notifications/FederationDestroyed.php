@@ -17,7 +17,8 @@ class FederationDestroyed extends Notification
      */
     public function __construct(
         public string $name
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.

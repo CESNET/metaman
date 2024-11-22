@@ -18,7 +18,8 @@ class MembershipRejected extends Notification
     public function __construct(
         public string $entity,
         public string $federation
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.

@@ -18,7 +18,8 @@ class MembershipAccepted extends Notification
      */
     public function __construct(
         public Membership $membership
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.

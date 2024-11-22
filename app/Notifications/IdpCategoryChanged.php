@@ -20,7 +20,8 @@ class IdpCategoryChanged extends Notification
     public function __construct(
         public Entity $entity,
         public Category $category
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.

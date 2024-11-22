@@ -30,7 +30,8 @@ class Old_GitAddToCategory implements ShouldQueue
         public Category $category,
         public Entity $entity,
         public User $user
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.

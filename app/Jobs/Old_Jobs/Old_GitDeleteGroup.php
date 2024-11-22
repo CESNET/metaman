@@ -26,7 +26,8 @@ class Old_GitDeleteGroup implements ShouldQueue
     public function __construct(
         public string $group,
         public User $user
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.

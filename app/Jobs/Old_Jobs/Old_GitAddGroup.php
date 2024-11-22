@@ -28,7 +28,8 @@ class Old_GitAddGroup implements ShouldQueue
     public function __construct(
         public Group $group,
         public User $user
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.

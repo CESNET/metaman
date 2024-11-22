@@ -18,7 +18,8 @@ class UserStatusChanged extends Notification
      */
     public function __construct(
         public User $user
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.

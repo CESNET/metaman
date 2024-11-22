@@ -21,7 +21,8 @@ class FederationOperatorsChanged extends Notification
         public Federation $federation,
         public Collection $operators,
         public string $action
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.

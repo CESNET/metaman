@@ -18,7 +18,8 @@ class FederationStateChanged extends Notification
      */
     public function __construct(
         public Federation $federation
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.

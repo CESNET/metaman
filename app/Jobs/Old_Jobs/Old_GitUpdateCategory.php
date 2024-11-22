@@ -28,7 +28,8 @@ class Old_GitUpdateCategory implements ShouldQueue
         public string $old_category,
         public Category $category,
         public User $user
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.

@@ -30,7 +30,8 @@ class Old_GitAddMembers implements ShouldQueue
         public Federation $federation,
         public Collection $entities,
         public User $user
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.

@@ -17,7 +17,8 @@ class ExceptionOccured extends Mailable
      */
     public function __construct(
         public array $data
-    ) {}
+    ) {
+    }
 
     /**
      * Build the message.

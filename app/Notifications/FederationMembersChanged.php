@@ -21,7 +21,8 @@ class FederationMembersChanged extends Notification
         public Federation $federation,
         public Collection $entities,
         public string $action
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.

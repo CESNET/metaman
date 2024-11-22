@@ -26,7 +26,8 @@ class Old_GitDeleteCategory implements ShouldQueue
     public function __construct(
         public string $category,
         public User $user
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.

@@ -20,7 +20,8 @@ class EntityDeletedFromFederation extends Notification
     public function __construct(
         public Entity $entity,
         public Federation $federation
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.

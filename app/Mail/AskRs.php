@@ -19,7 +19,8 @@ class AskRs extends Mailable implements ShouldQueue
      */
     public function __construct(
         public Entity $entity
-    ) {}
+    ) {
+    }
 
     /**
      * Build the message.

@@ -18,7 +18,8 @@ class EntityStateChanged extends Notification
      */
     public function __construct(
         public Entity $entity
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.
