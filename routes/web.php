@@ -56,32 +56,6 @@ if (App::environment(['local', 'testing'])) {
     Route::get('fakelogout', [FakeController::class, 'destroy'])->name('fakelogout');
 }
 
-// Federation group
-Route::group(['prefix' => 'federations', 'as' => 'federations.', 'middleware' => ['auth']], function () {
-
-    Route::get('import', [FederationManagementController::class, 'index'])->name('unknown');
-    Route::post('import', [FederationManagementController::class, 'store'])->name('import');
-    Route::get('refresh', [FederationManagementController::class, 'update'])->name('refresh');
-
-    Route::get('{federation}/requests', [FederationJoinController::class, 'index'])->name('requests')->withTrashed();
-
-    Route::resource('{federation}/operators', FederationOperatorController::class)->only(['index', 'store'])->withTrashed();
-    Route::delete('{federation}/operators', [FederationOperatorController::class, 'destroy'])->name('operators.destroy')->withTrashed();
-
-    Route::resource('{federation}/entities', FederationEntityController::class)->only(['index', 'store'])->withTrashed();
-    Route::delete('{federation}/entities', [FederationEntityController::class, 'destroy'])->name('entities.destroy')->withTrashed();
-
-    Route::patch('{federation}/state', [FederationStateController::class, 'state'])->name('state')->withTrashed();
-
-    Route::post('{federation}/approve', [FederationApprovalController::class, 'store'])->name('approve');
-    Route::delete('{federation}/reject', [FederationApprovalController::class, 'destroy'])->name('reject');
-
-    Route::resource('/', FederationController::class)->parameters(['' => 'federation'])->withTrashed();
-    Route::get('{federation}', [FederationController::class, 'show'])->name('show')->withTrashed();
-    Route::match(['put', 'patch'], '{federation}', [FederationController::class, 'update'])->name('update')->withTrashed();
-    Route::delete('{federation}', [FederationController::class, 'destroy'])->name('destroy')->withTrashed();
-});
-
 // Entities groups
 Route::group(['prefix' => 'entities', 'as' => 'entities.', 'middleware' => ['auth']], function () {
 
@@ -122,10 +96,37 @@ Route::group(['prefix' => 'entities', 'as' => 'entities.', 'middleware' => ['aut
 });
 
 Route::middleware('auth')->group(function () {
+    // Dashboard
     Route::view('dashboard', 'dashboard')->name('dashboard');
+
+    // Federations
+    Route::post('federations/{federation}/approve', [FederationApprovalController::class, 'store'])->name('federations.approve');
+    Route::delete('federations/{federation}/reject', [FederationApprovalController::class, 'destroy'])->name('federations.reject');
+
+    Route::patch('federations/{federation}/state', [FederationStateController::class, 'state'])->name('federations.state')->withTrashed();
+
+    Route::get('federations/{federation}/requests', [FederationJoinController::class, 'index'])->name('federations.requests')->withTrashed();
+
+    Route::get('federations/{federation}/operators', [FederationOperatorController::class, 'index'])->name('federations.operators.index')->withTrashed();
+    Route::post('federations/{federation}/operators', [FederationOperatorController::class, 'store'])->name('federations.operators.store')->withTrashed();
+    Route::delete('federations/{federation}/operators', [FederationOperatorController::class, 'destroy'])->name('federations.operators.destroy')->withTrashed();
+
+    Route::get('federations/{federation}/entities', [FederationEntityController::class, 'index'])->name('federations.entities.index')->withTrashed();
+    Route::post('federations/{federation}/entities', [FederationEntityController::class, 'store'])->name('federations.entities.store')->withTrashed();
+    Route::delete('federations/{federation}/entities', [FederationEntityController::class, 'destroy'])->name('federations.entities.destroy')->withTrashed();
+
+    Route::resource('federations', FederationController::class)->withTrashed();
+
+    // Categories
     Route::resource('categories', CategoryController::class)->only('index', 'show');
+
+    // Groups
     Route::resource('groups', GroupController::class)->only('index', 'show');
+
+    // Users
     Route::resource('users', UserController::class)->except('edit', 'destroy');
+
+    // Memberships
     Route::resource('memberships', MembershipController::class)->only('update', 'destroy');
 });
 
