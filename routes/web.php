@@ -19,7 +19,6 @@ use App\Http\Controllers\FederationApprovalController;
 use App\Http\Controllers\FederationController;
 use App\Http\Controllers\FederationEntityController;
 use App\Http\Controllers\FederationJoinController;
-use App\Http\Controllers\FederationManagementController;
 use App\Http\Controllers\FederationOperatorController;
 use App\Http\Controllers\FederationStateController;
 use App\Http\Controllers\GroupController;
