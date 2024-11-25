@@ -21,9 +21,7 @@ class NotificationService
             throw new \InvalidArgumentException('The given model does not have an operators relationship.');
         }
 
-        $operators = $model->operators;
-
-        self::sendOperatorNotification($operators, $notification);
+        self::sendOperatorNotification($model->operators, $notification);
     }
 
     public static function sendOperatorNotification(Collection $operators, $notification): void
@@ -33,16 +31,14 @@ class NotificationService
         }
 
         $admins = User::activeAdmins()->select('id', 'email')->get();
-
         $operatorIds = $operators->pluck('id');
 
         $filteredAdmins = $admins->filter(function ($admin) use ($operatorIds) {
             return ! $operatorIds->contains($admin->id);
         });
 
-        Notification::sendNow($operators, $notification);
-
-        Notification::sendNow($filteredAdmins, $notification);
+        Notification::send($operators, $notification);
+        Notification::send($filteredAdmins, $notification);
     }
 
     private static function sendRsNotification(Entity $entity): bool
@@ -83,6 +79,5 @@ class NotificationService
         if (! self::sendRsNotification($entity) && ! self::sendHfDNotification($entity)) {
             self::sendModelNotification($entity, new EntityUpdated($entity));
         }
-
     }
 }

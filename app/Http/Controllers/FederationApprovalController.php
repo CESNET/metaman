@@ -15,14 +15,15 @@ class FederationApprovalController extends Controller
     public function store(Federation $federation)
     {
         $this->authorize('do-everything');
+
         $federation->approved = true;
         $federation->update();
+
         NotificationService::sendModelNotification($federation, new FederationApproved($federation));
 
         return redirect()
             ->route('federations.show', $federation)
             ->with('status', __('federations.approved', ['name' => $federation->name]));
-
     }
 
     /**
@@ -34,6 +35,7 @@ class FederationApprovalController extends Controller
 
         $name = $federation->name;
         NotificationService::sendModelNotification($federation, new FederationRejected($name));
+
         $federation->forceDelete();
 
         return redirect('federations')

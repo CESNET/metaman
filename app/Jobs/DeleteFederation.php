@@ -22,15 +22,12 @@ class DeleteFederation implements ShouldQueue
      */
     use HandlesJobsFailuresTrait;
 
-    private string $folderName;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(string $folderName)
-    {
-        $this->folderName = $folderName;
-    }
+    public function __construct(
+        private string $folderName
+    ) {}
 
     public function getFolderName(): string
     {
@@ -42,7 +39,6 @@ class DeleteFederation implements ShouldQueue
      */
     public function handle(): void
     {
-
         try {
             $pathToDirectory = FederationService::getFederationFolderByXmlId($this->getFolderName());
         } catch (\Exception $e) {
@@ -51,12 +47,12 @@ class DeleteFederation implements ShouldQueue
             return;
         }
 
-        $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
+        $lockKey = 'directory-' . md5($pathToDirectory) . '-lock';
         $lock = Cache::lock($lockKey, config('constants.lock_constant'));
+
         try {
             $lock->block(config('constants.lock_constant'));
             FederationService::deleteFederationFolderByXmlId($this->getFolderName());
-
         } catch (Exception $e) {
             $this->fail($e);
         } finally {
@@ -66,6 +62,5 @@ class DeleteFederation implements ShouldQueue
                 Log::warning("Lock not owned by current process or lock lost for key: $lockKey");
             }
         }
-
     }
 }

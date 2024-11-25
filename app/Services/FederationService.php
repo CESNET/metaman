@@ -9,7 +9,6 @@ class FederationService
 {
     public static function createFederationFolder(Federation $federation): void
     {
-
         Storage::disk(config('storageCfg.name'))->makeDirectory($federation->xml_id);
     }
 
@@ -65,7 +64,7 @@ class FederationService
         if ($disk->exists($xmlId)) {
             return $disk->path($xmlId);
         } else {
-            throw new \Exception('Directory does not exist.');
+            throw new \Exception("Directory {$xmlId} does not exist.");
         }
     }
 }
