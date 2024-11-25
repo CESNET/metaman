@@ -23,6 +23,7 @@ use App\Http\Controllers\FederationManagementController;
 use App\Http\Controllers\FederationOperatorController;
 use App\Http\Controllers\FederationStateController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\ShibbolethController;
 use App\Http\Controllers\UserController;
@@ -40,14 +41,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/language/{locale}', function ($locale = null) {
-    if (isset($locale) && in_array($locale, config('app.locales'))) {
-        app()->setLocale($locale);
-        session()->put('locale', $locale);
-    }
-
-    return redirect()->back();
-});
+Route::get('language/{language}', LanguageController::class);
 
 Route::get('/', function () {
     return auth()->user() ? view('dashboard') : view('welcome');
