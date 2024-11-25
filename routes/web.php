@@ -114,7 +114,7 @@ Route::middleware('auth')->group(function () {
     Route::post('federations/{federation}/entities', [FederationEntityController::class, 'store'])->name('federations.entities.store')->withTrashed();
     Route::delete('federations/{federation}/entities', [FederationEntityController::class, 'destroy'])->name('federations.entities.destroy')->withTrashed();
 
-    Route::resource('federations', FederationController::class)->withTrashed();
+    Route::resource('federations', FederationController::class)->withTrashed(['show', 'destroy']);
 
     // Categories
     Route::resource('categories', CategoryController::class)->only('index', 'show');
