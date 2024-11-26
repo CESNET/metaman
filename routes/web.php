@@ -7,7 +7,6 @@ use App\Http\Controllers\EntityController;
 use App\Http\Controllers\EntityEduGainController;
 use App\Http\Controllers\EntityFederationController;
 use App\Http\Controllers\EntityHfdController;
-use App\Http\Controllers\EntityManagementController;
 use App\Http\Controllers\EntityMetadataController;
 use App\Http\Controllers\EntityOperatorController;
 use App\Http\Controllers\EntityOrganizationController;
@@ -55,45 +54,6 @@ if (App::environment(['local', 'testing'])) {
     Route::get('fakelogout', [FakeController::class, 'destroy'])->name('fakelogout');
 }
 
-// Entities groups
-Route::group(['prefix' => 'entities', 'as' => 'entities.', 'middleware' => ['auth']], function () {
-
-    Route::middleware('throttle:anti-ddos-limit')->group(function () {
-        Route::post('{entity}/join', [EntityFederationController::class, 'store'])->name('join');
-        Route::post('{entity}/leave', [EntityFederationController::class, 'destroy'])->name('leave');
-        Route::patch('{entity}/state', [EntityStateController::class, 'state'])->name('state')->withTrashed();
-        Route::patch('{entity}/edugain', [EntityEduGainController::class, 'edugain'])->name('edugain')->withTrashed();
-        Route::match(['put', 'patch'], '{entity}', [EntityController::class, 'update'])->name('update')->withTrashed();
-    });
-
-    Route::get('import', [EntityManagementController::class, 'index'])->name('unknown');
-    Route::post('import', [EntityManagementController::class, 'store'])->name('import');
-    Route::get('refresh', [EntityManagementController::class, 'update'])->name('refresh');
-
-    Route::get('{entity}/federations', [EntityFederationController::class, 'index'])->name('federations')->withTrashed();
-
-    Route::resource('{entity}/operators', EntityOperatorController::class)->only(['index', 'store'])->withTrashed();
-    Route::delete('{entity}/operators', [EntityOperatorController::class, 'destroy'])->name('operators.destroy')->withTrashed();
-
-    Route::post('{entity}/rs', [EntityRsController::class, 'store'])->name('rs.store');
-    Route::patch('{entity}/rs', [EntityRsController::class, 'rsState'])->name('rs.state')->withTrashed();
-
-    Route::patch('{entity}/category', [EntityCategoryController::class, 'update'])->name('category.update');
-
-    Route::patch('{entity}/hfd', [EntityHfdController::class, 'update'])->name('hfd');
-
-    Route::get('{entity}/metadata', [EntityMetadataController::class, 'store'])->name('metadata');
-    Route::get('{entity}/showmetadata', [EntityMetadataController::class, 'show'])->name('showmetadata');
-
-    Route::get('{entity}/previewmetadata', [EntityPreviewMetadataController::class, 'show'])->name('previewmetadata');
-
-    Route::post('{entity}/organization', [EntityOrganizationController::class, 'update'])->name('organization');
-
-    Route::resource('/', EntityController::class)->parameters(['' => 'entity'])->except('update');
-    Route::get('{entity}', [EntityController::class, 'show'])->name('show')->withTrashed();
-    Route::delete('{entity}', [EntityController::class, 'destroy'])->name('destroy')->withTrashed();
-});
-
 Route::middleware('auth')->group(function () {
     // Dashboard
     Route::view('dashboard', 'dashboard')->name('dashboard');
@@ -115,6 +75,35 @@ Route::middleware('auth')->group(function () {
     Route::delete('federations/{federation}/entities', [FederationEntityController::class, 'destroy'])->name('federations.entities.destroy')->withTrashed();
 
     Route::resource('federations', FederationController::class)->withTrashed(['show', 'destroy']);
+
+    // Entities
+    Route::get('entities/{entity}/previewmetadata', [EntityPreviewMetadataController::class, 'show'])->name('entities.previewmetadata');
+
+    Route::patch('entities/{entity}/category', [EntityCategoryController::class, 'update'])->name('entities.category.update');
+    Route::patch('entities/{entity}/hfd', [EntityHfdController::class, 'update'])->name('entities.hfd');
+    Route::post('entities/{entity}/organization', [EntityOrganizationController::class, 'update'])->name('entities.organization');
+
+    Route::post('entities/{entity}/rs', [EntityRsController::class, 'store'])->name('entities.rs.store');
+    Route::patch('entities/{entity}/rs', [EntityRsController::class, 'update'])->name('entities.rs.state');
+
+    Route::get('entities/{entity}/operators', [EntityOperatorController::class, 'index'])->name('entities.operators.index')->withTrashed();
+    Route::post('entities/{entity}/operators', [EntityOperatorController::class, 'store'])->name('entities.operators.store')->withTrashed();
+    Route::delete('entities/{entity}/operators', [EntityOperatorController::class, 'destroy'])->name('entities.operators.destroy')->withTrashed();
+
+    Route::get('entities/{entity}/metadata', [EntityMetadataController::class, 'store'])->name('entities.metadata');
+    Route::get('entities/{entity}/showmetadata', [EntityMetadataController::class, 'show'])->name('entities.showmetadata');
+
+    Route::get('entities/{entity}/federations', [EntityFederationController::class, 'index'])->name('entities.federations')->withTrashed();
+
+    Route::middleware('throttle:anti-ddos-limit')->group(function () {
+        Route::post('entities/{entity}/join', [EntityFederationController::class, 'store'])->name('entities.join');
+        Route::post('entities/{entity}/leave', [EntityFederationController::class, 'destroy'])->name('entities.leave');
+        Route::patch('entities/{entity}/state', [EntityStateController::class, 'update'])->name('entities.state')->withTrashed();
+        Route::patch('entities/{entity}/edugain', [EntityEduGainController::class, 'update'])->name('entities.edugain');
+        Route::match(['put', 'patch'], 'entities/{entity}', [EntityController::class, 'update'])->name('entities.update')->withTrashed();
+    });
+
+    Route::resource('entities', EntityController::class)->except('update')->withTrashed(['show', 'destroy']);
 
     // Categories
     Route::resource('categories', CategoryController::class)->only('index', 'show');

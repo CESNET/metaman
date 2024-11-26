@@ -6,7 +6,7 @@ use App\Models\Entity;
 
 class EntityStateController extends Controller
 {
-    public function state(Entity $entity)
+    public function update(Entity $entity)
     {
         $this->authorize('delete', $entity);
 
@@ -21,6 +21,5 @@ class EntityStateController extends Controller
             ->route('entities.show', $entity)
             ->with('status', __("entities.$state", ['name' => $entity->{"name_$locale"} ?? $entity->entityid]))
             ->with('color', $color);
-
     }
 }

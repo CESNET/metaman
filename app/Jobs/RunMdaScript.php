@@ -18,8 +18,7 @@ use Mockery\Exception;
 
 class RunMdaScript implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    use HandlesJobsFailuresTrait;
+    use Dispatchable, HandlesJobsFailuresTrait, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $federationId;
 
@@ -73,14 +72,11 @@ class RunMdaScript implements ShouldQueue
                     Log::error('Script execution error '.$command.' Message: '.$output);
                 }
             }
-
         } catch (Exception $e) {
             Log::error($e);
         } finally {
             Cache::restoreLock($lockKey, $this->owner)->release();
-
         }
-
     }
 
     /**
@@ -99,6 +95,5 @@ class RunMdaScript implements ShouldQueue
             new RateLimited('mda-run-limit'),
             (new WithoutOverlapping($lockKey))->dontRelease(),
         ];
-
     }
 }

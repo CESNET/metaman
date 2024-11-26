@@ -46,7 +46,7 @@ class EntityOperatorController extends Controller
         $new_operators = User::whereIn('id', request('operators'))->get();
         $entity->operators()->attach(request('operators'));
 
-        Notification::sendNow($new_operators, new YourEntityRightsChanged($entity, 'added'));
+        Notification::send($new_operators, new YourEntityRightsChanged($entity, 'added'));
         NotificationService::sendOperatorNotification($old_operators, new EntityOperatorsChanged($entity, $new_operators, 'added'));
 
         return redirect()
@@ -70,12 +70,11 @@ class EntityOperatorController extends Controller
         $old_operators = User::whereIn('id', request('operators'))->get();
         $entity->operators()->detach(request('operators'));
 
-        Notification::sendNow($old_operators, new YourEntityRightsChanged($entity, 'deleted'));
+        Notification::send($old_operators, new YourEntityRightsChanged($entity, 'deleted'));
         NotificationService::sendOperatorNotification($old_operators, new EntityOperatorsChanged($entity, $old_operators, 'deleted'));
 
         return redirect()
             ->route('entities.operators.index', $entity)
             ->with('status', __('entities.operators_deleted'));
-
     }
 }

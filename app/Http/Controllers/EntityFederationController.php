@@ -8,15 +8,12 @@ use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
 use App\Notifications\EntityDeletedFromFederation;
-use App\Traits\GitTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 
 class EntityFederationController extends Controller
 {
-    use GitTrait;
-
     public function index(Entity $entity)
     {
         $this->authorize('view', $entity);
@@ -77,7 +74,7 @@ class EntityFederationController extends Controller
             $federation = Federation::find($f);
 
             FolderDeleteMembership::dispatch($entity, $federation);
-            //GitDeleteFromFederation::dispatch($entity, $federation, Auth::user());
+
             Notification::send($entity->operators, new EntityDeletedFromFederation($entity, $federation));
             Notification::send(User::activeAdmins()->select('id', 'email')->get(), new EntityDeletedFromFederation($entity, $federation));
         }

@@ -5,10 +5,11 @@ namespace App\Notifications;
 use App\Models\Entity;
 use App\Models\Federation;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EntityDeletedFromFederation extends Notification
+class EntityDeletedFromFederation extends Notification implements ShouldQueue
 {
     use Queueable;
 

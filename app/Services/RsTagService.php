@@ -9,7 +9,7 @@ use DOMXPath;
 
 class RsTagService extends TagService
 {
-    use TagTrait,ValidatorTrait;
+    use TagTrait, ValidatorTrait;
 
     private string $value = 'http://refeds.org/category/research-and-scholarship';
 
@@ -58,11 +58,9 @@ class RsTagService extends TagService
     public function update(Entity $entity): false|string
     {
         if ($entity->rs) {
-
             if (! $this->hasTagInDocument($entity->xml_file, $this->value)) {
                 return $this->create($entity);
             }
-
         } else {
             if ($this->hasTagInDocument($entity->xml_file, $this->value)) {
                 return $this->delete($entity);
@@ -75,6 +73,7 @@ class RsTagService extends TagService
     protected function getOrCreateAttribute(\DOMXPath $xPath, \DOMDocument $dom, \DOMNode $entityAttributes, string $samlURI, bool $isIdp): \DOMNode
     {
         $attribute = $xPath->query('//mdattr:EntityAttributes/saml:Attribute', $entityAttributes);
+
         if ($attribute->length === 0) {
             $attribute = $dom->createElementNS($samlURI, 'saml:Attribute');
             $attribute->setAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');

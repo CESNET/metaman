@@ -12,8 +12,7 @@ use Mockery\Exception;
 
 class CategoryTagService extends TagService
 {
-    use HandlesJobsFailuresTrait;
-    use TagTrait,ValidatorTrait;
+    use HandlesJobsFailuresTrait, TagTrait, ValidatorTrait;
 
     public function create(Entity $entity): false|string
     {
@@ -25,10 +24,12 @@ class CategoryTagService extends TagService
         if (! $category) {
             return false;
         }
+
         $attributeValue = $this->hasAtributeValueInConfig($category);
         if (! $attributeValue) {
             return false;
         }
+
         $xml_document = $entity->xml_file;
 
         $dom = $this->createDOM($xml_document);
@@ -52,6 +53,7 @@ class CategoryTagService extends TagService
         if (! $category) {
             return false;
         }
+
         $attributeValue = $this->hasAtributeValueInConfig($category);
         if (! $attributeValue) {
             return false;
@@ -64,7 +66,6 @@ class CategoryTagService extends TagService
         $dom->normalize();
 
         return $dom->saveXML();
-
     }
 
     private static function hasCategoryInDatabase(Entity $entity): false|Category

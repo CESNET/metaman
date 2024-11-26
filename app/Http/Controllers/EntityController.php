@@ -14,18 +14,15 @@ use App\Notifications\EntityDestroyed;
 use App\Notifications\EntityRequested;
 use App\Traits\DumpFromGit\EntitiesHelp\DeleteFromEntity;
 use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
-use App\Traits\GitTrait;
 use App\Traits\ValidatorTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Storage;
 
 class EntityController extends Controller
 {
-    use DeleteFromEntity,UpdateEntity;
-    use GitTrait, ValidatorTrait;
+    use DeleteFromEntity, UpdateEntity, ValidatorTrait;
 
     /**
      * Display a listing of the resource.
@@ -171,9 +168,7 @@ class EntityController extends Controller
     {
         $this->authorize('update', $entity);
 
-        return view('entities.edit', [
-            'entity' => $entity,
-        ]);
+        return view('entities.edit', compact('entity'));
     }
 
     /**
@@ -260,7 +255,6 @@ class EntityController extends Controller
                     ->back()
                     ->with('status', __('entities.unknown_error_while_registration'))
                     ->with('color', 'red');
-
         }
     }
 
@@ -288,7 +282,7 @@ class EntityController extends Controller
         $entity->forceDelete();
 
         $admins = User::activeAdmins()->select('id', 'email')->get();
-        Notification::sendNow($admins, new EntityDestroyed($name));
+        Notification::send($admins, new EntityDestroyed($name));
 
         return redirect('entities')
             ->with('status', __('entities.destroyed', ['name' => $name]));

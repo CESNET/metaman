@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class EntityEduGainController extends Controller
 {
-    public function edugain(Entity $entity)
+    public function update(Entity $entity)
     {
         $this->authorize('update', $entity);
 

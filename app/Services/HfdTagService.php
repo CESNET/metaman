@@ -9,7 +9,7 @@ use DOMXPath;
 
 class HfdTagService extends TagService
 {
-    use TagTrait,ValidatorTrait;
+    use TagTrait, ValidatorTrait;
 
     private string $value = 'http://refeds.org/category/hide-from-discovery';
 
@@ -48,7 +48,6 @@ class HfdTagService extends TagService
         $dom->normalize();
 
         return $dom->saveXML();
-
     }
 
     public function deleteByXpath(DOMXPath $xPath): void
@@ -60,11 +59,9 @@ class HfdTagService extends TagService
     public function update(Entity $entity): false|string
     {
         if ($entity->hfd) {
-
             if (! $this->hasTagInDocument($entity->xml_file, $this->value)) {
                 return $this->create($entity);
             }
-
         } else {
             if ($this->hasTagInDocument($entity->xml_file, $this->value)) {
                 return $this->delete($entity);

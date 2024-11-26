@@ -4,11 +4,12 @@ namespace App\Notifications;
 
 use App\Models\Entity;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EntityOperatorsChanged extends Notification
+class EntityOperatorsChanged extends Notification implements ShouldQueue
 {
     use Queueable;
 

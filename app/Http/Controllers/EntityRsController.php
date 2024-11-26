@@ -14,7 +14,11 @@ class EntityRsController extends Controller
     {
         $this->authorize('update', $entity);
 
-        abort_unless($entity->federations()->where('xml_name', config('git.rs_federation'))->count(), 403, __('entities.rs_only_for_eduidcz_members'));
+        abort_unless(
+            $entity->federations()->where('xml_name', config('git.rs_federation'))->count(),
+            403,
+            __('entities.rs_only_for_eduidcz_members')
+        );
 
         Mail::to(config('mail.admin.address'))
             ->send(new AskRs($entity));
@@ -24,7 +28,7 @@ class EntityRsController extends Controller
             ->with('status', __('entities.rs_asked'));
     }
 
-    public function rsState(Entity $entity)
+    public function update(Entity $entity)
     {
         $this->authorize('do-everything');
 
@@ -37,6 +41,7 @@ class EntityRsController extends Controller
         $entity = DB::transaction(function () use ($entity) {
             $entity->rs = ! $entity->rs;
             $xml_document = RsTag::update($entity);
+
             if ($xml_document) {
                 $entity->xml_file = $xml_document;
                 $entity->update();

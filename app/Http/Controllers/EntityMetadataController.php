@@ -15,6 +15,7 @@ class EntityMetadataController extends Controller
                 ->with('status', __('entities.not_yet_approved'))
                 ->with('color', 'red');
         }
+
         $folderName = optional($entity->federations->first())->name;
         if (is_null($folderName)) {
             return to_route('entities.show', $entity)
@@ -36,6 +37,7 @@ class EntityMetadataController extends Controller
                 ->with('status', __('entities.not_yet_approved'))
                 ->with('color', 'red');
         }
+
         $folderName = optional($entity->federations->first())->name;
         if (is_null($folderName)) {
             return to_route('entities.show', $entity)
