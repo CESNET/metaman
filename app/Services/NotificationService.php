@@ -75,7 +75,6 @@ class NotificationService
 
     public static function sendUpdateNotification(Entity $entity): void
     {
-
         if (! self::sendRsNotification($entity) && ! self::sendHfDNotification($entity)) {
             self::sendModelNotification($entity, new EntityUpdated($entity));
         }

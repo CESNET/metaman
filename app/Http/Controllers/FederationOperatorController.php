@@ -46,13 +46,12 @@ class FederationOperatorController extends Controller
         $new_operators = User::whereIn('id', request('operators'))->get();
         $federation->operators()->attach(request('operators'));
 
-        Notification::sendNow($new_operators, new YourFederationRightsChanged($federation, 'added'));
+        Notification::send($new_operators, new YourFederationRightsChanged($federation, 'added'));
         NotificationService::sendOperatorNotification($old_operators, new FederationOperatorsChanged($federation, $new_operators, 'added'));
 
         return redirect()
             ->route('federations.operators.index', $federation)
             ->with('status', __('federations.operators_added'));
-
     }
 
     /**
@@ -73,12 +72,11 @@ class FederationOperatorController extends Controller
         $federation->operators()->toggle(request('operators'));
         $new_operators = $federation->operators;
 
-        Notification::sendNow($old_operators, new YourFederationRightsChanged($federation, 'deleted'));
+        Notification::send($old_operators, new YourFederationRightsChanged($federation, 'deleted'));
         NotificationService::sendOperatorNotification($new_operators, new FederationOperatorsChanged($federation, $old_operators, 'added'));
 
         return redirect()
             ->route('federations.operators.index', $federation)
             ->with('status', __('federations.operators_deleted'));
-
     }
 }

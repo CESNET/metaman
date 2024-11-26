@@ -10,16 +10,12 @@ use App\Notifications\FederationDestroyed;
 use App\Notifications\FederationRequested;
 use App\Notifications\FederationUpdated;
 use App\Services\NotificationService;
-use App\Traits\GitTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Storage;
 
 class FederationController extends Controller
 {
-    use GitTrait;
-
     /**
      * Display a listing of the resource.
      *
@@ -85,9 +81,7 @@ class FederationController extends Controller
     {
         $this->authorize('view', $federation);
 
-        return view('federations.show', [
-            'federation' => $federation,
-        ]);
+        return view('federations.show', compact('federation'));
     }
 
     /**
@@ -99,9 +93,7 @@ class FederationController extends Controller
     {
         $this->authorize('update', $federation);
 
-        return view('federations.edit', [
-            'federation' => $federation,
-        ]);
+        return view('federations.edit', compact('federation'));
     }
 
     /**
@@ -120,9 +112,9 @@ class FederationController extends Controller
         if (isset($validated['name'])) {
             $id = generateFederationID($validated['name']);
         }
-        $additionalFilters = $request->input('sp_and_ip_feed', 0);
         $filters = $id;
 
+        $additionalFilters = $request->input('sp_and_ip_feed', 0);
         if ($additionalFilters) {
             $filters .= ', '.$id.'+idp';
             $filters .= ', '.$id.'+sp';
@@ -137,7 +129,6 @@ class FederationController extends Controller
                 ->route('federations.show', $federation);
         }
         NotificationService::sendModelNotification($federation, new FederationUpdated($federation));
-        //  GitUpdateFederation::dispatch($federation, Auth::user());
 
         return redirect()
             ->route('federations.show', $federation)

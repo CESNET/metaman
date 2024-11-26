@@ -4,11 +4,12 @@ namespace App\Notifications;
 
 use App\Models\Federation;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class FederationMembersChanged extends Notification
+class FederationMembersChanged extends Notification implements ShouldQueue
 {
     use Queueable;
 

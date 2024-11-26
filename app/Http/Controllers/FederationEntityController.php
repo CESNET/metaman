@@ -58,7 +58,6 @@ class FederationEntityController extends Controller
         return redirect()
             ->route('federations.entities.index', $federation)
             ->with('status', __('federations.entities_added'));
-
     }
 
     /**
@@ -77,8 +76,7 @@ class FederationEntityController extends Controller
         $federation->entities()->detach(request('entities'));
 
         foreach (request('entities') as $id) {
-            $entity = Entity::find($id);
-            FolderDeleteMembership::dispatch($entity, $federation);
+            FolderDeleteMembership::dispatch(Entity::find($id), $federation);
         }
 
         $old_entities = Entity::whereIn('id', request('entities'))->get();

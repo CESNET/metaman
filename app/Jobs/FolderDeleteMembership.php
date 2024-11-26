@@ -21,21 +21,15 @@ use Mockery\Exception;
 
 class FolderDeleteMembership implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    use HandlesJobsFailuresTrait;
-
-    private Federation $federation;
-
-    private Entity $entity;
+    use Dispatchable, HandlesJobsFailuresTrait, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(Entity $entity, Federation $federation)
-    {
-        $this->federation = $federation;
-        $this->entity = $entity;
-    }
+    public function __construct(
+        private Entity $entity,
+        private Federation $federation
+    ) {}
 
     public function getFederation(): Federation
     {
@@ -58,12 +52,12 @@ class FolderDeleteMembership implements ShouldQueue
 
         try {
             $pathToDirectory = FederationService::getFederationFolder($federation);
-
         } catch (\Exception $e) {
             $this->fail($e);
 
             return;
         }
+
         $pathToFile = $federation->xml_id.'/'.$entity->file;
 
         if (! Storage::disk($diskName)->exists($pathToFile)) {
@@ -84,6 +78,7 @@ class FolderDeleteMembership implements ShouldQueue
 
                 return;
             }
+
             RunMdaScript::dispatch($federation->id, $lock->owner());
         } catch (Exception $e) {
             $this->fail($e);
@@ -94,6 +89,5 @@ class FolderDeleteMembership implements ShouldQueue
                 Log::warning("Lock not owned by current process or lock lost for key: $lockKey");
             }
         }
-
     }
 }

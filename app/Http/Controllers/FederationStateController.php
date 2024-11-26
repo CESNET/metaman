@@ -8,7 +8,7 @@ use App\Services\NotificationService;
 
 class FederationStateController extends Controller
 {
-    public function state(Federation $federation)
+    public function update(Federation $federation)
     {
         $this->authorize('delete', $federation);
 
@@ -23,6 +23,5 @@ class FederationStateController extends Controller
             ->route('federations.show', $federation)
             ->with('status', __("federations.$state", ['name' => $federation->name]))
             ->with('color', $color);
-
     }
 }

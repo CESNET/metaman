@@ -102,9 +102,9 @@ Route::middleware('auth')->group(function () {
     Route::post('federations/{federation}/approve', [FederationApprovalController::class, 'store'])->name('federations.approve');
     Route::delete('federations/{federation}/reject', [FederationApprovalController::class, 'destroy'])->name('federations.reject');
 
-    Route::patch('federations/{federation}/state', [FederationStateController::class, 'state'])->name('federations.state')->withTrashed();
+    Route::patch('federations/{federation}/state', [FederationStateController::class, 'update'])->name('federations.state')->withTrashed();
 
-    Route::get('federations/{federation}/requests', [FederationJoinController::class, 'index'])->name('federations.requests')->withTrashed();
+    Route::get('federations/{federation}/requests', [FederationJoinController::class, 'index'])->name('federations.requests');
 
     Route::get('federations/{federation}/operators', [FederationOperatorController::class, 'index'])->name('federations.operators.index')->withTrashed();
     Route::post('federations/{federation}/operators', [FederationOperatorController::class, 'store'])->name('federations.operators.store')->withTrashed();
