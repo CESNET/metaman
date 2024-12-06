@@ -17,8 +17,9 @@ use App\Traits\GitTrait;
 use App\Traits\ValidatorTrait;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Console\Isolatable;
 
-class DumpFromGit extends Command
+class DumpFromGit extends Command implements Isolatable
 {
     use CreateCategoriesAndGroupsTrait,CreateEntitiesTrait,CreateFederationTrait;
     use EdugainTrait;
@@ -71,6 +72,10 @@ class DumpFromGit extends Command
             $this->fixEntities();
             $this->createMetadataFiles();
             $this->makeEdu2Edugain();
+
+            $this->newLine();
+            $this->info("All done!");
+
 
         });
 
