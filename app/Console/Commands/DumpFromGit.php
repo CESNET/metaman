@@ -74,8 +74,7 @@ class DumpFromGit extends Command implements Isolatable
             $this->makeEdu2Edugain();
 
             $this->newLine();
-            $this->info("All done!");
-
+            $this->info('All done!');
 
         });
 
