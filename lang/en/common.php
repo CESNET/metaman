@@ -131,4 +131,6 @@ return [
     'confirm' => 'Confirm',
     'organization' => 'Organization',
     'add_sp_idp' => 'Add additional IdP and Sp  feeds',
+    'confirm_leave_groups' => 'Leave groups?',
+    'confirm_leave_groups_body' => 'Would you really like to leave the selected groups?',
 ];

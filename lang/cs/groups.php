@@ -7,4 +7,5 @@ return [
     'profile' => 'Profil skupiny',
     'searchbox' => 'Hledat skupinu podle jména, popisu nebo .tag souboru...',
     'show' => 'Skupina :name',
+    'no_members' => 'Tato entita není součástí žádnou skupiny',
 ];

@@ -71,4 +71,11 @@ return [
     'organization_assigned' => 'Organizace byla úspěšně přiřazena.',
     'not_yet_approved' => 'Tato entity ještě není schválená, proto nelze požadavek provést.',
     'without_federation' => 'Tato entity nemá přidělenout federaci',
+
+    'join_empty_group' => 'Nezvolili jste žádnou skupinu k připojení.',
+    'join_group' => 'Připojit ke skupině',
+    'leave_empty_group' => 'Nezvolili jste žádnou skupinu k opuštění.',
+    'leave_group' => 'Opustit skupinu',
+    'choose_group_placeholder' => 'Zvolte skupinu, v níž bude entita členem',
+    'not_part_of_a_group' => 'Tato entita není členem žádné skupiny.',
 ];

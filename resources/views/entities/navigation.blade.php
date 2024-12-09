@@ -35,4 +35,24 @@
         'cursor-default' => request()->routeIs('entities.federations'),
     ])
         href="{{ route('entities.federations', $entity) }}">{{ __('common.federations') }}</a>
+
+    @can('do-everything')
+        <a @class([
+        'px-2',
+        'py-1',
+        'mr-2',
+        'rounded-lg',
+        'shadow',
+        'bg-gray-300' => request()->routeIs('entities.category '),
+        'bg-blue-100 hover:bg-blue-300' => !request()->routeIs(
+            'entities.category '
+        ),
+        'cursor-default' => request()->routeIs('entities.category '),
+    ])
+           href="{{ route('entities.groups', $entity) }}">{{ __('common.groups') }}</a>
+
+    @endcan
+
+
+
 </div>

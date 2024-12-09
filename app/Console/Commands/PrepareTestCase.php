@@ -20,7 +20,7 @@ class PrepareTestCase extends Command implements Isolatable
      *
      * @var string
      */
-    protected $signature = 'app:prefed';
+    protected $signature = 'app:pre';
 
     /**
      * The console command description.

@@ -131,4 +131,6 @@ return [
     'confirm' => 'Potvrdit',
     'organization' => 'Organizace',
     'add_sp_idp' => 'Přidat IdP a Sp feedy',
+    'confirm_leave_groups' => 'Opustit skupiny?',
+    'confirm_leave_groups_body' => 'Opravdu chcete opustit zvolené skupiny?',
 ];

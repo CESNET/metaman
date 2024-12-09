@@ -6,6 +6,7 @@ use App\Http\Controllers\EntityCategoryController;
 use App\Http\Controllers\EntityController;
 use App\Http\Controllers\EntityEduGainController;
 use App\Http\Controllers\EntityFederationController;
+use App\Http\Controllers\EntityGroupController;
 use App\Http\Controllers\EntityHfdController;
 use App\Http\Controllers\EntityMetadataController;
 use App\Http\Controllers\EntityOperatorController;
@@ -94,6 +95,7 @@ Route::middleware('auth')->group(function () {
     Route::get('entities/{entity}/showmetadata', [EntityMetadataController::class, 'show'])->name('entities.showmetadata');
 
     Route::get('entities/{entity}/federations', [EntityFederationController::class, 'index'])->name('entities.federations')->withTrashed();
+    Route::get('entities/{entity}/group', [EntityGroupController::class, 'index'])->name('entities.groups')->withTrashed();
 
     Route::middleware('throttle:anti-ddos-limit')->group(function () {
         Route::post('entities/{entity}/join', [EntityFederationController::class, 'store'])->name('entities.join');
@@ -101,6 +103,9 @@ Route::middleware('auth')->group(function () {
         Route::patch('entities/{entity}/state', [EntityStateController::class, 'update'])->name('entities.state')->withTrashed();
         Route::patch('entities/{entity}/edugain', [EntityEduGainController::class, 'update'])->name('entities.edugain');
         Route::match(['put', 'patch'], 'entities/{entity}', [EntityController::class, 'update'])->name('entities.update')->withTrashed();
+
+        Route::post('entities/{entity}/group/join', [EntityGroupController::class, 'store'])->name('entities.group.join');
+        Route::delete('entities/{entity}/group/leave', [EntityGroupController::class, 'destroy'])->name('entities.group.leave')->withTrashed();
     });
 
     Route::resource('entities', EntityController::class)->except('update')->withTrashed(['show', 'destroy']);

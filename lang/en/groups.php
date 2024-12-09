@@ -7,4 +7,5 @@ return [
     'profile' => "Group's profile",
     'searchbox' => 'Search groups by name, description or tagfile...',
     'show' => ':name Group',
+    'no_members' => 'This entity is not part of a group ',
 ];

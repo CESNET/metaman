@@ -71,4 +71,11 @@ return [
     'organization_assigned' => 'Organization has been successfully assigned.',
     'not_yet_approved' => "This entity isn't approved, yet, thus the request cannot be completed.",
     'without_federation' => 'This entity does not have any federations.',
+
+    'join_empty_group' => 'You have not selected any group to join.',
+    'join_group' => 'Join group',
+    'leave_empty_group' => 'You have not selected any group to leave.',
+    'leave_group' => 'Leave group',
+    'choose_group_placeholder' => 'Choose a group to be a member of',
+    'not_part_of_a_group' => 'This entity is not a member of any group.',
 ];
