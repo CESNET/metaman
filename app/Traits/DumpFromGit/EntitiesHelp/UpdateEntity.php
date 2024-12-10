@@ -6,6 +6,9 @@ use App\Facades\RsTag;
 use App\Models\Category;
 use App\Models\Entity;
 use App\Traits\ValidatorTrait;
+use DOMDocument;
+use DOMElement;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 
 trait UpdateEntity
@@ -20,12 +23,11 @@ trait UpdateEntity
 
     use ValidatorTrait;
 
-    private function updateXmlCategories(string $xml_document, int $category_id): string
+    private function prepareXmlStructure(DOMDocument $dom): \DOMNode|bool|DOMElement|\DOMNameSpaceNode|null
     {
-        $dom = $this->createDOM($xml_document);
         $xPath = $this->createXPath($dom);
-
         $rootTag = $xPath->query("//*[local-name()='EntityDescriptor']")->item(0);
+
         $entityExtensions = $xPath->query('//md:Extensions');
         if ($entityExtensions->length === 0) {
             $dom->documentElement->lookupNamespaceURI('md');
@@ -34,6 +36,7 @@ trait UpdateEntity
         } else {
             $entityExtensions = $entityExtensions->item(0);
         }
+
         $entityAttributes = $xPath->query('//mdattr:EntityAttributes');
         if ($entityAttributes->length === 0) {
             $entityAttributes = $dom->createElementNS($this->mdattrURI, 'mdattr:EntityAttributes');
@@ -44,21 +47,51 @@ trait UpdateEntity
 
         $attribute = $xPath->query('//mdattr:EntityAttributes/saml:Attribute', $entityAttributes);
         if ($attribute->length === 0) {
-
             $attribute = $dom->createElementNS($this->samlURI, 'saml:Attribute');
-
             $attribute->setAttribute('Name', 'http://macedir.org/entity-category');
             $attribute->setAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-
             $entityAttributes->appendChild($attribute);
         } else {
             $attribute = $attribute->item(0);
         }
 
+        return $attribute;
+    }
+
+    /**
+     * @throws \DOMException
+     * @throws \Exception
+     */
+    private function updateXmlCategories(string $xml_document, int $category_id): string
+    {
+        $dom = $this->createDOM($xml_document);
+
+        $attribute = $this->prepareXmlStructure($dom);
+
         $categoryXml = Category::whereId($category_id)->first()->xml_value;
+
+        if (empty($categoryXml)) {
+            throw new \Exception("Category with ID $category_id has no XML value.");
+        }
 
         $attributeValue = $dom->createElementNS($this->samlURI, 'saml:AttributeValue', $categoryXml);
         $attribute->appendChild($attributeValue);
+
+        return $dom->saveXML();
+    }
+
+    /**
+     * @throws \DOMException
+     */
+    public function updateXmlGroups(string $xml_document, array $groupsName): string
+    {
+        $dom = $this->createDOM($xml_document);
+        $attribute = $this->prepareXmlStructure($dom);
+
+        foreach ($groupsName as $name) {
+            $attributeValue = $dom->createElementNS($this->samlURI, 'saml:AttributeValue', config("groups.$name"));
+            $attribute->appendChild($attributeValue);
+        }
 
         return $dom->saveXML();
     }
@@ -135,6 +168,8 @@ trait UpdateEntity
     /**
      * @param  array  $timestampDocumentArray  for add registration time from git file
      * @return void update entity in db and return
+     *
+     * @throws \DOMException
      */
     public function updateEntityXml($entity, array $timestampDocumentArray = []): void
     {
@@ -146,6 +181,11 @@ trait UpdateEntity
         RsTag::update($entity);
         if (! empty($entity->category_id)) {
             $xml_document = $this->updateXmlCategories($xml_document, $entity->category_id);
+        }
+        $groupName = $entity->groups()->pluck('name')->toArray();
+
+        if (! empty($groupName)) {
+            $xml_document = $this->updateXmlGroups($xml_document, $groupName);
         }
 
         $xml_document = $this->updateRegistrationInfo($xml_document, $entity->entityid, $timestampDocumentArray);

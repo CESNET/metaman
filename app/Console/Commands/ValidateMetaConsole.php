@@ -6,6 +6,7 @@ use App\Jobs\RunMdaScript;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Traits\DumpFromGit\EntitiesHelp\FixEntityTrait;
+use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
 use App\Traits\ValidatorTrait;
 use Exception;
 use Illuminate\Console\Command;
@@ -27,7 +28,7 @@ class ValidateMetaConsole extends Command
      */
     protected $description = 'Command description';
 
-    use FixEntityTrait,ValidatorTrait;
+    use FixEntityTrait,UpdateEntity,ValidatorTrait;
 
     /**
      * Execute the console command.
@@ -100,18 +101,30 @@ class ValidateMetaConsole extends Command
 
     public function handle()
     {
-        dump(config('constants.lock_constant'));
 
-        /*        $lockKey = 'directory-'.md5('aboba').'-lock';
-                $lock = Cache::lock($lockKey, 61);
-                RunMdaScript::dispatch(2, $lock->owner());
-                $lock->release();*/
+        /*        $entity = Entity::find(1);
+                $xml_document = $entity->xml_file;
 
-        /*        $federation = Federation::where('id', 1)->first();
-                $this->runMDA($federation);*/
+                $xml_document = $this->updateXmlGroups($xml_document, $entity->groups()->pluck('name')->toArray());
+                dump($xml_document);*/
 
-        // $this->fixEntities();
-        //  $this->doc();
-
+        /*        if(!empty($entity->groups)) {
+                    $groups = $entity->groups()->pluck('name')->toArray();
+                    foreach ($groups as $name) {
+                        $configValue = config("groups.$name");
+                        dump($configValue);
+                    }*/
     }
+
+    /*        $lockKey = 'directory-'.md5('aboba').'-lock';
+            $lock = Cache::lock($lockKey, 61);
+            RunMdaScript::dispatch(2, $lock->owner());
+            $lock->release();*/
+
+    /*        $federation = Federation::where('id', 1)->first();
+            $this->runMDA($federation);*/
+
+    // $this->fixEntities();
+    //  $this->doc();
+
 }
