@@ -5,6 +5,7 @@ namespace App\Traits\DumpFromGit\EntitiesHelp;
 use App\Facades\RsTag;
 use App\Models\Category;
 use App\Models\Entity;
+use App\Traits\EntitiesXML\TagTrait;
 use App\Traits\ValidatorTrait;
 use DOMDocument;
 use DOMElement;
@@ -21,7 +22,7 @@ trait UpdateEntity
 
     private string $mdrpiURI = 'urn:oasis:names:tc:SAML:metadata:rpi';
 
-    use ValidatorTrait;
+    use TagTrait,ValidatorTrait;
 
     private function prepareXmlStructure(DOMDocument $dom): \DOMNode|bool|DOMElement|\DOMNameSpaceNode|null
     {
@@ -65,7 +66,6 @@ trait UpdateEntity
     private function updateXmlCategories(string $xml_document, int $category_id): string
     {
         $dom = $this->createDOM($xml_document);
-
         $attribute = $this->prepareXmlStructure($dom);
 
         $categoryXml = Category::whereId($category_id)->first()->xml_value;
@@ -86,11 +86,36 @@ trait UpdateEntity
     public function updateXmlGroups(string $xml_document, array $groupLink): string
     {
         $dom = $this->createDOM($xml_document);
+        $xPath = $this->createXPath($dom);
         $attribute = $this->prepareXmlStructure($dom);
 
         foreach ($groupLink as $link) {
-            $attributeValue = $dom->createElementNS($this->samlURI, 'saml:AttributeValue', $link);
-            $attribute->appendChild($attributeValue);
+            $query = "//saml:AttributeValue[text()='$link']";
+            $existing = $xPath->query($query);
+            if ($existing->length === 0) {
+                $attributeValue = $dom->createElementNS($this->samlURI, 'saml:AttributeValue', $link);
+                $attribute->appendChild($attributeValue);
+            }
+        }
+
+        return $dom->saveXML();
+    }
+
+    public function deleteXmlGroups(string $xml_document, array $groupLink): string
+    {
+        $dom = $this->createDOM($xml_document);
+        $xPath = $this->createXPath($dom);
+
+        $xPath->registerNamespace('saml', $this->samlURI);
+
+        foreach ($groupLink as $link) {
+            $query = "//saml:AttributeValue[text()='$link']";
+
+            $nodes = $xPath->query($query);
+
+            foreach ($nodes as $node) {
+                $this->deleteTag($node);
+            }
         }
 
         return $dom->saveXML();

@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Entity;
 use App\Models\Group;
-use Illuminate\Http\Request;
+use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
 
 class EntityGroupController extends Controller
 {
+    use UpdateEntity;
+
     /**
      * Display a listing of the resource.
      */
@@ -31,7 +33,7 @@ class EntityGroupController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Entity $entity)
+    public function store(Entity $entity)
     {
         $this->authorize('do-everything');
 
@@ -40,8 +42,11 @@ class EntityGroupController extends Controller
                 ->with('status', __('entities.join_empty_group'))
                 ->with('color', 'red');
         }
-
         $entity->groups()->attach(request('group'));
+        $groupLink = Group::find(request('group'))->pluck('xml_value')->toArray();
+
+        $xml_val = $this->updateXmlGroups($entity->xml_file, $groupLink);
+        $entity->update(['xml_file' => $xml_val]);
 
         return redirect()
             ->back()
@@ -63,6 +68,10 @@ class EntityGroupController extends Controller
         $entity
             ->groups()
             ->detach(request('groups'));
+
+        $groupLink = Group::find(request('groups'))->pluck('xml_value')->toArray();
+        $xml_val = $this->deleteXmlGroups($entity->xml_file, $groupLink);
+        $entity->update(['xml_file' => $xml_val]);
 
         return redirect()
             ->back()
