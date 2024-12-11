@@ -13,6 +13,7 @@ class Group extends Model
         'name',
         'description',
         'tagfile',
+        'xml_value',
     ];
 
     public function entities()

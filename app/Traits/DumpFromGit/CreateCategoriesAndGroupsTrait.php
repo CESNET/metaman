@@ -65,6 +65,7 @@ trait CreateCategoriesAndGroupsTrait
                         'name' => $names[$item],
                         'description' => $descriptions[$item],
                         'tagfile' => $item,
+                        'xml_value' => config("groups.$names[$item]"),
                     ]);
                 });
             }
