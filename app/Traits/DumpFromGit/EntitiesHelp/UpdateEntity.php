@@ -83,13 +83,13 @@ trait UpdateEntity
     /**
      * @throws \DOMException
      */
-    public function updateXmlGroups(string $xml_document, array $groupsName): string
+    public function updateXmlGroups(string $xml_document, array $groupLink): string
     {
         $dom = $this->createDOM($xml_document);
         $attribute = $this->prepareXmlStructure($dom);
 
-        foreach ($groupsName as $name) {
-            $attributeValue = $dom->createElementNS($this->samlURI, 'saml:AttributeValue', config("groups.$name"));
+        foreach ($groupLink as $link) {
+            $attributeValue = $dom->createElementNS($this->samlURI, 'saml:AttributeValue', $link);
             $attribute->appendChild($attributeValue);
         }
 
@@ -182,10 +182,10 @@ trait UpdateEntity
         if (! empty($entity->category_id)) {
             $xml_document = $this->updateXmlCategories($xml_document, $entity->category_id);
         }
-        $groupName = $entity->groups()->pluck('name')->toArray();
+        $groupLink = $entity->groups()->pluck('xml_value')->toArray();
 
-        if (! empty($groupName)) {
-            $xml_document = $this->updateXmlGroups($xml_document, $groupName);
+        if (! empty($groupLink)) {
+            $xml_document = $this->updateXmlGroups($xml_document, $groupLink);
         }
 
         $xml_document = $this->updateRegistrationInfo($xml_document, $entity->entityid, $timestampDocumentArray);

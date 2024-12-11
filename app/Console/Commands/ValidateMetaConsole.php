@@ -102,11 +102,14 @@ class ValidateMetaConsole extends Command
     public function handle()
     {
 
-        /*        $entity = Entity::find(1);
-                $xml_document = $entity->xml_file;
+        /*                $entity = Entity::find(1);
+                        $xml_document = $entity->xml_file;
+                        $groupLink = $entity->groups()->pluck('xml_value')->toArray();
 
-                $xml_document = $this->updateXmlGroups($xml_document, $entity->groups()->pluck('name')->toArray());
-                dump($xml_document);*/
+                        dump($groupLink);
+
+                        $xml_document = $this->updateXmlGroups($xml_document, $groupLink);
+                        dump($xml_document);*/
 
         /*        if(!empty($entity->groups)) {
                     $groups = $entity->groups()->pluck('name')->toArray();
