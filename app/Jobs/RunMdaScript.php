@@ -65,7 +65,7 @@ class RunMdaScript implements ShouldQueue
             foreach ($filterArray as $filter) {
                 $file = config('storageCfg.mdaConfigFolder').'/'.escapeshellarg($filter).'.xml';
                 $pipeline = 'main';
-                $command = 'sh '.escapeshellarg($realScriptPath).' '.$file.' '.$pipeline;
+                $command = 'bash '.escapeshellarg($realScriptPath).' '.$file.' '.$pipeline;
                 $output = shell_exec($command);
 
                 if ($output === false || str_contains($output, 'ERROR') || str_contains($output, 'WARN')) {
