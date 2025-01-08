@@ -767,7 +767,7 @@ trait ValidatorTrait
     }
 
 
-    public function checkAttributeForContentExistence (mixed $attributes):void{
+    public function checkAttributeForContentExistence(mixed $attributes):void{
 
         foreach ($attributes as $attribute) {
             if(empty($attribute->nodeValue)){
@@ -775,6 +775,10 @@ trait ValidatorTrait
                 break;
             }
         }
+
+    }
+    public function checkAttributeForEmptyContent(mixed $attributes):void
+    {
 
     }
 
