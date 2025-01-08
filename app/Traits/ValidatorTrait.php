@@ -766,15 +766,28 @@ trait ValidatorTrait
         }
     }
 
-    public function checkServiceNameAttributeForContentExistence(object $xpath): void
-    {
-        foreach ($xpath->query('/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:ServiceName') as $attribute) {
-            if (empty($attribute->nodeValue)) {
-                $this->error .= 'ServiceName attribute is empty please fill the attribute. ';
+
+    public function checkAttributeForContentExistence (mixed $attributes):void{
+
+        foreach ($attributes as $attribute) {
+            if(empty($attribute->nodeValue)){
+                $this->error .= " $attribute->localName attribute is empty please fill the attribute. ";
                 break;
             }
         }
+
     }
+
+    public function checkServiceNameAttributeForContentExistence(object $xpath): void
+    {
+        $this->checkAttributeForContentExistence($xpath->query('/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:ServiceName'));
+    }
+    public function checkServiceDescriptionAttributeForContentExistence(object $xpath): void
+    {
+        $this->checkAttributeForContentExistence($xpath->query('/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:ServiceDescription'));
+    }
+
+
 
     public function generateResult(): void
     {
@@ -807,6 +820,7 @@ trait ValidatorTrait
             $this->checkOneEntityAttributesElementPerExtensions($xpath);
             $this->checkServiceProviderRequestedAttributeNameValueDuplicity($xpath);
             $this->checkServiceNameAttributeForContentExistence($xpath);
+            $this->checkServiceDescriptionAttributeForContentExistence($xpath);
 
             $this->generateResult();
         }
