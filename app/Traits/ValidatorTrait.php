@@ -779,19 +779,32 @@ trait ValidatorTrait
     }
     public function checkAttributeForEmptyContent(mixed $attributes):void
     {
-
+        foreach ($attributes as $attribute) {
+            if(!empty($attribute->nodeValue)){
+                $this->error .= " $attribute->localName attribute is not empty please clear the attribute content. ";
+                break;
+            }
+        }
     }
 
-    public function checkServiceNameAttributeForContentExistence(object $xpath): void
+    public function checkAttributeConsumingService(object $xpath):void
     {
-        $this->checkAttributeForContentExistence($xpath->query('/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:ServiceName'));
-    }
-    public function checkServiceDescriptionAttributeForContentExistence(object $xpath): void
-    {
-        $this->checkAttributeForContentExistence($xpath->query('/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:ServiceDescription'));
-    }
+        $contentExistence = [
+            "ServiceName",
+            "ServiceDescription",
+        ];
+        $contentEmptiness = [
+            "RequestedAttribute",
+        ];
 
+        foreach ($contentExistence as $content) {
+            $this->checkAttributeForContentExistence($xpath->query("/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:$content"));
+        }
+        foreach ($contentEmptiness as $content) {
+            $this->checkAttributeForEmptyContent($xpath->query("/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:$content"));
+        }
 
+    }
 
     public function generateResult(): void
     {
@@ -823,8 +836,7 @@ trait ValidatorTrait
             $this->checkEC($xpath);
             $this->checkOneEntityAttributesElementPerExtensions($xpath);
             $this->checkServiceProviderRequestedAttributeNameValueDuplicity($xpath);
-            $this->checkServiceNameAttributeForContentExistence($xpath);
-            $this->checkServiceDescriptionAttributeForContentExistence($xpath);
+            $this->checkAttributeConsumingService($xpath);
 
             $this->generateResult();
         }
