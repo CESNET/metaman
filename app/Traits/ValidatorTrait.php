@@ -28,6 +28,8 @@ trait ValidatorTrait
         if ($request->input('metadata')) {
             return $request->input('metadata');
         }
+
+        return false;
     }
 
     public function libxml_display_errors(): string
@@ -46,7 +48,7 @@ trait ValidatorTrait
     {
         libxml_use_internal_errors(true);
 
-        $dom = new \DOMDocument();
+        $dom = new \DOMDocument;
         $dom->loadXML($metadata);
 
         $result = null;
@@ -356,6 +358,8 @@ trait ValidatorTrait
                 return '';
             }
         }
+
+        return '';
     }
 
     public function checkUIInfo(object $xpath): void
@@ -410,7 +414,7 @@ trait ValidatorTrait
                         $this->error .= $SSODescriptor.'/UIInfo/Logo '.$logo->nodeValue.' could not be read. ';
                     } else {
                         if (str_ends_with($logo->nodeValue, '.svg')) {
-                            $doc = new \DOMDocument();
+                            $doc = new \DOMDocument;
                             $doc->load($logo->nodeValue);
                             if (strcmp($doc->documentElement->nodeName, 'svg') !== 0) {
                                 $this->error .= $SSODescriptor.'/UIInfo/Logo '.$logo->nodeValue.' is not an image. ';
@@ -762,6 +766,16 @@ trait ValidatorTrait
         }
     }
 
+    public function checkServiceNameAttributeForContentExistence(object $xpath): void
+    {
+        foreach ($xpath->query('/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:ServiceName') as $attribute) {
+            if (empty($attribute->nodeValue)) {
+                $this->error .= 'ServiceName attribute is empty please fill the attribute. ';
+                break;
+            }
+        }
+    }
+
     public function generateResult(): void
     {
         if (empty($this->error)) {
@@ -792,6 +806,7 @@ trait ValidatorTrait
             $this->checkEC($xpath);
             $this->checkOneEntityAttributesElementPerExtensions($xpath);
             $this->checkServiceProviderRequestedAttributeNameValueDuplicity($xpath);
+            $this->checkServiceNameAttributeForContentExistence($xpath);
 
             $this->generateResult();
         }
