@@ -28,6 +28,8 @@ trait ValidatorTrait
         if ($request->input('metadata')) {
             return $request->input('metadata');
         }
+
+        return false;
     }
 
     public function libxml_display_errors(): string
@@ -46,7 +48,7 @@ trait ValidatorTrait
     {
         libxml_use_internal_errors(true);
 
-        $dom = new \DOMDocument();
+        $dom = new \DOMDocument;
         $dom->loadXML($metadata);
 
         $result = null;
@@ -356,6 +358,8 @@ trait ValidatorTrait
                 return '';
             }
         }
+
+        return '';
     }
 
     public function checkUIInfo(object $xpath): void
@@ -410,7 +414,7 @@ trait ValidatorTrait
                         $this->error .= $SSODescriptor.'/UIInfo/Logo '.$logo->nodeValue.' could not be read. ';
                     } else {
                         if (str_ends_with($logo->nodeValue, '.svg')) {
-                            $doc = new \DOMDocument();
+                            $doc = new \DOMDocument;
                             $doc->load($logo->nodeValue);
                             if (strcmp($doc->documentElement->nodeName, 'svg') !== 0) {
                                 $this->error .= $SSODescriptor.'/UIInfo/Logo '.$logo->nodeValue.' is not an image. ';
@@ -762,6 +766,51 @@ trait ValidatorTrait
         }
     }
 
+    public function checkAttributeForContentExistence(mixed $attributes): void
+    {
+
+        foreach ($attributes as $attribute) {
+            if (empty($attribute->nodeValue)) {
+                $this->error .= " $attribute->localName attribute is empty please fill the attribute. ";
+                break;
+            }
+        }
+    }
+
+    public function checkAttributeForEmptyContent(mixed $attributes): void
+    {
+        foreach ($attributes as $attribute) {
+            if (! empty($attribute->nodeValue)) {
+                $this->error .= " $attribute->localName attribute is not empty please clear the attribute content. ";
+                break;
+            }
+        }
+    }
+
+    public function checkAttributeConsumingService(object $xpath): void
+    {
+        $contentExistence = [
+            'ServiceName',
+            'ServiceDescription',
+        ];
+
+        $contentEmptiness = [
+            'RequestedAttribute',
+        ];
+
+        foreach ($contentExistence as $content) {
+            $this->checkAttributeForContentExistence(
+                $xpath->query("/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:$content")
+            );
+        }
+
+        foreach ($contentEmptiness as $content) {
+            $this->checkAttributeForEmptyContent(
+                $xpath->query("/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:$content")
+            );
+        }
+    }
+
     public function generateResult(): void
     {
         if (empty($this->error)) {
@@ -792,6 +841,7 @@ trait ValidatorTrait
             $this->checkEC($xpath);
             $this->checkOneEntityAttributesElementPerExtensions($xpath);
             $this->checkServiceProviderRequestedAttributeNameValueDuplicity($xpath);
+            $this->checkAttributeConsumingService($xpath);
 
             $this->generateResult();
         }
