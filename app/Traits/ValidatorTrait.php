@@ -799,10 +799,15 @@ trait ValidatorTrait
         ];
 
         foreach ($contentExistence as $content) {
-            $this->checkAttributeForContentExistence($xpath->query("/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:$content"));
+            $this->checkAttributeForContentExistence(
+                $xpath->query("/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:$content")
+            );
         }
+
         foreach ($contentEmptiness as $content) {
-            $this->checkAttributeForEmptyContent($xpath->query("/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:$content"));
+            $this->checkAttributeForEmptyContent(
+                $xpath->query("/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:$content")
+            );
         }
     }
 
