@@ -766,35 +766,36 @@ trait ValidatorTrait
         }
     }
 
-
-    public function checkAttributeForContentExistence(mixed $attributes):void{
+    public function checkAttributeForContentExistence(mixed $attributes): void
+    {
 
         foreach ($attributes as $attribute) {
-            if(empty($attribute->nodeValue)){
+            if (empty($attribute->nodeValue)) {
                 $this->error .= " $attribute->localName attribute is empty please fill the attribute. ";
                 break;
             }
         }
-
     }
-    public function checkAttributeForEmptyContent(mixed $attributes):void
+
+    public function checkAttributeForEmptyContent(mixed $attributes): void
     {
         foreach ($attributes as $attribute) {
-            if(!empty($attribute->nodeValue)){
+            if (! empty($attribute->nodeValue)) {
                 $this->error .= " $attribute->localName attribute is not empty please clear the attribute content. ";
                 break;
             }
         }
     }
 
-    public function checkAttributeConsumingService(object $xpath):void
+    public function checkAttributeConsumingService(object $xpath): void
     {
         $contentExistence = [
-            "ServiceName",
-            "ServiceDescription",
+            'ServiceName',
+            'ServiceDescription',
         ];
+
         $contentEmptiness = [
-            "RequestedAttribute",
+            'RequestedAttribute',
         ];
 
         foreach ($contentExistence as $content) {
@@ -803,7 +804,6 @@ trait ValidatorTrait
         foreach ($contentEmptiness as $content) {
             $this->checkAttributeForEmptyContent($xpath->query("/md:EntityDescriptor/md:SPSSODescriptor/md:AttributeConsumingService/md:$content"));
         }
-
     }
 
     public function generateResult(): void
