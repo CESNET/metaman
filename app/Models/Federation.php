@@ -21,9 +21,13 @@ class Federation extends Model
         'explanation',
     ];
 
-    protected $casts = [
-        'approved' => 'boolean',
-    ];
+
+    protected function casts(): array
+    {
+        return [
+            'approved' => 'boolean',
+        ];
+    }
 
     public function operators()
     {
