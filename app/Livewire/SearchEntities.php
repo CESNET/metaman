@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Livewire;
 
 use App\Models\Entity;
 use Illuminate\Support\Facades\Auth;
@@ -9,6 +9,7 @@ use Livewire\WithPagination;
 
 class SearchEntities extends Component
 {
+
     use WithPagination;
 
     public $search = '';
@@ -40,4 +41,5 @@ class SearchEntities extends Component
             'entities' => $entities,
         ]);
     }
+
 }
