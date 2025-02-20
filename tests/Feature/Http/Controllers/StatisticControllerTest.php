@@ -34,8 +34,8 @@ class StatisticControllerTest extends TestCase
         $this->assertCount(10, Category::all());
 
         $entities = Entity::select('type', 'entityid', 'edugain', 'hfd', 'rs', 'cocov1', 'sirtfi')->get();
-        $idps = $entities->filter(fn($e) => $e->type->value === 'idp');
-        $sps = $entities->filter(fn($e) => $e->type->value === 'sp');
+        $idps = $entities->filter(fn ($e) => $e->type->value === 'idp');
+        $sps = $entities->filter(fn ($e) => $e->type->value === 'sp');
 
         foreach ($idps as $idp) {
             Entity::whereEntityid($idp->entityid)
@@ -59,26 +59,26 @@ class StatisticControllerTest extends TestCase
                 ],
                 'entities' => [
                     'all' => Entity::count(),
-                    'edugain' => $entities->filter(fn($e) => $e->edugain)->count(),
-                    'hfd' => $entities->filter(fn($e) => $e->hfd)->count(),
-                    'rs' => $entities->filter(fn($e) => $e->rs)->count(),
-                    'cocov1' => $entities->filter(fn($e) => $e->cocov1)->count(),
-                    'sirtfi' => $entities->filter(fn($e) => $e->sirtfi)->count(),
+                    'edugain' => $entities->filter(fn ($e) => $e->edugain)->count(),
+                    'hfd' => $entities->filter(fn ($e) => $e->hfd)->count(),
+                    'rs' => $entities->filter(fn ($e) => $e->rs)->count(),
+                    'cocov1' => $entities->filter(fn ($e) => $e->cocov1)->count(),
+                    'sirtfi' => $entities->filter(fn ($e) => $e->sirtfi)->count(),
                     'idp' => [
                         'all' => $idps->count(),
                         'category' => $idp_category,
-                        'hfd' => $idps->filter(fn($e) => $e->hfd)->count(),
-                        'edugain' => $idps->filter(fn($e) => $e->edugain)->count(),
-                        'rs' => $idps->filter(fn($e) => $e->rs)->count(),
-                        'cocov1' => $idps->filter(fn($e) => $e->cocov1)->count(),
-                        'sirtfi' => $idps->filter(fn($e) => $e->sirtfi)->count(),
+                        'hfd' => $idps->filter(fn ($e) => $e->hfd)->count(),
+                        'edugain' => $idps->filter(fn ($e) => $e->edugain)->count(),
+                        'rs' => $idps->filter(fn ($e) => $e->rs)->count(),
+                        'cocov1' => $idps->filter(fn ($e) => $e->cocov1)->count(),
+                        'sirtfi' => $idps->filter(fn ($e) => $e->sirtfi)->count(),
                     ],
                     'sp' => [
                         'all' => $sps->count(),
-                        'edugain' => $sps->filter(fn($e) => $e->edugain)->count(),
-                        'rs' => $sps->filter(fn($e) => $e->rs)->count(),
-                        'cocov1' => $sps->filter(fn($e) => $e->cocov1)->count(),
-                        'sirtfi' => $sps->filter(fn($e) => $e->sirtfi)->count(),
+                        'edugain' => $sps->filter(fn ($e) => $e->edugain)->count(),
+                        'rs' => $sps->filter(fn ($e) => $e->rs)->count(),
+                        'cocov1' => $sps->filter(fn ($e) => $e->cocov1)->count(),
+                        'sirtfi' => $sps->filter(fn ($e) => $e->sirtfi)->count(),
                     ],
                 ],
             ]);

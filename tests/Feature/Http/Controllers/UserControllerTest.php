@@ -295,7 +295,7 @@ class UserControllerTest extends TestCase
             ->post(route('users.store', [
                 'name' => $userName = "{$this->faker->firstName()} {$this->faker->lastName()}",
                 'uniqueid' => $userUniqueid = $this->faker->safeEmail(),
-                'email' => $userEmail = $this->faker->firstName() . '@cesnet.cz',
+                'email' => $userEmail = $this->faker->firstName().'@cesnet.cz',
             ]));
 
         $this->assertEquals(3, User::count());

@@ -74,7 +74,7 @@ class CategoryControllerTest extends TestCase
             ->post(route('categories.store'), [
                 'name' => $name = substr($this->faker->company(), 0, 32),
                 'description' => $this->faker->catchPhrase(),
-                'tagfile' => generateFederationID($name) . '.tag',
+                'tagfile' => generateFederationID($name).'.tag',
             ])
             ->assertSeeText('login');
 
@@ -197,7 +197,7 @@ class CategoryControllerTest extends TestCase
             ->post(route('categories.store'), [
                 'name' => $name = substr($this->faker->company(), 0, 32),
                 'description' => $this->faker->catchPhrase(),
-                'tagfile' => generateFederationID($name) . '.tag',
+                'tagfile' => generateFederationID($name).'.tag',
             ])
             ->assertStatus(403);
 
@@ -210,7 +210,7 @@ class CategoryControllerTest extends TestCase
         $user = User::factory()->create();
         $categoryName = substr($this->faker->company(), 0, 32);
         $categoryDescription = $this->faker->catchPhrase();
-        $categoryTagfile = generateFederationID($categoryName) . '.tag';
+        $categoryTagfile = generateFederationID($categoryName).'.tag';
         $category = Category::factory()->create([
             'name' => $categoryName,
             'description' => $categoryDescription,
@@ -228,7 +228,7 @@ class CategoryControllerTest extends TestCase
             ->patch(route('categories.update', $category), [
                 'name' => $name = substr($this->faker->company(), 0, 32),
                 'description' => $this->faker->catchPhrase(),
-                'tagfile' => generateFederationID($name) . '.tag',
+                'tagfile' => generateFederationID($name).'.tag',
             ])
             ->assertStatus(403);
 
@@ -335,7 +335,7 @@ class CategoryControllerTest extends TestCase
             ->post(route('categories.store'), [
                 'name' => $categoryName = substr($this->faker->company(), 0, 32),
                 'description' => $categoryDescription = $this->faker->catchPhrase(),
-                'tagfile' => $categoryTagfile = generateFederationID($categoryName) . '.tag',
+                'tagfile' => $categoryTagfile = generateFederationID($categoryName).'.tag',
             ])
             ->assertSeeText(__('categories.added', ['name' => $categoryName]));
 
@@ -357,7 +357,7 @@ class CategoryControllerTest extends TestCase
         $admin = User::factory()->create(['admin' => true]);
         $categoryName = substr($this->faker->company(), 0, 32);
         $categoryDescription = $this->faker->catchPhrase();
-        $categoryTagfile = generateFederationID($categoryName) . '.tag';
+        $categoryTagfile = generateFederationID($categoryName).'.tag';
         $oldCategoryName = $categoryTagfile;
         $category = Category::factory()->create([
             'name' => $categoryName,
@@ -389,7 +389,7 @@ class CategoryControllerTest extends TestCase
             ->patch(route('categories.update', $category), [
                 'name' => $categoryName = substr($this->faker->company(), 0, 32),
                 'description' => $categoryDescription = $this->faker->catchPhrase(),
-                'tagfile' => $categoryTagfile = generateFederationID($categoryName) . '.tag',
+                'tagfile' => $categoryTagfile = generateFederationID($categoryName).'.tag',
             ])
             ->assertSeeText(__('categories.updated', ['name' => $oldCategoryName]));
 

@@ -18,7 +18,7 @@ class ExceptionOccuredTest extends TestCase
         Mail::fake();
 
         $data['message'] = $this->faker->sentence();
-        $data['file'] = $this->faker->word() . '.php';
+        $data['file'] = $this->faker->word().'.php';
         $data['line'] = $this->faker->randomNumber(4, false);
 
         $instance = resolve(ExceptionOccured::class, ['data' => $data]);
