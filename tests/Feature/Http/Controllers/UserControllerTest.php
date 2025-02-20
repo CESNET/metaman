@@ -7,13 +7,14 @@ use App\Notifications\UserCreated;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_users_list()
     {
         $this
@@ -24,7 +25,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_users_detail()
     {
         $user = User::factory()->create();
@@ -37,7 +38,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_form_to_add_a_new_user()
     {
         $this
@@ -48,7 +49,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_toggle_users_status()
     {
         $user = User::factory()->create();
@@ -63,7 +64,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_toggle_users_role()
     {
         $user = User::factory()->create();
@@ -78,7 +79,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_users_list()
     {
         $user = User::factory()->create();
@@ -91,7 +92,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('users.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_users_detail()
     {
         $user = User::factory()->create();
@@ -105,7 +106,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('users.show', $anotherUser), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_form_to_add_a_new_user()
     {
         $user = User::factory()->create();
@@ -118,7 +119,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('users.create'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_toggle_users_status()
     {
         $user = User::factory()->create();
@@ -134,7 +135,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('users.show', $anotherUser), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_toggle_users_role()
     {
         $user = User::factory()->create();
@@ -150,7 +151,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('users.show', $anotherUser), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_toggle_their_status()
     {
         $user = User::factory()->create();
@@ -165,7 +166,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('users.show', $user), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_toggle_their_role()
     {
         $user = User::factory()->create();
@@ -180,7 +181,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('users.show', $user), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_can_show_their_user_details()
     {
         $user = User::factory()->create();
@@ -195,7 +196,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('users.show', $user), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_can_update_their_preferred_email_address()
     {
         $user = User::factory()->create([
@@ -232,7 +233,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals($emails[1], $user->email);
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_users_list()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -251,7 +252,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('users.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_users_detail()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -267,7 +268,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('users.show', $user), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_form_to_add_a_new_user()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -280,7 +281,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(route('users.create'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_add_a_new_user()
     {
         Notification::fake();
@@ -294,7 +295,7 @@ class UserControllerTest extends TestCase
             ->post(route('users.store', [
                 'name' => $userName = "{$this->faker->firstName()} {$this->faker->lastName()}",
                 'uniqueid' => $userUniqueid = $this->faker->safeEmail(),
-                'email' => $userEmail = $this->faker->firstName().'@cesnet.cz',
+                'email' => $userEmail = $this->faker->firstName() . '@cesnet.cz',
             ]));
 
         $this->assertEquals(3, User::count());
@@ -312,7 +313,7 @@ class UserControllerTest extends TestCase
         Notification::assertSentTo([$admins], UserCreated::class);
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_toggle_users_status()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -343,7 +344,7 @@ class UserControllerTest extends TestCase
         $this->assertTrue($user->active);
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_toggle_users_role()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -374,7 +375,7 @@ class UserControllerTest extends TestCase
         $this->assertFalse($user->admin);
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_cannot_toggle_their_status()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -393,7 +394,7 @@ class UserControllerTest extends TestCase
         $this->assertTrue($admin->active);
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_cannot_toggle_their_role()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -411,7 +412,7 @@ class UserControllerTest extends TestCase
         $this->assertTrue($admin->admin);
     }
 
-    /** @test */
+    #[Test]
     public function unkwnown_action_on_users_update_function_redirects_back()
     {
         $user = User::factory()->create();

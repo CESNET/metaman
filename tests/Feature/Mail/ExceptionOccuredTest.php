@@ -5,19 +5,20 @@ namespace Tests\Feature\Mail;
 use App\Mail\ExceptionOccured;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Mail;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ExceptionOccuredTest extends TestCase
 {
     use WithFaker;
 
-    /** @test */
+    #[Test]
     public function exception_contains_message_and_file_and_line()
     {
         Mail::fake();
 
         $data['message'] = $this->faker->sentence();
-        $data['file'] = $this->faker->word().'.php';
+        $data['file'] = $this->faker->word() . '.php';
         $data['line'] = $this->faker->randomNumber(4, false);
 
         $instance = resolve(ExceptionOccured::class, ['data' => $data]);

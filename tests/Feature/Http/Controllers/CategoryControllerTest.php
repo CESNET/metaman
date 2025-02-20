@@ -11,13 +11,14 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_categories_list()
     {
         $this
@@ -28,7 +29,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_categories_detail()
     {
         $category = Category::factory()->create();
@@ -41,7 +42,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_form_to_add_a_new_category()
     {
         $this
@@ -52,7 +53,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_form_to_edit_an_existing_category()
     {
         $category = Category::factory()->create();
@@ -65,7 +66,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_add_a_new_category()
     {
         $this
@@ -73,14 +74,14 @@ class CategoryControllerTest extends TestCase
             ->post(route('categories.store'), [
                 'name' => $name = substr($this->faker->company(), 0, 32),
                 'description' => $this->faker->catchPhrase(),
-                'tagfile' => generateFederationID($name).'.tag',
+                'tagfile' => generateFederationID($name) . '.tag',
             ])
             ->assertSeeText('login');
 
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_edit_an_existing_category()
     {
         $categoryName = substr($this->faker->company(), 0, 32);
@@ -115,7 +116,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_delete_an_existing_category()
     {
         $category = Category::factory()->create();
@@ -131,7 +132,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_categories_list()
     {
         $user = User::factory()->create();
@@ -144,7 +145,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_categories_detail()
     {
         $user = User::factory()->create();
@@ -158,7 +159,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.show', $category), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_form_to_add_a_new_category()
     {
         $user = User::factory()->create();
@@ -171,7 +172,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.create'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_form_to_edit_an_existing_category()
     {
         $user = User::factory()->create();
@@ -186,7 +187,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.edit', $category), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_add_a_new_category()
     {
         $user = User::factory()->create();
@@ -196,20 +197,20 @@ class CategoryControllerTest extends TestCase
             ->post(route('categories.store'), [
                 'name' => $name = substr($this->faker->company(), 0, 32),
                 'description' => $this->faker->catchPhrase(),
-                'tagfile' => generateFederationID($name).'.tag',
+                'tagfile' => generateFederationID($name) . '.tag',
             ])
             ->assertStatus(403);
 
         $this->assertEquals(route('categories.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_edit_an_existing_category()
     {
         $user = User::factory()->create();
         $categoryName = substr($this->faker->company(), 0, 32);
         $categoryDescription = $this->faker->catchPhrase();
-        $categoryTagfile = generateFederationID($categoryName).'.tag';
+        $categoryTagfile = generateFederationID($categoryName) . '.tag';
         $category = Category::factory()->create([
             'name' => $categoryName,
             'description' => $categoryDescription,
@@ -227,7 +228,7 @@ class CategoryControllerTest extends TestCase
             ->patch(route('categories.update', $category), [
                 'name' => $name = substr($this->faker->company(), 0, 32),
                 'description' => $this->faker->catchPhrase(),
-                'tagfile' => generateFederationID($name).'.tag',
+                'tagfile' => generateFederationID($name) . '.tag',
             ])
             ->assertStatus(403);
 
@@ -239,7 +240,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.show', $category), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_delete_an_existing_category()
     {
         $user = User::factory()->create();
@@ -256,7 +257,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.show', $category), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_categories_list()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -273,7 +274,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_categories_details()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -291,7 +292,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.show', $category), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_form_to_add_a_new_category()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -304,7 +305,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.create'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_form_to_edit_an_existing_category()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -321,7 +322,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.edit', $category), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_add_a_new_category()
     {
         Bus::fake();
@@ -334,7 +335,7 @@ class CategoryControllerTest extends TestCase
             ->post(route('categories.store'), [
                 'name' => $categoryName = substr($this->faker->company(), 0, 32),
                 'description' => $categoryDescription = $this->faker->catchPhrase(),
-                'tagfile' => $categoryTagfile = generateFederationID($categoryName).'.tag',
+                'tagfile' => $categoryTagfile = generateFederationID($categoryName) . '.tag',
             ])
             ->assertSeeText(__('categories.added', ['name' => $categoryName]));
 
@@ -348,7 +349,7 @@ class CategoryControllerTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_edit_an_existing_category()
     {
         Bus::fake();
@@ -356,7 +357,7 @@ class CategoryControllerTest extends TestCase
         $admin = User::factory()->create(['admin' => true]);
         $categoryName = substr($this->faker->company(), 0, 32);
         $categoryDescription = $this->faker->catchPhrase();
-        $categoryTagfile = generateFederationID($categoryName).'.tag';
+        $categoryTagfile = generateFederationID($categoryName) . '.tag';
         $oldCategoryName = $categoryTagfile;
         $category = Category::factory()->create([
             'name' => $categoryName,
@@ -388,7 +389,7 @@ class CategoryControllerTest extends TestCase
             ->patch(route('categories.update', $category), [
                 'name' => $categoryName = substr($this->faker->company(), 0, 32),
                 'description' => $categoryDescription = $this->faker->catchPhrase(),
-                'tagfile' => $categoryTagfile = generateFederationID($categoryName).'.tag',
+                'tagfile' => $categoryTagfile = generateFederationID($categoryName) . '.tag',
             ])
             ->assertSeeText(__('categories.updated', ['name' => $oldCategoryName]));
 
@@ -403,7 +404,7 @@ class CategoryControllerTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_delete_an_existing_category_without_members()
     {
         Bus::fake();
@@ -427,7 +428,7 @@ class CategoryControllerTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_cannot_delete_an_existing_category_with_members()
     {
         $admin = User::factory()->create(['admin' => true]);

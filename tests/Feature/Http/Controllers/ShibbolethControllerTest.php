@@ -6,13 +6,14 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ShibbolethControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function if_no_shibboleth_just_show_a_message(): void
     {
         $this
@@ -21,7 +22,7 @@ class ShibbolethControllerTest extends TestCase
             ->assertSeeText('login');
     }
 
-    /** @test */
+    #[Test]
     public function shibboleth_login_redirects_correctly(): void
     {
         $this
@@ -31,7 +32,7 @@ class ShibbolethControllerTest extends TestCase
         $this->assertEquals('http://localhost/login', url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_existing_user_with_inactive_account_cannot_login(): void
     {
         $user = User::factory()->create(['active' => false]);
@@ -56,7 +57,7 @@ class ShibbolethControllerTest extends TestCase
         $this->assertEquals('http://localhost/blocked', url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_existing_user_with_active_account_can_login(): void
     {
         $user = User::factory()->create(['active' => true]);
@@ -76,7 +77,7 @@ class ShibbolethControllerTest extends TestCase
         $this->assertFalse(Auth::guest());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_can_log_out(): void
     {
         $user = User::factory()->create(['active' => true]);

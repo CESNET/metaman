@@ -12,13 +12,14 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class EntityControllerTest extends TestCase
 {
   use RefreshDatabase, WithFaker;
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_isnt_shown_an_entities_list()
   {
     $this
@@ -29,7 +30,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('login'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_isnt_shown_an_entities_details()
   {
     $entity = Entity::factory()->create();
@@ -42,7 +43,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('login'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_isnt_shown_a_form_to_add_a_new_entity()
   {
     $this
@@ -53,7 +54,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('login'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_cannot_add_a_new_entity()
   {
     // metadata URL
@@ -71,7 +72,7 @@ class EntityControllerTest extends TestCase
     // metadata file
   }
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_cannot_see_entities_edit_page()
   {
     $entity = Entity::factory()->create();
@@ -85,7 +86,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('login'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_cannot_edit_an_existing_entity()
   {
     $entity = Entity::factory()->create();
@@ -99,7 +100,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('login'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_cannot_change_an_existing_entities_state()
   {
     $entity = Entity::factory()->create();
@@ -115,7 +116,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('login'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_cannot_change_an_existing_entities_operators()
   {
     $entity = Entity::factory()->create();
@@ -147,7 +148,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('login'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_cannot_change_an_existing_entities_federation_membership()
   {
     $entity = Entity::factory()->create();
@@ -163,7 +164,7 @@ class EntityControllerTest extends TestCase
       ->assertSeeText('login');
   }
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_cannot_purge_an_existing_entity()
   {
     $entity = Entity::factory()->create([
@@ -178,7 +179,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('login'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_cannot_reject_a_new_entity_request()
   {
     $user = User::factory()->create();
@@ -196,7 +197,7 @@ class EntityControllerTest extends TestCase
       ->assertSeeText('login');
   }
 
-  /** @test */
+  #[Test]
   public function an_anonymouse_user_cannot_approve_a_new_entity_request()
   {
     $user = User::factory()->create();
@@ -214,7 +215,7 @@ class EntityControllerTest extends TestCase
       ->assertSeeText('login');
   }
 
-  /** @test */
+  #[Test]
   public function a_user_is_shown_a_entities_list()
   {
     $this->assertEquals(0, Entity::count());
@@ -233,7 +234,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.index'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function a_user_is_shown_a_entities_details()
   {
     $this->assertEquals(0, Entity::count());
@@ -253,7 +254,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.show', $entity), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function a_user_is_shown_a_form_to_add_a_new_entity()
   {
     $user = User::factory()->create();
@@ -266,7 +267,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.create'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function a_user_cannot_add_metadata_using_invalid_url()
   {
     $user = User::factory()->create(['active' => true]);
@@ -283,7 +284,7 @@ class EntityControllerTest extends TestCase
       ->assertSeeText(__('entities.no_metadata'));
   }
 
-  /** @test */
+  #[Test]
   public function a_user_can_add_a_new_entity()
   {
     $user = User::factory()->create();
@@ -468,7 +469,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.show', Entity::find(1)), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function a_user_with_operator_permission_can_see_entities_edit_page()
   {
     $user = User::factory()->create();
@@ -484,7 +485,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.edit', $entity), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function a_user_with_operator_permission_can_edit_an_existing_entity()
   {
     Bus::fake();
@@ -646,7 +647,7 @@ class EntityControllerTest extends TestCase
     });
   }
 
-  /** @test */
+  #[Test]
   public function a_user_with_operator_permission_can_change_an_existing_entities_state()
   {
     Bus::fake();
@@ -687,7 +688,7 @@ class EntityControllerTest extends TestCase
     });
   }
 
-  /** @test */
+  #[Test]
   public function a_user_with_operator_permission_can_change_an_existing_entities_operators()
   {
     $user = User::factory()->create();
@@ -724,7 +725,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.show', $entity), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function a_user_with_operator_permission_can_change_an_existing_entities_federation_membership()
   {
     $user = User::factory()->create();
@@ -747,7 +748,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(1, Membership::whereApproved(false)->count());
   }
 
-  /** @test */
+  #[Test]
   public function a_user_without_operator_permission_cannot_see_entities_edit_page()
   {
     $user = User::factory()->create();
@@ -759,7 +760,7 @@ class EntityControllerTest extends TestCase
       ->assertForbidden();
   }
 
-  /** @test */
+  #[Test]
   public function a_user_without_operator_permission_cannot_edit_an_existing_entity()
   {
     $entity = Entity::factory()->create(['entityid' => 'https://whoami.cesnet.cz/idp/shibboleth']);
@@ -773,7 +774,7 @@ class EntityControllerTest extends TestCase
       ->assertSeeText('login');
   }
 
-  /** @test */
+  #[Test]
   public function a_user_without_operator_permission_cannot_change_an_existing_entities_state()
   {
     $user = User::factory()->create();
@@ -787,7 +788,7 @@ class EntityControllerTest extends TestCase
       ->assertForbidden();
   }
 
-  /** @test */
+  #[Test]
   public function a_user_without_operator_permission_cannot_change_an_existing_entities_operators()
   {
     $user = User::factory()->create();
@@ -814,7 +815,7 @@ class EntityControllerTest extends TestCase
       ->assertForbidden();
   }
 
-  /** @test */
+  #[Test]
   public function a_user_without_operator_permission_cannot_change_an_existing_entities_federation_membership()
   {
     $user = User::factory()->create();
@@ -836,7 +837,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(0, Membership::whereApproved(false)->count());
   }
 
-  /** @test */
+  #[Test]
   public function a_user_cannot_purge_an_existing_entity()
   {
     $user = User::factory()->create();
@@ -851,7 +852,7 @@ class EntityControllerTest extends TestCase
       ->assertForbidden();
   }
 
-  /** @test */
+  #[Test]
   public function a_user_cannot_reject_a_new_entity_request()
   {
     $user = User::factory()->create();
@@ -871,7 +872,7 @@ class EntityControllerTest extends TestCase
       ->assertForbidden();
   }
 
-  /** @test */
+  #[Test]
   public function a_user_cannot_approve_a_new_entity_request()
   {
     $user = User::factory()->create();
@@ -892,7 +893,7 @@ class EntityControllerTest extends TestCase
       ->assertForbidden();
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_is_shown_a_entities_list()
   {
     $admin = User::factory()->create(['admin' => true]);
@@ -909,7 +910,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.index'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_is_shown_a_entities_details()
   {
     $admin = User::factory()->create(['admin' => true]);
@@ -927,7 +928,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.show', $entity), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_is_shown_a_form_to_add_a_new_entity()
   {
     $admin = User::factory()->create(['admin' => true]);
@@ -940,7 +941,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.create'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_can_add_a_new_entity()
   {
     $admin = User::factory()->create(['admin' => true]);
@@ -1113,7 +1114,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.show', Entity::find(1)), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_can_see_entities_edit_page()
   {
     $admin = User::factory()->create(['admin' => true]);
@@ -1129,7 +1130,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.edit', $entity), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_can_edit_an_existing_entity()
   {
     Bus::fake();
@@ -1289,7 +1290,7 @@ class EntityControllerTest extends TestCase
     });
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_can_change_an_existing_entities_state()
   {
     Bus::fake();
@@ -1329,7 +1330,7 @@ class EntityControllerTest extends TestCase
     });
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_can_change_an_existing_entities_operators()
   {
     $admin = User::factory()->create(['admin' => true]);
@@ -1387,7 +1388,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('entities.show', $entity), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_can_change_an_existing_entities_federation_membership()
   {
     $this->withoutExceptionHandling();
@@ -1410,7 +1411,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(1, Membership::whereApproved(false)->count());
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_can_purge_an_existing_entity()
   {
     $admin = User::factory()->create(['admin' => true]);
@@ -1426,7 +1427,7 @@ class EntityControllerTest extends TestCase
       ->assertSeeText(__('entities.destroyed', ['name' => $name]));
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_can_reject_a_new_entity_request()
   {
     $admin = User::factory()->create(['admin' => true]);
@@ -1445,7 +1446,7 @@ class EntityControllerTest extends TestCase
       ->assertSeeText(__('federations.membership_rejected', ['entity' => $entity->name_en]));
   }
 
-  /** @test */
+  #[Test]
   public function an_admin_can_approve_a_new_entity_request()
   {
     Bus::fake();
@@ -1466,7 +1467,7 @@ class EntityControllerTest extends TestCase
       ->assertSeeText(__('federations.membership_accepted', ['entity' => $entity->entityid]));
   }
 
-  /** @test */
+  #[Test]
   public function not_even_an_admin_can_run_update_function_without_definig_action()
   {
     $admin = User::factory()->create(['admin' => true]);
@@ -1480,7 +1481,7 @@ class EntityControllerTest extends TestCase
     $this->assertEquals(route('home'), url()->current());
   }
 
-  /** @test */
+  #[Test]
   public function ask_rs_isnt_shown_for_sp_entities_not_in_rs_federation()
   {
     $user = User::factory()->create();
@@ -1500,7 +1501,7 @@ class EntityControllerTest extends TestCase
       ->assertSeeText(__('entities.rs_only_for_eduidcz_members'));
   }
 
-  /** @test */
+  #[Test]
   public function ask_rs_is_shown_for_sp_entities_in_rs_federation()
   {
     $user = User::factory()->create();

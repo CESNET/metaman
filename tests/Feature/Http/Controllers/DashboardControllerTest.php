@@ -6,13 +6,14 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class DashboardControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_is_redirected_to_login(): void
     {
         $this
@@ -25,7 +26,7 @@ class DashboardControllerTest extends TestCase
         $this->assertTrue(Auth::guest());
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_is_shown_dashboard_page(): void
     {
         $user = User::factory()->create(['active' => true]);
