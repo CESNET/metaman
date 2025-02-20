@@ -8,6 +8,6 @@
 
 @section('content')
 
-    @livewire('search-users')
+    <livewire:search-users />
 
 @endsection

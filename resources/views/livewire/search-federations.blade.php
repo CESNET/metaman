@@ -3,7 +3,7 @@
     <div class="mb-4">
         <form>
             <label class="sr-only" for="search">{{ __('common.search') }}</label>
-            <input wire:model.debounce.500ms="search" class="dark:bg-transparent w-full px-4 py-2 border rounded-lg"
+            <input wire:model.live="search" class="dark:bg-transparent w-full px-4 py-2 border rounded-lg"
                    type="text" name="search" id="search" value="{{ request('search') }}"
                    placeholder="{{ __('federations.searchbox') }}" autofocus>
         </form>

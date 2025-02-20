@@ -7,7 +7,6 @@
     <title>{{ config('app.name') }} &dash; @yield('title')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('scripts')
-    @livewireStyles
 </head>
 
 <body class="bg-gray-50 dark:bg-gray-900 dark:text-gray-400 antialiased text-gray-700">
@@ -20,8 +19,6 @@
     </main>
 
     @include('partials.footer')
-
-    @livewireScripts
 
 </body>
 

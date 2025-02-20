@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\User;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -10,24 +11,21 @@ class SearchUsers extends Component
 {
     use WithPagination;
 
-    public $search = '';
+    #[Url(except: '')]
+    public string $search = '';
 
-    protected $queryString = ['search' => ['except' => '']];
-
-    public function updatingSearch()
+    public function updatedSearch()
     {
         $this->resetPage();
     }
 
     public function render()
     {
-        $users = User::query()
-            ->search($this->search)
-            ->orderBy('name')
-            ->paginate();
-
         return view('livewire.search-users', [
-            'users' => $users,
+            'users' => User::query()
+                ->search($this->search)
+                ->orderBy('name')
+                ->paginate(),
         ]);
     }
 }
