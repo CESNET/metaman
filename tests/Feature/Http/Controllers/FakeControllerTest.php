@@ -6,13 +6,14 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class FakeControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+   #[Test]
     public function a_user_can_log_in_using_fakecontroller(): void
     {
         $user = User::factory()->create(['active' => true]);
@@ -31,7 +32,7 @@ class FakeControllerTest extends TestCase
         $this->assertFalse(Auth::guest());
     }
 
-    /** @test */
+   #[Test]
     public function a_user_can_log_out_using_fakecontroller(): void
     {
         $user = User::factory()->create(['active' => true]);

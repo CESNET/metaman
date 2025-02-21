@@ -9,15 +9,14 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use LdapRecord\Laravel\Testing\DirectoryEmulator;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class LdapEntityControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-    /**
-     * @test
-     */
+    #[Test]
     public function entity_controller_show_works()
     {
         $this->assertTrue(true);

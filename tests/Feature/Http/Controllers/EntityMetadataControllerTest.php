@@ -6,13 +6,14 @@ use App\Models\Entity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class EntityMetadataControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function anonymouse_user_is_redirected_to_login(): void
     {
         Queue::fake();
@@ -25,7 +26,7 @@ class EntityMetadataControllerTest extends TestCase
 
     }
 
-    /** @test */
+    #[Test]
     public function cant_download_unapproved_entitys_metadata(): void
     {
         $user = User::factory()->create(['active' => true]);
@@ -38,7 +39,7 @@ class EntityMetadataControllerTest extends TestCase
             ->assertSeeText(__('entities.not_yet_approved'));
     }
 
-    /** @test */
+    #[Test]
     public function cant_show_unapproved_entitys_metadata(): void
     {
         $user = User::factory()->create(['active' => true]);
