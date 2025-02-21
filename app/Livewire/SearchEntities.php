@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Livewire;
 
 use App\Models\Entity;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -11,9 +12,8 @@ class SearchEntities extends Component
 {
     use WithPagination;
 
+    #[Url(except: '')]
     public $search = '';
-
-    protected $queryString = ['search' => ['except' => '']];
 
     public $locale;
 
@@ -29,15 +29,13 @@ class SearchEntities extends Component
 
     public function render()
     {
-        $entities = Entity::query()
-            ->visibleTo(Auth::user())
-            ->search($this->search)
-            ->orderByDesc('approved')
-            ->orderBy("name_{$this->locale}")
-            ->paginate();
-
         return view('livewire.search-entities', [
-            'entities' => $entities,
+            'entities' => Entity::query()
+                ->visibleTo(Auth::user())
+                ->search($this->search)
+                ->orderByDesc('approved')
+                ->orderBy("name_{$this->locale}")
+                ->paginate(),
         ]);
     }
 }
