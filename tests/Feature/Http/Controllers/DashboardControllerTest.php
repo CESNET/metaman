@@ -13,7 +13,7 @@ class DashboardControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-   #[Test]
+    #[Test]
     public function unauthenticated_user_is_redirected_to_login(): void
     {
         $this
@@ -26,7 +26,7 @@ class DashboardControllerTest extends TestCase
         $this->assertTrue(Auth::guest());
     }
 
-   #[Test]
+    #[Test]
     public function authenticated_user_is_shown_dashboard_page(): void
     {
         $user = User::factory()->create(['active' => true]);

@@ -13,7 +13,7 @@ class GroupControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-   #[Test]
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_groups_list()
     {
         $this
@@ -24,7 +24,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-   #[Test]
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_groups_detail()
     {
         $group = Group::factory()->create();
@@ -37,7 +37,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-   #[Test]
+    #[Test]
     public function a_user_isnt_shown_a_groups_list()
     {
         $user = User::factory()->create();
@@ -50,7 +50,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.index'), url()->current());
     }
 
-   #[Test]
+    #[Test]
     public function a_user_isnt_shown_a_groups_detail()
     {
         $user = User::factory()->create();
@@ -64,7 +64,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.show', $group), url()->current());
     }
 
-   #[Test]
+    #[Test]
     public function an_admin_is_shown_a_groups_list()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -81,7 +81,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.index'), url()->current());
     }
 
-   #[Test]
+    #[Test]
     public function an_admin_is_shown_a_groups_details()
     {
         $admin = User::factory()->create(['admin' => true]);
