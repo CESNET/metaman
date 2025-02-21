@@ -28,15 +28,18 @@ class Entity extends Model
         'metadata',
     ];
 
-    protected $casts = [
-        'type' => EntityType::class,
-        'edugain' => 'boolean',
-        'hfd' => 'boolean',
-        'rs' => 'boolean',
-        'cocov1' => 'boolean',
-        'sirtfi' => 'boolean',
-        'approved' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'type' => EntityType::class,
+            'edugain' => 'boolean',
+            'hfd' => 'boolean',
+            'rs' => 'boolean',
+            'cocov1' => 'boolean',
+            'sirtfi' => 'boolean',
+            'approved' => 'boolean',
+        ];
+    }
 
     public function operators()
     {
