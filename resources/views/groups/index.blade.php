@@ -12,6 +12,6 @@
 
 @section('content')
 
-    @livewire('search-groups')
+    <livewire:search-groups />
 
 @endsection

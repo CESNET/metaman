@@ -13,6 +13,6 @@
 
 @section('content')
 
-    @livewire('search-federations')
+    <livewire:search-federations />
 
 @endsection

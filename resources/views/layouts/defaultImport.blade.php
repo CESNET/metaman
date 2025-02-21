@@ -7,12 +7,12 @@
 <form method="POST" action="@yield('form_action')">
     @csrf
     <div class="dark:bg-transparent overflow-x-auto bg-white border rounded-lg">
-        <table class="min-w-full border-b border-gray-300" x-data="selectAllCheckboxes()">
+        <table class="min-w-full border-b border-gray-300">
             <thead>
             <tr>
                 <x-form-table.head-cell>
                     <label>
-                        <input class="rounded" type="checkbox" @click="selectAll = !selectAll">
+                        <input class="rounded" type="checkbox" onclick="toggle(this);">
                     </label>
                 </x-form-table.head-cell>
                 @isset($cells)
@@ -41,10 +41,12 @@
 
 @push('scripts')
     <script defer>
-        function selectAllCheckboxes() {
-            return {
-                selectAll: false,
-            };
+        function toggle(source) {
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i] != source)
+                    checkboxes[i].checked = source.checked;
+            }
         }
     </script>
 @endpush

@@ -7,13 +7,14 @@ use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class StatisticControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_produces_statistics(): void
     {
         User::factory(2)->create();

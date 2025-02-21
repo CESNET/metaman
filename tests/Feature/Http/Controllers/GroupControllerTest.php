@@ -11,13 +11,14 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class GroupControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_groups_list()
     {
         $this
@@ -28,7 +29,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_groups_detail()
     {
         $group = Group::factory()->create();
@@ -41,7 +42,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_form_to_add_a_new_group()
     {
         $this
@@ -52,7 +53,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_add_a_new_group()
     {
         $this
@@ -67,7 +68,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_edit_an_existing_group()
     {
         $groupName = substr($this->faker->company(), 0, 32);
@@ -102,7 +103,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_delete_an_existing_group()
     {
         $group = Group::factory()->create();
@@ -118,7 +119,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_groups_list()
     {
         $user = User::factory()->create();
@@ -131,7 +132,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_groups_detail()
     {
         $user = User::factory()->create();
@@ -145,7 +146,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.show', $group), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_form_to_add_a_new_group()
     {
         $user = User::factory()->create();
@@ -158,7 +159,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.create'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_add_a_new_group()
     {
         $user = User::factory()->create();
@@ -175,7 +176,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_edit_an_existing_group()
     {
         $user = User::factory()->create();
@@ -211,7 +212,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.show', $group), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_delete_an_existing_group()
     {
         $user = User::factory()->create();
@@ -228,7 +229,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.show', $group), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_groups_list()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -245,7 +246,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_groups_details()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -263,7 +264,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.show', $group), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_form_to_add_a_new_group()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -276,7 +277,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.create'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_form_to_edit_an_existing_group()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -293,7 +294,7 @@ class GroupControllerTest extends TestCase
         $this->assertEquals(route('groups.edit', $group), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_add_a_new_group()
     {
         Bus::fake();
@@ -320,7 +321,7 @@ class GroupControllerTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_edit_an_existing_group()
     {
         Bus::fake();
@@ -375,7 +376,7 @@ class GroupControllerTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_delete_an_existing_group_without_members()
     {
         Bus::fake();
@@ -399,7 +400,7 @@ class GroupControllerTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_cannot_delete_an_existing_group_with_members()
     {
         $admin = User::factory()->create(['admin' => true]);
