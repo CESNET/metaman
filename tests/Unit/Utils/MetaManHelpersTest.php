@@ -2,17 +2,18 @@
 
 namespace Tests\Unit\Utils;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class MetaManHelpersTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function generateFederationId_replaces_czech_characters_with_ascii()
     {
         $this->assertEquals('escrzyaieuudtn', generateFederationID('ěščřžýáíéúůďťň'));
     }
 
-    /** @test */
+    #[Test]
     public function generateFederationId_replaces_white_spaces_with_a_dash()
     {
         $this->assertEquals('eduid-cz', generateFederationID('eduid cz'));
@@ -21,7 +22,7 @@ class MetaManHelpersTest extends TestCase
         $this->assertEquals('edu-id-cz', generateFederationID('edu id   cz'));
     }
 
-    /** @test */
+    #[Test]
     public function generateFederationId_replaces_two_or_more_dashes_with_just_one()
     {
         $this->assertEquals('eduid-cz', generateFederationID('eduid--cz'));
@@ -29,7 +30,7 @@ class MetaManHelpersTest extends TestCase
         $this->assertEquals('eduid-cz', generateFederationID('eduid----cz'));
     }
 
-    /** @test */
+    #[Test]
     public function generateFederationId_replaces_two_or_more_underscores_whit_just_one()
     {
         $this->assertEquals('eduid_cz', generateFederationID('eduid__cz'));
@@ -37,13 +38,13 @@ class MetaManHelpersTest extends TestCase
         $this->assertEquals('eduid_cz', generateFederationID('eduid____cz'));
     }
 
-    /** @test */
+    #[Test]
     public function generateFederationId_produces_only_lowercased_characters()
     {
         $this->assertEquals('eduidcz', generateFederationID('eduIDcz'));
     }
 
-    /** @test */
+    #[Test]
     public function generateFederationId_produces_only_valid_output_for_quite_an_ugly_input()
     {
         $this->assertEquals('eduidcz', generateFederationID('eduID..cz'));

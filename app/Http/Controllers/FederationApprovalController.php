@@ -6,13 +6,19 @@ use App\Models\Federation;
 use App\Notifications\FederationApproved;
 use App\Notifications\FederationRejected;
 use App\Services\NotificationService;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 
 class FederationApprovalController extends Controller
 {
     /**
      * Store a newly created resource in storage.
+     *
+     * @throws AuthorizationException
      */
-    public function store(Federation $federation)
+    public function store(Federation $federation): RedirectResponse
     {
         $this->authorize('do-everything');
 
@@ -28,8 +34,10 @@ class FederationApprovalController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @throws AuthorizationException
      */
-    public function destroy(Federation $federation)
+    public function destroy(Federation $federation): Application|Redirector|RedirectResponse
     {
         $this->authorize('update', $federation);
 

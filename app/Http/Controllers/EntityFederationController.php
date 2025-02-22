@@ -8,13 +8,21 @@ use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
 use App\Notifications\EntityDeletedFromFederation;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 
 class EntityFederationController extends Controller
 {
-    public function index(Entity $entity)
+    /**
+     * @throws AuthorizationException
+     */
+    public function index(Entity $entity): Factory|Application|View
     {
         $this->authorize('view', $entity);
 
@@ -32,7 +40,10 @@ class EntityFederationController extends Controller
         ]);
     }
 
-    public function store(JoinFederation $request, Entity $entity)
+    /**
+     * @throws AuthorizationException
+     */
+    public function store(JoinFederation $request, Entity $entity): RedirectResponse
     {
         $this->authorize('update', $entity);
 
@@ -56,7 +67,10 @@ class EntityFederationController extends Controller
             ]));
     }
 
-    public function destroy(Request $request, Entity $entity)
+    /**
+     * @throws AuthorizationException
+     */
+    public function destroy(Request $request, Entity $entity): RedirectResponse
     {
         $this->authorize('update', $entity);
 

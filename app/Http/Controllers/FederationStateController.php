@@ -5,10 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Federation;
 use App\Notifications\FederationStateChanged;
 use App\Services\NotificationService;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\RedirectResponse;
 
 class FederationStateController extends Controller
 {
-    public function update(Federation $federation)
+    /**
+     * @throws AuthorizationException
+     */
+    public function update(Federation $federation): RedirectResponse
     {
         $this->authorize('delete', $federation);
 

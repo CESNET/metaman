@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Entity;
 use App\Models\Federation;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
 class StatisticController extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $cache_time = now('Europe/Prague')->addHour();
 

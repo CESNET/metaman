@@ -7,11 +7,19 @@ use App\Models\Entity;
 use App\Models\Federation;
 use App\Notifications\FederationMembersChanged;
 use App\Services\NotificationService;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
 class FederationEntityController extends Controller
 {
-    public function index(Federation $federation)
+    /**
+     * @throws AuthorizationException
+     */
+    public function index(Federation $federation): Factory|View|Application
     {
         $this->authorize('view', $federation);
 
@@ -33,8 +41,10 @@ class FederationEntityController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @throws AuthorizationException
      */
-    public function store(Federation $federation)
+    public function store(Federation $federation): RedirectResponse
     {
         $this->authorize('update', $federation);
 
@@ -62,8 +72,10 @@ class FederationEntityController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @throws AuthorizationException
      */
-    public function destroy(Federation $federation)
+    public function destroy(Federation $federation): RedirectResponse
     {
         $this->authorize('update', $federation);
 

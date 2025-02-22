@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 
 class GroupController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function index()
+    public function index(): Factory|View|Application
     {
         $this->authorize('do-everything');
 
@@ -21,9 +25,9 @@ class GroupController extends Controller
     /**
      * Display the specified resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function show(Group $group)
+    public function show(Group $group): Factory|View|Application
     {
         $this->authorize('do-everything');
 

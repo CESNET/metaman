@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Entity;
 use App\Models\Group;
 use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
+use DOMException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 
 class EntityGroupController extends Controller
 {
@@ -12,8 +18,10 @@ class EntityGroupController extends Controller
 
     /**
      * Display a listing of the resource.
+     *
+     * @throws AuthorizationException
      */
-    public function index(Entity $entity)
+    public function index(Entity $entity): Factory|Application|View
     {
         $this->authorize('do-everything');
 
@@ -32,8 +40,11 @@ class EntityGroupController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @throws AuthorizationException
+     * @throws DOMException
      */
-    public function store(Entity $entity)
+    public function store(Entity $entity): RedirectResponse
     {
         $this->authorize('do-everything');
 
@@ -55,8 +66,10 @@ class EntityGroupController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @throws AuthorizationException
      */
-    public function destroy(Entity $entity)
+    public function destroy(Entity $entity): RedirectResponse
     {
         $this->authorize('do-everything');
 

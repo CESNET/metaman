@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class ShibbolethController extends Controller
 {
-    public function create()
+    public function create(): Application|Redirector|string|RedirectResponse
     {
         if (is_null(request()->server('Shib-Handler'))) {
             return 'login';
@@ -22,7 +25,7 @@ class ShibbolethController extends Controller
         );
     }
 
-    public function store()
+    public function store(): Application|Redirector|RedirectResponse
     {
         $mail = explode(';', request()->server('mail'));
 
@@ -48,7 +51,7 @@ class ShibbolethController extends Controller
         return redirect()->intended('/');
     }
 
-    public function destroy()
+    public function destroy(): Application|Redirector|RedirectResponse
     {
         Auth::logout();
         Session::flush();

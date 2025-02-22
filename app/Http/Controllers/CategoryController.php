@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 
 class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function index()
+    public function index(): Factory|Application|View
     {
         $this->authorize('do-everything');
 
@@ -21,9 +25,9 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function show(Category $category)
+    public function show(Category $category): Factory|View|Application
     {
         $this->authorize('do-everything');
 

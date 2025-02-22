@@ -31,15 +31,13 @@ class User extends Authenticatable
         //
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'admin' => 'boolean',
-        'active' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'admin' => 'boolean',
+            'active' => 'boolean',
+        ];
+    }
 
     public function federations()
     {

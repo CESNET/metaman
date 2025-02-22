@@ -12,13 +12,14 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class FederationControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_federations_list()
     {
         $this
@@ -29,7 +30,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_federations_details()
     {
         $federation = Federation::factory()->create();
@@ -42,7 +43,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_form_to_add_a_new_federation()
     {
         $this
@@ -53,7 +54,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_add_a_new_federation()
     {
         $this
@@ -72,7 +73,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_see_federations_edit_page()
     {
         $federation = Federation::factory()->create();
@@ -86,7 +87,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_edit_an_existing_federation()
     {
         $federation = Federation::factory()->create();
@@ -105,7 +106,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_change_an_existing_federations_state()
     {
         $federation = Federation::factory()->create();
@@ -123,7 +124,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_change_an_existing_federations_operators()
     {
         $federation = Federation::factory()->create();
@@ -155,7 +156,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_change_an_existing_federations_entities()
     {
         Queue::fake();
@@ -196,7 +197,7 @@ class FederationControllerTest extends TestCase
 
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_purge_an_existing_federation()
     {
         $federation = Federation::factory()->create([
@@ -212,7 +213,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_cancel_a_new_federation_request()
     {
         $federation = Federation::factory()->create([
@@ -230,7 +231,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_reject_a_new_federation_request()
     {
         $federation = Federation::factory()->create([
@@ -248,7 +249,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_cannot_approve_a_new_federation_request()
     {
         $federation = Federation::factory()->create([
@@ -266,7 +267,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_is_shown_a_federations_list()
     {
         $user = User::factory()->create();
@@ -283,7 +284,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_is_shown_a_federations_details()
     {
         $user = User::factory()->create();
@@ -301,7 +302,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.show', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_is_shown_a_form_to_add_a_new_federation()
     {
         $user = User::factory()->create();
@@ -314,7 +315,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.create'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_can_add_a_new_federation()
     {
         $user = User::factory()->create();
@@ -348,7 +349,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_with_operator_permission_can_see_federations_edit_page()
     {
         $user = User::factory()->create();
@@ -366,7 +367,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.edit', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_with_operator_permission_can_edit_an_existing_federation()
     {
         Bus::fake();
@@ -389,7 +390,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals($federationName, $federation->name);
     }
 
-    /** @test */
+    #[Test]
     public function a_user_with_operator_permission_can_change_an_existing_federations_state()
     {
         Bus::fake();
@@ -422,7 +423,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.show', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_with_operator_permission_can_change_an_existing_federations_operators()
     {
         $federation = Federation::factory()->create();
@@ -459,7 +460,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.operators.index', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_with_operator_permission_can_change_an_existing_federations_entities()
     {
         Bus::fake();
@@ -504,7 +505,7 @@ class FederationControllerTest extends TestCase
 
     }
 
-    /** @test */
+    #[Test]
     public function a_user_with_operator_permission_can_reject_a_new_federation_request()
     {
         Notification::fake();
@@ -535,7 +536,7 @@ class FederationControllerTest extends TestCase
         Notification::assertSentTo($admin, FederationRejected::class);
     }
 
-    /** @test */
+    #[Test]
     public function a_user_without_operator_permission_cannot_see_federations_edit_page()
     {
         $user = User::factory()->create();
@@ -551,7 +552,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.edit', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_without_operator_permission_cannot_edit_an_existing_federation()
     {
         Bus::fake();
@@ -570,7 +571,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.show', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_without_operator_permission_cannot_change_an_existing_federations_state()
     {
         $user = User::factory()->create();
@@ -585,7 +586,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.state', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_without_operator_permission_cannot_change_an_existing_federations_operators()
     {
         $federation = Federation::factory()->create();
@@ -623,7 +624,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.operators.index', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_without_operator_permission_cannot_change_an_existing_federations_entities()
     {
         Queue::fake();
@@ -666,7 +667,7 @@ class FederationControllerTest extends TestCase
 
     }
 
-    /** @test */
+    #[Test]
     public function a_user_without_operator_permission_cannot_cancel_a_new_federation_request()
     {
         $user = User::factory()->create();
@@ -684,7 +685,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.approve', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_purge_an_existing_federation()
     {
         $user = User::factory()->create();
@@ -702,7 +703,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.show', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_reject_a_new_federation_request()
     {
         $user = User::factory()->create();
@@ -720,7 +721,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.reject', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_cannot_approve_a_new_federation_request()
     {
         $user = User::factory()->create();
@@ -738,7 +739,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.approve', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_federations_list()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -755,7 +756,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_federations_details()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -773,7 +774,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.show', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_form_to_add_a_new_federation()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -786,7 +787,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.create'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_add_a_new_federation()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -819,7 +820,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_see_federations_edit_page()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -836,7 +837,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.edit', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_edit_an_existing_federation()
     {
         Bus::fake();
@@ -886,7 +887,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.show', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_change_an_existing_federations_state()
     {
         Bus::fake();
@@ -918,7 +919,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.show', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_change_an_existing_federations_operators()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -973,7 +974,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.operators.index', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_change_an_existing_federations_entities()
     {
         Bus::fake();
@@ -1038,7 +1039,7 @@ class FederationControllerTest extends TestCase
 
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_purge_an_existing_federation()
     {
         Notification::fake();
@@ -1071,7 +1072,7 @@ class FederationControllerTest extends TestCase
         Notification::assertSentTo([$admins], FederationDestroyed::class);
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_reject_a_new_federation_request()
     {
         Notification::fake();
@@ -1100,7 +1101,7 @@ class FederationControllerTest extends TestCase
         Notification::assertSentTo([$federationOperators], FederationRejected::class);
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_approve_a_new_federation_request()
     {
         Bus::fake();
@@ -1124,7 +1125,7 @@ class FederationControllerTest extends TestCase
         $this->assertEquals(route('federations.show', $federation), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function not_even_an_admin_can_run_update_function_without_definig_action()
     {
         $admin = User::factory()->create(['admin' => true]);

@@ -3,10 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entity;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 
 class EntityMetadataController extends Controller
 {
-    public function store(Entity $entity)
+    /**
+     * @throws AuthorizationException
+     */
+    private function validateEntity(Entity $entity): ?RedirectResponse
     {
         $this->authorize('view', $entity);
 
@@ -16,11 +24,22 @@ class EntityMetadataController extends Controller
                 ->with('color', 'red');
         }
 
-        $folderName = optional($entity->federations->first())->name;
-        if (is_null($folderName)) {
+        if (is_null(optional($entity->federations->first())->name)) {
             return to_route('entities.show', $entity)
                 ->with('status', __('entities.without_federation'))
                 ->with('color', 'red');
+        }
+
+        return null;
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function store(Entity $entity): Application|Response|RedirectResponse|ResponseFactory
+    {
+        if ($redirectResponse = $this->validateEntity($entity)) {
+            return $redirectResponse;
         }
 
         return response($entity->xml_file)
@@ -28,21 +47,14 @@ class EntityMetadataController extends Controller
             ->header('Content-Disposition', 'attachment; filename="'.$entity->file.'"');
     }
 
-    public function show(Entity $entity)
+    /**
+     * @throws AuthorizationException
+     */
+    public function show(Entity $entity): Application|Response|RedirectResponse|ResponseFactory
     {
-        $this->authorize('view', $entity);
 
-        if (! $entity->approved) {
-            return to_route('entities.show', $entity)
-                ->with('status', __('entities.not_yet_approved'))
-                ->with('color', 'red');
-        }
-
-        $folderName = optional($entity->federations->first())->name;
-        if (is_null($folderName)) {
-            return to_route('entities.show', $entity)
-                ->with('status', __('entities.without_federation'))
-                ->with('color', 'red');
+        if ($redirectResponse = $this->validateEntity($entity)) {
+            return $redirectResponse;
         }
 
         return response($entity->xml_file)

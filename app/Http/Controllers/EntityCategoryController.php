@@ -8,6 +8,10 @@ use App\Models\Entity;
 use App\Models\User;
 use App\Notifications\IdpCategoryChanged;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 
@@ -16,9 +20,9 @@ class EntityCategoryController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @throws AuthorizationException if do-everything not define in provider
+     * @throws AuthorizationException
      */
-    public function index(Entity $entity)
+    public function index(Entity $entity): Factory|Application|View
     {
         $this->authorize('do-everything');
         $categories = $entity->category() ? $entity->category()->get() : collect();
@@ -36,8 +40,10 @@ class EntityCategoryController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @throws AuthorizationException
      */
-    public function store(Request $request, Entity $entity)
+    public function store(Request $request, Entity $entity): RedirectResponse
     {
         $this->authorize('do-everything');
 
@@ -58,8 +64,10 @@ class EntityCategoryController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @throws AuthorizationException
      */
-    public function destroy(Request $request, Entity $entity)
+    public function destroy(Request $request, Entity $entity): RedirectResponse
     {
         $this->authorize('do-everything');
         $entity->category()->dissociate();
@@ -71,7 +79,10 @@ class EntityCategoryController extends Controller
 
     }
 
-    public function update(Entity $entity)
+    /**
+     * @throws AuthorizationException
+     */
+    public function update(Entity $entity): RedirectResponse
     {
         $this->authorize('do-everything');
 

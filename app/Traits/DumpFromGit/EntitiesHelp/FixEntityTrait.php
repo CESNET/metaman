@@ -34,7 +34,7 @@ trait FixEntityTrait
 
             $xml_document = $entity->xml_file;
 
-            //$xml_document = $entity->metadata;
+            // $xml_document = $entity->metadata;
 
             $res = json_decode($this->validateMetadata($xml_document, true), true);
             $res['ent_id'] = $entity->id;

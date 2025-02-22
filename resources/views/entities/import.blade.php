@@ -22,8 +22,7 @@
 
             <x-form-table.body-cell>
                 <label>
-                    <input class="rounded" type="checkbox" name="entities[]" value="{{ $entity['file'] }}"
-                           x-bind:checked="selectAll">
+                    <input class="rounded" type="checkbox" name="entities[]" value="{{ $entity['file'] }}">
                 </label>
             </x-form-table.body-cell>
 

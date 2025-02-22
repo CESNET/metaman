@@ -21,6 +21,9 @@ class FakeController extends Controller
 
             return redirect()->intended('/');
         }
+
+        // use default case
+        return redirect('/');
     }
 
     public function destroy(): RedirectResponse
@@ -31,5 +34,8 @@ class FakeController extends Controller
 
             return redirect('/');
         }
+
+        // use default case
+        return redirect('/');
     }
 }

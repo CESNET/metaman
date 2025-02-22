@@ -7,12 +7,19 @@ use App\Ldap\CesnetOrganization;
 use App\Ldap\EduidczOrganization;
 use App\Models\Entity;
 use App\Traits\ValidatorTrait;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\RedirectResponse;
+use LdapRecord\LdapRecordException;
 
 class EntityOrganizationController extends Controller
 {
     use ValidatorTrait;
 
-    public function update(Entity $entity, AssignOrganization $request)
+    /**
+     * @throws AuthorizationException
+     * @throws LdapRecordException
+     */
+    public function update(Entity $entity, AssignOrganization $request): RedirectResponse
     {
         $this->authorize('do-everything');
 

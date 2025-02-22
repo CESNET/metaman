@@ -6,13 +6,14 @@ use App\Models\Category;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_categories_list()
     {
         $this
@@ -23,7 +24,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_anonymouse_user_isnt_shown_a_categories_detail()
     {
         $category = Category::factory()->create();
@@ -36,7 +37,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('login'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_categories_list()
     {
         $user = User::factory()->create();
@@ -49,7 +50,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function a_user_isnt_shown_a_categories_detail()
     {
         $user = User::factory()->create();
@@ -63,7 +64,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.show', $category), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_categories_list()
     {
         $admin = User::factory()->create(['admin' => true]);
@@ -80,7 +81,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(route('categories.index'), url()->current());
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_is_shown_a_categories_details()
     {
         $admin = User::factory()->create(['admin' => true]);

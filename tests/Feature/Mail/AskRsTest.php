@@ -9,13 +9,14 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AskRsTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function email_is_queued_for_rs_federation_only()
     {
         Mail::fake();
@@ -45,7 +46,7 @@ class AskRsTest extends TestCase
 
     }
 
-    /** @test */
+    #[Test]
     public function email_isnt_queued_for_non_rs_federation()
     {
         Mail::fake();

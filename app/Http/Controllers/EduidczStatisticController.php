@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Federation;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Cache;
 
 class EduidczStatisticController extends Controller
 {
-    public function __invoke()
+    public function __invoke(): Factory|Application|View
     {
         $cache_time = now('Europe/Prague')->addHour();
 

@@ -7,6 +7,6 @@
 
 @section('content')
 
-    @livewire('search-entities')
+    <livewire:search-entities />
 
 @endsection

@@ -7,11 +7,19 @@ use App\Models\User;
 use App\Notifications\FederationOperatorsChanged;
 use App\Notifications\YourFederationRightsChanged;
 use App\Services\NotificationService;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Notification;
 
 class FederationOperatorController extends Controller
 {
-    public function index(Federation $federation)
+    /**
+     * @throws AuthorizationException
+     */
+    public function index(Federation $federation): Factory|View|Application
     {
         $this->authorize('view', $federation);
 
@@ -31,8 +39,10 @@ class FederationOperatorController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @throws AuthorizationException
      */
-    public function store(Federation $federation)
+    public function store(Federation $federation): RedirectResponse
     {
         $this->authorize('update', $federation);
 
@@ -56,8 +66,10 @@ class FederationOperatorController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @throws AuthorizationException
      */
-    public function destroy(Federation $federation)
+    public function destroy(Federation $federation): RedirectResponse
     {
 
         $this->authorize('update', $federation);

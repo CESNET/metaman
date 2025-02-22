@@ -4,10 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Federation;
 use App\Models\Membership;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 
 class FederationJoinController extends Controller
 {
-    public function index(Federation $federation)
+    /**
+     * @throws AuthorizationException
+     */
+    public function index(Federation $federation): Factory|View|Application
     {
         $this->authorize('update', $federation);
 

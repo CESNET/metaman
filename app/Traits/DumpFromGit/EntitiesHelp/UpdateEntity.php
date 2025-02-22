@@ -176,7 +176,7 @@ trait UpdateEntity
             $info = $info->item(0);
         }
 
-        //For English
+        // For English
         $registrationPolicyEN = $dom->createElementNS($this->samlURI, 'saml:AttributeValue', config('registrationInfo.en'));
         $registrationPolicyEN->setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:lang', 'en');
         $info->appendChild($registrationPolicyEN);

@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Facades\RsTag;
 use App\Mail\AskRs;
 use App\Models\Entity;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class EntityRsController extends Controller
 {
-    public function store(Entity $entity)
+    /**
+     * @throws AuthorizationException
+     */
+    public function store(Entity $entity): RedirectResponse
     {
         $this->authorize('update', $entity);
 
@@ -28,7 +33,10 @@ class EntityRsController extends Controller
             ->with('status', __('entities.rs_asked'));
     }
 
-    public function update(Entity $entity)
+    /**
+     * @throws AuthorizationException
+     */
+    public function update(Entity $entity): RedirectResponse
     {
         $this->authorize('do-everything');
 

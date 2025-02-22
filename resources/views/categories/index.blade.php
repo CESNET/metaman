@@ -3,6 +3,6 @@
 
 @section('content')
 
-    @livewire('search-categories')
+    <livewire:search-categories />
 
 @endsection

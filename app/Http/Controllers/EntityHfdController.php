@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Facades\HfdTag;
 use App\Models\Entity;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 
 class EntityHfdController extends Controller
 {
-    public function update(Entity $entity)
+    /**
+     * @throws AuthorizationException
+     */
+    public function update(Entity $entity): RedirectResponse
     {
         $this->authorize('do-everything');
 

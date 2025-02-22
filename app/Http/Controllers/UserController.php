@@ -7,7 +7,13 @@ use App\Models\User;
 use App\Notifications\UserCreated;
 use App\Notifications\UserRoleChanged;
 use App\Notifications\UserStatusChanged;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Notification;
 
 class UserController extends Controller
@@ -15,9 +21,9 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function index()
+    public function index(): Factory|View|Application
     {
         $this->authorize('viewAny', User::class);
 
@@ -27,9 +33,9 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function create()
+    public function create(): Factory|View|Application
     {
         $this->authorize('create', User::class);
 
@@ -39,10 +45,9 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function store(StoreUser $request)
+    public function store(StoreUser $request): Application|Redirector|RedirectResponse
     {
         $this->authorize('create', User::class);
 
@@ -58,10 +63,9 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function show(User $user)
+    public function show(User $user): Factory|View|Application
     {
         $this->authorize('view', $user);
 
@@ -76,10 +80,9 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, User $user): RedirectResponse
     {
         switch (request('action')) {
             case 'status':
