@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Membership;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -11,10 +13,9 @@ class MembershipController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function update(Membership $membership)
+    public function update(Membership $membership): RedirectResponse
     {
         $this->authorize('update', $membership);
 
@@ -35,9 +36,9 @@ class MembershipController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function destroy(Membership $membership)
+    public function destroy(Membership $membership): RedirectResponse
     {
         $this->authorize('delete', $membership);
         $locale = app()->getLocale();

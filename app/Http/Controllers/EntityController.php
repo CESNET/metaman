@@ -15,7 +15,13 @@ use App\Notifications\EntityRequested;
 use App\Traits\DumpFromGit\EntitiesHelp\DeleteFromEntity;
 use App\Traits\DumpFromGit\EntitiesHelp\UpdateEntity;
 use App\Traits\ValidatorTrait;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -25,11 +31,9 @@ class EntityController extends Controller
     use DeleteFromEntity, UpdateEntity, ValidatorTrait;
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function index()
+    public function index(): Factory|Application|View
     {
         $this->authorize('viewAny', Entity::class);
 
@@ -39,9 +43,9 @@ class EntityController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function create()
+    public function create(): Factory|Application|View
     {
         $this->authorize('create', Entity::class);
 
@@ -53,10 +57,9 @@ class EntityController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @throws AuthorizationException
      */
-    public function store(StoreEntity $request)
+    public function store(StoreEntity $request): Application|Redirector|RedirectResponse
     {
         $this->authorize('create', Entity::class);
 
@@ -134,11 +137,9 @@ class EntityController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function show(Entity $entity)
+    public function show(Entity $entity): Factory|Application|View
     {
         $this->authorize('view', $entity);
 
@@ -162,9 +163,9 @@ class EntityController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function edit(Entity $entity)
+    public function edit(Entity $entity): Factory|View|Application
     {
         $this->authorize('update', $entity);
 
@@ -174,9 +175,9 @@ class EntityController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @throws AuthorizationException
      */
-    public function update(Request $request, Entity $entity)
+    public function update(Request $request, Entity $entity): RedirectResponse
     {
         $this->authorize('update', $entity);
 
@@ -261,9 +262,9 @@ class EntityController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function destroy(Entity $entity)
+    public function destroy(Entity $entity): Application|Redirector|RedirectResponse
     {
         $this->authorize('forceDelete', $entity);
 

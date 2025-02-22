@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entity;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\RedirectResponse;
 
 class EntityStateController extends Controller
 {
-    public function update(Entity $entity)
+    /**
+     * @throws AuthorizationException
+     */
+    public function update(Entity $entity): RedirectResponse
     {
         $this->authorize('delete', $entity);
 

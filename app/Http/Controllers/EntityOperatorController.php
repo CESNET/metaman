@@ -7,11 +7,19 @@ use App\Models\User;
 use App\Notifications\EntityOperatorsChanged;
 use App\Notifications\YourEntityRightsChanged;
 use App\Services\NotificationService;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Notification;
 
 class EntityOperatorController extends Controller
 {
-    public function index(Entity $entity)
+    /**
+     * @throws AuthorizationException
+     */
+    public function index(Entity $entity): Factory|Application|View
     {
         $this->authorize('view', $entity);
 
@@ -31,8 +39,10 @@ class EntityOperatorController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @throws AuthorizationException
      */
-    public function store(Entity $entity)
+    public function store(Entity $entity): RedirectResponse
     {
         $this->authorize('update', $entity);
 
@@ -56,8 +66,10 @@ class EntityOperatorController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @throws AuthorizationException
      */
-    public function destroy(Entity $entity)
+    public function destroy(Entity $entity): RedirectResponse
     {
         $this->authorize('update', $entity);
 

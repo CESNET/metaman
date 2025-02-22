@@ -10,6 +10,12 @@ use App\Notifications\FederationDestroyed;
 use App\Notifications\FederationRequested;
 use App\Notifications\FederationUpdated;
 use App\Services\NotificationService;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -19,9 +25,9 @@ class FederationController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function index()
+    public function index(): Factory|Application|View
     {
         $this->authorize('viewAny', Federation::class);
 
@@ -31,9 +37,9 @@ class FederationController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function create()
+    public function create(): Factory|Application|View
     {
         $this->authorize('create', Federation::class);
 
@@ -43,10 +49,9 @@ class FederationController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function store(StoreFederation $request)
+    public function store(StoreFederation $request): Application|Redirector|RedirectResponse
     {
         $this->authorize('create', Federation::class);
 
@@ -75,9 +80,9 @@ class FederationController extends Controller
     /**
      * Display the specified resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function show(Federation $federation)
+    public function show(Federation $federation): Factory|Application|View
     {
         $this->authorize('view', $federation);
 
@@ -87,9 +92,9 @@ class FederationController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function edit(Federation $federation)
+    public function edit(Federation $federation): Factory|Application|View
     {
         $this->authorize('update', $federation);
 
@@ -99,10 +104,9 @@ class FederationController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @throws AuthorizationException
      */
-    public function update(UpdateFederation $request, Federation $federation)
+    public function update(UpdateFederation $request, Federation $federation): RedirectResponse
     {
         $this->authorize('update', $federation);
 
@@ -138,9 +142,9 @@ class FederationController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
-    public function destroy(Federation $federation)
+    public function destroy(Federation $federation): Application|Redirector|RedirectResponse
     {
         $this->authorize('delete', $federation);
 
