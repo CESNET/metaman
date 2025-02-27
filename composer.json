@@ -13,10 +13,10 @@
         "ext-dom": "*",
         "ext-exif": "*",
         "czproject/git-php": "^4.3",
-        "directorytree/ldaprecord-laravel": "^3.3",
+        "directorytree/ldaprecord-laravel": "^3.4.0",
         "doctrine/dbal": "^4.2",
         "guzzlehttp/guzzle": "^7.9",
-        "laravel/framework": "^11.9",
+        "laravel/framework": "^v12.0.0",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.5",
         "psy/psysh": "^0.12.7"
