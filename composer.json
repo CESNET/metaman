@@ -19,7 +19,8 @@
         "laravel/framework": "^v12.0.0",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.5",
-        "psy/psysh": "^0.12.7"
+        "psy/psysh": "^0.12.7",
+        "ext-openssl": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.14",
