@@ -496,7 +496,6 @@ trait ValidatorTrait
 
     public function checkCertificates(object $xpath): void
     {
-        //        dump("hello im checkCertificates and im running");
         $certificates = $xpath->query('//ds:X509Certificate');
 
         if ($certificates->length === 0) {
@@ -506,29 +505,37 @@ trait ValidatorTrait
         }
 
         $i = 0;
+
+        $hasValidSigningCert = false;
+        $hasValidEncryptionCert = false;
+        $hasValidCert = false;
+        $tmpErr = '';
+
         foreach ($certificates as $cert) {
+
+            $keyDescriptor = $cert->parentNode->parentNode->parentNode;
+
+            $use = $keyDescriptor->getAttribute('use');
+
+            $isValidCert = true;
+
             $X509Certificate = "-----BEGIN CERTIFICATE-----\n".trim($cert->nodeValue)."\n-----END CERTIFICATE-----";
             $cert_info = openssl_x509_parse($X509Certificate, true);
 
             if (is_array($cert_info)) {
                 $cert_validTo = date('Y-m-d', $cert_info['validTo_time_t']);
                 $cert_validFor = floor((strtotime($cert_validTo) - time()) / (60 * 60 * 24));
-
-                /*                dump($cert_info);
-                                dump("im valid to $cert_validTo");
-                                dump("im valid for $cert_validFor");*/
-
                 $CRT_VALIDITY = 30;
                 if ($cert_validFor < $CRT_VALIDITY) {
-                    $this->error .= 'The certificate(s) must be valid at least for '.$CRT_VALIDITY.' days, yours certificate #'.($i + 1).' is valid for '.$cert_validFor.' days. ';
-                    $this->errorsArray['certificate'] = 'The certificate #'.($i + 1).' is invalid.';
+                    $tmpErr .= 'The certificate(s) must be valid at least for '.$CRT_VALIDITY.' days, yours certificate #'.($i + 1).' is valid for '.$cert_validFor.' days. ';
+                    $isValidCert = false;
 
                 }
-
                 $pub_key = openssl_pkey_get_details(openssl_pkey_get_public($X509Certificate));
             } else {
-                $this->error .= 'The certificate #'.($i + 1).' is invalid. ';
-                $this->errorsArray['certificate'] = 'The certificate #'.($i + 1).' is invalid.';
+
+                $tmpErr .= 'The certificate #'.($i + 1).' is invalid. ';
+                $isValidCert = false;
             }
 
             // This is here to skip every other certificate in order to
@@ -542,17 +549,46 @@ trait ValidatorTrait
 
             $CRT_KEY_SIZE_RSA = 2048;
             if (array_key_exists('rsa', $pub_key) && $pub_key['bits'] < $CRT_KEY_SIZE_RSA) {
-                $this->error .= 'The RSA public key(s) must be at least '.$CRT_KEY_SIZE_RSA.' bits, yours RSA public key for certificate #'.($i + 1).' is '.$pub_key['bits'].' bits. ';
-                $this->errorsArray['certificate'] = 'The certificate #'.($i + 1).' is invalid.';
+                $tmpErr .= 'The RSA public key(s) must be at least '.$CRT_KEY_SIZE_RSA.' bits, yours RSA public key for certificate #'.($i + 1).' is '.$pub_key['bits'].' bits. ';
+                $isValidCert = false;
             }
 
             $CRT_KEY_SIZE_EC = 384;
             if (array_key_exists('ec', $pub_key) && $pub_key['bits'] < $CRT_KEY_SIZE_EC) {
-                $this->error .= 'The EC public key(s) must be at least '.$CRT_KEY_SIZE_EC.' bits, yours EC public key for certificate #'.($i + 1).' is '.$pub_key['bits'].' bits. ';
-                $this->errorsArray['certificate'] = 'The certificate #'.($i + 1).' is invalid.';
+                $tmpErr .= 'The EC public key(s) must be at least '.$CRT_KEY_SIZE_EC.' bits, yours EC public key for certificate #'.($i + 1).' is '.$pub_key['bits'].' bits. ';
+                $isValidCert = false;
             }
 
+            if ($isValidCert) {
+
+                switch ($use) {
+                    case 'signing':
+                        $hasValidSigningCert = true;
+                        break;
+
+                    case 'encryption':
+                        $hasValidEncryptionCert = true;
+                        break;
+                }
+
+                if (($hasValidSigningCert && $hasValidEncryptionCert) || ! $use) {
+                    $hasValidCert = true;
+                    break;
+                }
+
+            }
             $i++;
+        }
+        if (! $hasValidCert) {
+
+            if (! $hasValidSigningCert) {
+                $tmpErr .= 'No valid Signing Certificate found.';
+            }
+            if (! $hasValidEncryptionCert) {
+                $tmpErr .= 'No valid Encryption Certificate found.';
+            }
+            $this->error .= $tmpErr;
+            $this->errorsArray['certificate'] = 'Missing valid certificate';
         }
     }
 

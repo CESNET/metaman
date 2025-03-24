@@ -101,16 +101,24 @@ class ValidateMetaConsole extends Command
 
     public function RunValidate($metadata)
     {
-        $res = json_decode($this->validateMetadata($metadata, true), true);
-        $errorArray = $res['errorArray'];
-        dump($errorArray);
-        if (empty($errorArray)) {
-            dump('no error');
-        }
+        $result = json_decode($this->validateMetadata($metadata), true);
+        $new_entity = json_decode($this->parseMetadata($metadata), true);
+        dump($result);
+
+        /*        $res = json_decode($this->validateMetadata($metadata, true), true);
+                $errorArray = $res['errorArray'];
+                dump($errorArray);
+                if (empty($errorArray)) {
+                    dump('no error');
+                }*/
     }
 
     public function handle()
     {
+
+        $xml1 = '
+        ';
+
         /*        $xml1 = '';
                 $this->RunValidate($xml1);*/
 
