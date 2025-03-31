@@ -11,6 +11,7 @@ return [
     'email_changed' => 'Preferred email address has been successfully changed.',
     'email_placeholder' => "Enter user's email address",
     'inactive' => ':name has been successfully deactivated.',
+    'loading_users_please_wait' => 'Loading users, please wait...',
     'name_placeholder' => "Enter user's name",
     'no_entities' => 'No operating rights to any entity.',
     'no_federations' => 'No operating rights to any federation.',

@@ -11,6 +11,7 @@ return [
     'email_changed' => 'Preferovaná e-mailová adresa byla změněna.',
     'email_placeholder' => 'Vložte e-mailovou adresu uživatele',
     'inactive' => 'Uživateli :name byl deaktivován účet.',
+    'loading_users_please_wait' => 'Načítám uživatele, prosím počkejte...',
     'name_placeholder' => 'Vložte jméno uživatele',
     'no_entities' => 'Neexistují správcovská práva k žádné entitě.',
     'no_federations' => 'Neexistují správcovská práva k žádné federaci.',
