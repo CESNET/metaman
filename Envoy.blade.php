@@ -224,7 +224,7 @@
         php artisan queue:restart -q --no-ansi --no-interaction
 
     echo "Reload PHP-FPM"
-        sudo systemctl reload php8.1-fpm
+        sudo systemctl reload php8.3-fpm
 @endtask
 
 @task('cleanup')
