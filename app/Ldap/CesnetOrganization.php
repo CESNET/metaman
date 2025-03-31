@@ -11,13 +11,13 @@ class CesnetOrganization extends Model
      *
      * @var array
      */
-    public static $objectClasses = [
+    public static array $objectClasses = [
         'top',
         'dcObject',
         'cesnetOrganization',
     ];
 
-    protected function getCreatableRdnAttribute()
+    protected function getCreatableRdnAttribute(): string
     {
         return 'dc';
     }
