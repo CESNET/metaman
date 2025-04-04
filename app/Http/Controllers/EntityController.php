@@ -175,7 +175,7 @@ class EntityController extends Controller
         if (! app()->environment('testing')) {
             if ($entity->type->value === 'idp' && ! $entity->hfd) {
                 $eduidczOrganization = EduidczOrganization::whereEntityIDofIdP($entity->entityid)->first();
-                $cesnetOrganization = CesnetOrganization::find($eduidczOrganization?->getFirstAttribute('oPointer'));
+                $cesnetOrganization = $eduidczOrganization ? CesnetOrganization::find($eduidczOrganization?->getFirstAttribute('oPointer')) : null;
                 $cesnetOrganizations = is_null($cesnetOrganization) ? CesnetOrganization::select('o')->get() : null;
             }
         }
