@@ -3,11 +3,18 @@
 namespace App\Traits;
 
 use CzProject\GitPhp\Git;
+use CzProject\GitPhp\GitException;
+use CzProject\GitPhp\GitRepository;
 use Illuminate\Support\Facades\Storage;
 
 trait GitTrait
 {
-    public function initializeGit()
+    /**
+     * @throws GitException
+     *
+     * @codeCoverageIgnore
+     */
+    public function initializeGit(): GitRepository
     {
         $git = new Git;
 
@@ -24,7 +31,7 @@ trait GitTrait
         return $git;
     }
 
-    public function trimWhiteSpaces(string $file)
+    public function trimWhiteSpaces(string $file): void
     {
         $content = Storage::disk('git')->get($file);
         $content = trim(preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $content));
@@ -42,7 +49,10 @@ trait GitTrait
         }
     }
 
-    public function committer()
+    /**
+     * @codeCoverageIgnore
+     */
+    public function committer(): string
     {
         return strtolower(config('app.name'));
     }
