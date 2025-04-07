@@ -244,6 +244,11 @@ trait ValidatorTrait
     // //////////////////////////////////////////////////
     // SAML validator
     // //////////////////////////////////////////////////
+    /**
+     * @throws \Exception
+     *
+     * @codeCoverageIgnore
+     */
     public function checkDependencies(): void
     {
         if (! extension_loaded('exif')) {
