@@ -251,9 +251,6 @@ XML;
         $dom = $this->createDOM($xml);
         $xpath = $this->createXPath($dom);
         $this->checkAttributeAuthorityDescriptor($xpath);
-
-        var_dump($this->error);
-
         $this->assertNotNull($this->error);
     }
 }
