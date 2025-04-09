@@ -2,10 +2,8 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Facades\RsTag;
 use App\Models\Entity;
 use App\Models\User;
-use App\Services\RsTagService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
@@ -14,10 +12,12 @@ use Tests\TestCase;
 class EntityRsControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
-    public function testAdminCanChangeEntityRs(){
+
+    public function test_admin_can_change_entity_rs()
+    {
         Bus::fake();
 
-        $xml_document = <<<XML
+        $xml_document = <<<'XML'
 <?xml version="1.0" encoding="utf-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="test_sp_metadata" entityID="https://test-sp.example.com/saml/metadata">
   <md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -80,7 +80,7 @@ XML;
             'rs' => false,
             'type' => 'sp',
             'xml_file' => $xml_document,
-            'metadata'=>$xml_document
+            'metadata' => $xml_document,
         ]);
         $this->followingRedirects()
             ->actingAs($admin)
@@ -89,7 +89,7 @@ XML;
                 'rs' => false,
                 'type' => 'sp',
                 'xml_file' => $xml_document,
-                'metadata'=>$xml_document
+                'metadata' => $xml_document,
             ])->assertStatus(200);
         $entity->refresh();
         $this->assertTrue($entity->rs);
