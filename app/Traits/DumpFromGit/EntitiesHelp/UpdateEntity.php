@@ -202,8 +202,12 @@ trait UpdateEntity
             return;
         }
 
-        $xml_document = $entity->xml_file;
-        RsTag::update($entity);
+        $xml_document = RsTag::update($entity);
+
+        if ($xml_document === false) {
+            $xml_document = $entity->xml_file;
+        }
+
         if (! empty($entity->category_id)) {
             $xml_document = $this->updateXmlCategories($xml_document, $entity->category_id);
         }

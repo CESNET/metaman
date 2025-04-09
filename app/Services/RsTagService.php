@@ -6,6 +6,8 @@ use App\Models\Entity;
 use App\Traits\EntitiesXML\TagTrait;
 use App\Traits\ValidatorTrait;
 use DOMXPath;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
 class RsTagService extends TagService
 {
@@ -55,19 +57,31 @@ class RsTagService extends TagService
         $this->DeleteAllTags($xpathQuery, $xPath);
     }
 
+    /**
+     * @throws Exception
+     */
     public function update(Entity $entity): false|string
     {
-        if ($entity->rs) {
-            if (! $this->hasTagInDocument($entity->xml_file, $this->value)) {
-                return $this->create($entity);
-            }
-        } else {
-            if ($this->hasTagInDocument($entity->xml_file, $this->value)) {
-                return $this->delete($entity);
-            }
-        }
+        try {
+            if ($entity->rs) {
+                if (! $this->hasTagInDocument($entity->xml_file, $this->value)) {
+                    dump("create -> $entity->id ");
 
-        return false;
+                    return $this->create($entity);
+                }
+            } else {
+                if ($this->hasTagInDocument($entity->xml_file, $this->value)) {
+                    dump("delete -> $entity->id ");
+
+                    return $this->delete($entity);
+                }
+            }
+
+            return false;
+        } catch (Exception $e) {
+            Log::critical("Exception occurred in {$entity->id}}: {$e->getMessage()}");
+            throw $e;
+        }
     }
 
     protected function getOrCreateAttribute(\DOMXPath $xPath, \DOMDocument $dom, \DOMNode $entityAttributes, string $samlURI, bool $isIdp): \DOMNode
