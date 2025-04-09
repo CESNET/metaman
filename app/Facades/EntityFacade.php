@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Facade;
  */
 class EntityFacade extends Facade
 {
+    /**
+     * @codeCoverageIgnore
+     */
     protected static function getFacadeAccessor()
     {
         return 'entity';
