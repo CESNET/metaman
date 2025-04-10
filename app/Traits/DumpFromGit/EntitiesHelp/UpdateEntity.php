@@ -2,6 +2,7 @@
 
 namespace App\Traits\DumpFromGit\EntitiesHelp;
 
+use App\Facades\HfdTag;
 use App\Facades\RsTag;
 use App\Models\Category;
 use App\Models\Entity;
@@ -10,6 +11,7 @@ use App\Traits\ValidatorTrait;
 use DOMDocument;
 use DOMElement;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 trait UpdateEntity
@@ -201,9 +203,25 @@ trait UpdateEntity
         if (empty($entity->xml_file)) {
             return;
         }
+        // dump($entity->type);
+        if ($entity->type->value == 'sp') {
+            $xml_document = RsTag::update($entity);
 
-        $xml_document = $entity->xml_file;
-        RsTag::update($entity);
+            if ($xml_document === false) {
+                $xml_document = $entity->xml_file;
+            }
+        } elseif ($entity->type->value == 'idp') {
+            $xml_document = HfdTag::update($entity);
+
+            if ($xml_document === false) {
+                $xml_document = $entity->xml_file;
+            }
+        } else {
+
+            Log::critical("entity -> {$entity->id} type is not idp or sp");
+            throw new Exception("entity -> {$entity->id} type is not idp or sp");
+        }
+
         if (! empty($entity->category_id)) {
             $xml_document = $this->updateXmlCategories($xml_document, $entity->category_id);
         }

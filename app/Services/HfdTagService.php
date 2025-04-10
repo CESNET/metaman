@@ -6,6 +6,8 @@ use App\Models\Entity;
 use App\Traits\EntitiesXML\TagTrait;
 use App\Traits\ValidatorTrait;
 use DOMXPath;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
 class HfdTagService extends TagService
 {
@@ -58,17 +60,23 @@ class HfdTagService extends TagService
 
     public function update(Entity $entity): false|string
     {
-        if ($entity->hfd) {
-            if (! $this->hasTagInDocument($entity->xml_file, $this->value)) {
-                return $this->create($entity);
+        try {
+            if ($entity->hfd) {
+                if (! $this->hasTagInDocument($entity->xml_file, $this->value)) {
+                    return $this->create($entity);
+                }
+            } else {
+                if ($this->hasTagInDocument($entity->xml_file, $this->value)) {
+                    return $this->delete($entity);
+                }
             }
-        } else {
-            if ($this->hasTagInDocument($entity->xml_file, $this->value)) {
-                return $this->delete($entity);
-            }
+
+            return false;
+        } catch (Exception $e) {
+            Log::critical("Exception occurred in {$entity->id}}: {$e->getMessage()}");
+            throw $e;
         }
 
-        return false;
     }
 
     private function getOrCreateAttribute(DOMXPath $xPath, \DOMDocument $dom, \DOMNode $entityAttributes, string $samlURI): \DOMNode
