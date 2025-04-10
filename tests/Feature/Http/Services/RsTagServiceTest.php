@@ -7,6 +7,7 @@ use App\Services\RsTagService;
 use App\Traits\ValidatorTrait;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class RsTagServiceTest extends TestCase
@@ -213,5 +214,27 @@ XML
 XML;
         $this->assertEquals($expected, $result);
 
+    }
+
+    public function test_update_throws_and_logs_exception_with_broken_xml()
+    {
+        $brokenXml = '<xml><unclosed-tag>';
+
+        $entity = Entity::factory()->make([
+            'rs' => true,
+            'xml_file' => $brokenXml,
+        ]);
+
+        $service = new RsTagService;
+
+        // Ожидаем лог
+        Log::shouldReceive('critical')
+            ->once()
+            ->withArgs(function ($message) use ($entity) {
+                return str_contains($message, "Exception occurred in {$entity->id}");
+            });
+
+        $this->expectException(\Exception::class);
+        $service->update($entity);
     }
 }
