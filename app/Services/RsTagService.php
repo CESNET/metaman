@@ -65,14 +65,10 @@ class RsTagService extends TagService
         try {
             if ($entity->rs) {
                 if (! $this->hasTagInDocument($entity->xml_file, $this->value)) {
-                    dump("create -> $entity->id ");
-
                     return $this->create($entity);
                 }
             } else {
                 if ($this->hasTagInDocument($entity->xml_file, $this->value)) {
-                    dump("delete -> $entity->id ");
-
                     return $this->delete($entity);
                 }
             }
