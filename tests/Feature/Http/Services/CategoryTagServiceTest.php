@@ -266,4 +266,44 @@ XML;
 
         $this->assertXmlStringEqualsXmlString($expected, $service->create($entity));
     }
+
+    public function test_service_can_create_extensions()
+    {
+
+        $xml_document = <<<'XML'
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="">
+  <md:IDPSSODescriptor protocolSupportEnumeration="">
+  </md:IDPSSODescriptor>
+</md:EntityDescriptor>
+XML;
+
+        $category = Category::factory()->create([
+            'name' => 'avcr',
+        ]);
+        $entity = Entity::factory()->create([
+            'xml_file' => $xml_document,
+            'rs' => false,
+            'type' => 'idp',
+
+        ]);
+        $entity->category()->associate($category);
+
+        $service = new CategoryTagService;
+        $expected = <<<'XML'
+<?xml version="1.0"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="">
+  <md:IDPSSODescriptor protocolSupportEnumeration="">
+  </md:IDPSSODescriptor>
+  <md:Extensions>
+    <mdattr:EntityAttributes xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute">
+      <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="http://macedir.org/entity-category" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>http://eduid.cz/uri/idp-group/avcr</saml:AttributeValue>
+      </saml:Attribute>
+    </mdattr:EntityAttributes>
+  </md:Extensions>
+</md:EntityDescriptor>
+
+XML;
+        $this->assertXmlStringEqualsXmlString($expected, $service->create($entity));
+    }
 }
