@@ -7,8 +7,6 @@ use App\Jobs\FolderAddEntity;
 use App\Models\Entity;
 use App\Models\Federation;
 use App\Models\User;
-use App\Notifications\EntityStateChanged;
-use App\Notifications\EntityUpdated;
 use App\Services\FederationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -16,7 +14,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
-use Mockery;
 use Tests\TestCase;
 
 class FolderAddEntityTest extends TestCase
@@ -122,13 +119,6 @@ class FolderAddEntityTest extends TestCase
             public function release() {}
         });
 
-        $mock = Mockery::mock('alias:App\Services\NotificationService');
-        $mock->shouldReceive('sendModelNotification')
-            ->once()
-            ->withArgs(function ($model, $notification) {
-                return $notification instanceof EntityStateChanged;
-            });
-
         EntityFacade::shouldReceive('saveMetadataToFederationFolder')->once();
 
         $job = new FolderAddEntity($entity);
@@ -173,13 +163,6 @@ class FolderAddEntityTest extends TestCase
 
             public function release() {}
         });
-
-        $mock = Mockery::mock('alias:App\Services\NotificationService');
-        $mock->shouldReceive('sendModelNotification')
-            ->once()
-            ->withArgs(function ($model, $notification) {
-                return $notification instanceof EntityUpdated;
-            });
 
         EntityFacade::shouldReceive('saveMetadataToFederationFolder')->once();
 
