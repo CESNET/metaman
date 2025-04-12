@@ -21,7 +21,7 @@ yarn-error.log
 /docker/8.1/id_ed25519*
 /docker/8.1/known_hosts
 
-/storage/coverage-report
+/storage/coverage*
 
 /docker/8.3/id_ed25519*
 /docker/8.3/known_hosts
