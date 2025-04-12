@@ -8,6 +8,7 @@ use App\Models\Membership;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
 use PHPUnit\Framework\Attributes\Test;
@@ -1533,5 +1534,84 @@ class EntityControllerTest extends TestCase
             ->post(route('entities.rs.store', $entity))
             ->assertStatus(200)
             ->assertSeeText(__('entities.rs_asked'));
+    }
+
+    public function test_update_return_status_not_found_where_metadata_not_readable()
+    {
+        Queue::fake();
+
+        $user = User::factory()->create();
+        $entity = Entity::factory()->create([
+            'entityid' => 'https://whoami.cesnet.cz/idp/shibboleth',
+        ]);
+        $user->entities()->attach($entity);
+
+        $emptyFile = UploadedFile::fake()->create('broken.xml', 0);
+
+        $this
+            ->actingAs($user)
+            ->patch(route('entities.update', $entity), [
+                'action' => 'update',
+                'file' => $emptyFile,
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('status', __('entities.metadata_couldnt_be_read'))
+            ->assertSessionHas('color', 'red');
+    }
+
+    public function test_store_returns_status_not_found_when_metadata_is_unreadable()
+    {
+        Queue::fake();
+
+        $user = User::factory()->create();
+        $entity = Entity::factory()->create([
+            'entityid' => 'https://whoami.cesnet.cz/idp/shibboleth',
+        ]);
+        $user->entities()->attach($entity);
+        $federation = Federation::factory()->create();
+
+        $emptyFile = UploadedFile::fake()->create('broken.xml', 0);
+
+        $this
+            ->actingAs($user)
+            ->post(route('entities.store'), [
+                'file' => $emptyFile,
+                'federation' => $federation->id,
+                'explanation' => 'Test explanation',
+
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('status', __('entities.metadata_couldnt_be_read'))
+            ->assertSessionHas('color', 'red');
+    }
+
+    public function test_store_redirects_back_when_metadata_validation_fails()
+    {
+        Queue::fake();
+
+        $user = User::factory()->create();
+        $federation = Federation::factory()->create();
+
+        $invalidXml = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://invalid.example.com/idp">
+    <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                             Location="http://invalid.example.com/idp/sso"/>
+    </IDPSSODescriptor>
+</EntityDescriptor>
+
+XML;
+
+        $this
+            ->actingAs($user)
+            ->post(route('entities.store'), [
+                'metadata' => $invalidXml,
+                'federation' => $federation->id,
+                'explanation' => 'Testing failed validation',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('status')
+            ->assertSessionHas('color', 'red');
     }
 }
