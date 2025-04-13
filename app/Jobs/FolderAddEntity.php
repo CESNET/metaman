@@ -107,6 +107,8 @@ class FolderAddEntity implements ShouldQueue
      * Get the middleware the job should pass through.
      *
      * @return array<int, object>
+     *
+     * @codeCoverageIgnore
      */
     public function middleware(): array
     {
