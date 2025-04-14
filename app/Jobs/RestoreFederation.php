@@ -35,6 +35,8 @@ class RestoreFederation implements ShouldQueue
     {
         if ($this->batch()->cancelled()) {
             $this->fail(new Exception('batch was cancelled'));
+
+            return;
         }
         try {
             $federation = $this->membership->federation;
@@ -43,6 +45,8 @@ class RestoreFederation implements ShouldQueue
 
         } catch (Exception $e) {
             $this->fail($e);
+
+            return;
         }
 
     }
