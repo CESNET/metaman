@@ -14,6 +14,7 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Process;
 use Mockery\Exception;
 
 class RunMdaScript implements ShouldQueue
@@ -40,7 +41,7 @@ class RunMdaScript implements ShouldQueue
     {
         $federation = Federation::withTrashed()->find($this->federationId);
         if (! $federation) {
-            $this->fail("Federation with id {$this->federationId} not found");
+            $this->fail(new \Exception("Federation with id {$this->federationId} not found"));
 
             return;
         }
@@ -66,10 +67,10 @@ class RunMdaScript implements ShouldQueue
                 $file = config('storageCfg.mdaConfigFolder').'/'.escapeshellarg($filter).'.xml';
                 $pipeline = 'main';
                 $command = 'bash '.escapeshellarg($realScriptPath).' '.$file.' '.$pipeline;
-                $output = shell_exec($command);
+                $result = Process::run($command);
 
-                if ($output === false || str_contains($output, 'ERROR') || str_contains($output, 'WARN')) {
-                    Log::error('Script execution error '.$command.' Message: '.$output);
+                if ($result->failed() || str_contains($result->output(), 'ERROR') || str_contains($result->output(), 'WARN')) {
+                    Log::error('Script execution error '.$command.' Message: '.$result->output());
                 }
             }
         } catch (Exception $e) {
@@ -81,6 +82,8 @@ class RunMdaScript implements ShouldQueue
 
     /**
      * Get the middleware the job should pass through.
+     *
+     * @codeCoverageIgnore
      *
      * @return array<int, object>
      *
