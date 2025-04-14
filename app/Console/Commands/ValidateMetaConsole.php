@@ -12,6 +12,9 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * @codeCoverageIgnore
+ */
 class ValidateMetaConsole extends Command
 {
     /**
