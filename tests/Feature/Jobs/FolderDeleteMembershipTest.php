@@ -3,11 +3,12 @@
 namespace Tests\Feature\Jobs;
 
 use App\Facades\EntityFacade;
-use App\Jobs\FolderDeleteEntity;
+use App\Jobs\FolderDeleteMembership;
 use App\Models\Entity;
 use App\Models\Federation;
+use App\Models\Membership;
 use App\Models\User;
-use App\Notifications\EntityStateChanged;
+use App\Notifications\MembershipRejected;
 use App\Services\FederationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -18,56 +19,26 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class FolderDeleteEntityTest extends TestCase
+class FolderDeleteMembershipTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-    public function test_get_entity_id_returns_entity_id()
+    public function test_get_federation_returns_federation()
     {
-        $user = User::factory()->create();
         $entity = Entity::factory()->create();
         $federation = Federation::factory()->create();
-        $entity->federations()->attach($federation, [
-            'requested_by' => $user->id,
-            'explanation' => 'Test explanation',
-            'approved' => 1,
-        ]);
-        $federationIDs = $entity->federations->pluck('id')->toArray();
 
-        $job = new FolderDeleteEntity($entity->id, $federationIDs, $entity->file);
-        $this->assertEquals($entity->id, $job->getEntityId());
+        $job = new FolderDeleteMembership($entity, $federation);
+        $this->assertEquals($federation, $job->getFederation());
     }
 
-    public function test_get_get_federations_i_ds_returns_federations_i_ds()
+    public function test_get_entity_returns_federation()
     {
-        $user = User::factory()->create();
         $entity = Entity::factory()->create();
         $federation = Federation::factory()->create();
-        $entity->federations()->attach($federation, [
-            'requested_by' => $user->id,
-            'explanation' => 'Test explanation',
-            'approved' => 1,
-        ]);
-        $federationIDs = $entity->federations->pluck('id')->toArray();
 
-        $job = new FolderDeleteEntity($entity->id, $federationIDs, $entity->file);
-        $this->assertEquals($federationIDs, $job->getFederationsIDs());
-    }
-
-    public function test_get_file_returns_file()
-    {
-        $user = User::factory()->create();
-        $entity = Entity::factory()->create();
-        $federation = Federation::factory()->create();
-        $entity->federations()->attach($federation, [
-            'requested_by' => $user->id,
-            'explanation' => 'Test explanation',
-            'approved' => 1,
-        ]);
-        $federationIDs = $entity->federations->pluck('id')->toArray();
-
-        $job = new FolderDeleteEntity($entity->id, $federationIDs, $entity->file);
-        $this->assertEquals($entity->file, $job->getFile());
+        $job = new FolderDeleteMembership($entity, $federation);
+        $this->assertEquals($entity, $job->getEntity());
     }
 
     public function test_handle_should_call_fail_if_federation_folder_fails()
@@ -76,15 +47,8 @@ class FolderDeleteEntityTest extends TestCase
         Queue::fake();
         config(['storageCfg.name' => 'metadata']);
 
-        $user = User::factory()->create();
         $entity = Entity::factory()->create();
         $federation = Federation::factory()->create();
-        $entity->federations()->attach($federation, [
-            'requested_by' => $user->id,
-            'explanation' => 'Test explanation',
-            'approved' => 1,
-        ]);
-        $federationIDs = $entity->federations->pluck('id')->toArray();
 
         $this->mock(FederationService::class, function ($mock) use ($federation) {
             $mock->shouldReceive('getFederationFolder')
@@ -111,8 +75,8 @@ class FolderDeleteEntityTest extends TestCase
 
         Log::shouldReceive('warning');
 
-        $job = $this->getMockBuilder(FolderDeleteEntity::class)
-            ->setConstructorArgs([$entity->id, $federationIDs, $entity->file])
+        $job = $this->getMockBuilder(FolderDeleteMembership::class)
+            ->setConstructorArgs([$entity, $federation])
             ->onlyMethods(['fail'])
             ->getMock();
 
@@ -124,7 +88,7 @@ class FolderDeleteEntityTest extends TestCase
         $job->handle();
     }
 
-    public function test_handle_should_send_state_changed_notification_on_update()
+    public function test_handle_should_send_reject_where_not_in_file()
     {
         Storage::fake('metadata');
         Queue::fake();
@@ -141,11 +105,70 @@ class FolderDeleteEntityTest extends TestCase
             'explanation' => 'Test explanation',
             'approved' => 1,
         ]);
-        $federationIDs = $entity->federations->pluck('id')->toArray();
 
         Storage::disk('metadata')->makeDirectory($federation->xml_id);
         $path = FederationService::getFederationFolderByXmlId($federation->xml_id);
         $this->assertDirectoryExists($path);
+
+        $this->assertNotNull(Membership::find(1));
+
+        Cache::shouldReceive('lock')->andReturn(new class
+        {
+            public function block() {}
+
+            public function owner()
+            {
+                return 'owner';
+            }
+
+            public function isOwnedByCurrentProcess()
+            {
+                return true;
+            }
+
+            public function release() {}
+        });
+
+        $job = new FolderDeleteMembership($entity, $federation);
+        $job->handle();
+        Notification::assertSentTo([$operator], MembershipRejected::class);
+    }
+
+    public function test_handle_should_delete_file_from_federation_folder()
+    {
+        Storage::fake('metadata');
+        Queue::fake();
+        Notification::fake();
+        config(['storageCfg.name' => 'metadata']);
+
+        $xml_document = <<<'XML'
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="">
+  <md:IDPSSODescriptor protocolSupportEnumeration="">
+  </md:IDPSSODescriptor>
+</md:EntityDescriptor>
+XML;
+
+        $user = User::factory()->create();
+        $entity = Entity::factory()->create([
+            'xml_file' => $xml_document,
+        ]);
+        $federation = Federation::factory()->create();
+        $operator = User::factory()->create();
+        $entity->operators()->attach($operator);
+        $entity->federations()->attach($federation, [
+            'requested_by' => $user->id,
+            'explanation' => 'Test explanation',
+            'approved' => 1,
+        ]);
+
+        Storage::disk('metadata')->makeDirectory($federation->xml_id);
+        $path = FederationService::getFederationFolderByXmlId($federation->xml_id);
+        $this->assertDirectoryExists($path);
+
+        $this->assertNotNull(Membership::find(1));
+
+        $relativePath = $federation->xml_id.'/'.$entity->file;
+        Storage::disk('metadata')->put($relativePath, $entity->xml_file);
 
         Cache::shouldReceive('lock')->andReturn(new class
         {
@@ -165,9 +188,8 @@ class FolderDeleteEntityTest extends TestCase
         });
 
         EntityFacade::shouldReceive('deleteEntityMetadataFromFolder')->once();
-        $job = new FolderDeleteEntity($entity->id, $federationIDs, $entity->file);
+        $job = new FolderDeleteMembership($entity, $federation);
         $job->handle();
-        Notification::assertSentTo([$operator], EntityStateChanged::class);
     }
 
     public function test_handle_should_return_warning_where_lock_owner_is_null()
@@ -177,8 +199,17 @@ class FolderDeleteEntityTest extends TestCase
         Notification::fake();
         config(['storageCfg.name' => 'metadata']);
 
+        $xml_document = <<<'XML'
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="">
+  <md:IDPSSODescriptor protocolSupportEnumeration="">
+  </md:IDPSSODescriptor>
+</md:EntityDescriptor>
+XML;
+
         $user = User::factory()->create();
-        $entity = Entity::factory()->create();
+        $entity = Entity::factory()->create([
+            'xml_file' => $xml_document,
+        ]);
         $federation = Federation::factory()->create();
         $operator = User::factory()->create();
         $entity->operators()->attach($operator);
@@ -187,11 +218,15 @@ class FolderDeleteEntityTest extends TestCase
             'explanation' => 'Test explanation',
             'approved' => 1,
         ]);
-        $federationIDs = $entity->federations->pluck('id')->toArray();
 
         Storage::disk('metadata')->makeDirectory($federation->xml_id);
         $path = FederationService::getFederationFolderByXmlId($federation->xml_id);
         $this->assertDirectoryExists($path);
+
+        $this->assertNotNull(Membership::find(1));
+
+        $relativePath = $federation->xml_id.'/'.$entity->file;
+        Storage::disk('metadata')->put($relativePath, $entity->xml_file);
 
         Cache::shouldReceive('lock')->andReturn(new class
         {
@@ -212,7 +247,7 @@ class FolderDeleteEntityTest extends TestCase
 
         EntityFacade::shouldReceive('deleteEntityMetadataFromFolder')->once();
         Log::shouldReceive('warning')->once();
-        $job = new FolderDeleteEntity($entity->id, $federationIDs, $entity->file);
+        $job = new FolderDeleteMembership($entity, $federation);
         $job->handle();
     }
 
@@ -223,8 +258,17 @@ class FolderDeleteEntityTest extends TestCase
         Notification::fake();
         config(['storageCfg.name' => 'metadata']);
 
+        $xml_document = <<<'XML'
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="">
+  <md:IDPSSODescriptor protocolSupportEnumeration="">
+  </md:IDPSSODescriptor>
+</md:EntityDescriptor>
+XML;
+
         $user = User::factory()->create();
-        $entity = Entity::factory()->create();
+        $entity = Entity::factory()->create([
+            'xml_file' => $xml_document,
+        ]);
         $federation = Federation::factory()->create();
         $operator = User::factory()->create();
         $entity->operators()->attach($operator);
@@ -233,11 +277,15 @@ class FolderDeleteEntityTest extends TestCase
             'explanation' => 'Test explanation',
             'approved' => 1,
         ]);
-        $federationIDs = $entity->federations->pluck('id')->toArray();
 
         Storage::disk('metadata')->makeDirectory($federation->xml_id);
         $path = FederationService::getFederationFolderByXmlId($federation->xml_id);
         $this->assertDirectoryExists($path);
+
+        $this->assertNotNull(Membership::find(1));
+
+        $relativePath = $federation->xml_id.'/'.$entity->file;
+        Storage::disk('metadata')->put($relativePath, $entity->xml_file);
 
         Cache::shouldReceive('lock')->andReturn(new class
         {
@@ -258,7 +306,7 @@ class FolderDeleteEntityTest extends TestCase
 
         EntityFacade::shouldReceive('deleteEntityMetadataFromFolder')->once();
         Log::shouldReceive('warning')->once();
-        $job = new FolderDeleteEntity($entity->id, $federationIDs, $entity->file);
+        $job = new FolderDeleteMembership($entity, $federation);
         $job->handle();
     }
 }
