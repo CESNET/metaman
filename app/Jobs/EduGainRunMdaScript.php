@@ -9,6 +9,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
@@ -44,9 +46,11 @@ class EduGainRunMdaScript implements ShouldQueue
             $file = config('storageCfg.mdaConfigFolder').'/'.escapeshellarg($folderName).'.xml';
             $pipeline = 'main';
             $command = 'sh '.escapeshellarg($realScriptPath).' '.$file.' '.$pipeline;
+            $result = Process::run($command);
 
-            $res = shell_exec($command);
-            dump($res);
+            if ($result->failed() || str_contains($result->output(), 'ERROR') || str_contains($result->output(), 'WARN')) {
+                Log::error('Script execution error '.$command.' Message: '.$result->output());
+            }
 
         } catch (Exception $e) {
             $this->fail($e);
