@@ -83,7 +83,7 @@ class RunMdaScriptTest extends TestCase
         $job->expects($this->never())->method('fail');
 
         $job->handle();
-       // Process::assertRan('bash \'\' /var/www/html/storage/mda-config/\'edugain\'.xml main');
+        // Process::assertRan('bash \'\' /var/www/html/storage/mda-config/\'edugain\'.xml main');
     }
 
     public function test_handle_should_log_error_when_script_fails()

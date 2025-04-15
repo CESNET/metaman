@@ -9,6 +9,11 @@ use App\Traits\GitTrait;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
 
+/**
+ * using only in test purposes
+ *
+ * @codeCoverageIgnore
+ */
 class PrepareTestCase extends Command implements Isolatable
 {
     use CreateCategoriesAndGroupsTrait,CreateFederationTrait,

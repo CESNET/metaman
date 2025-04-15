@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * using only in test purposes
+ *
+ * @codeCoverageIgnore
+ */
 class PrepareTestData extends Command
 {
     use DeleteFromEntity,GitTrait,ValidatorTrait;

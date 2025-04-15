@@ -3,7 +3,6 @@
 namespace Tests\Feature\Jobs;
 
 use App\Jobs\EduGainRunMdaScript;
-use App\Jobs\RunMdaScript;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Log;
@@ -13,7 +12,6 @@ use Tests\TestCase;
 
 class EduGainRunMdaScriptTest extends TestCase
 {
-
     use RefreshDatabase, WithFaker;
 
     public function test_handle_should_run_script_successfully()
@@ -45,6 +43,4 @@ class EduGainRunMdaScriptTest extends TestCase
         $job->handle();
 
     }
-
-
 }
