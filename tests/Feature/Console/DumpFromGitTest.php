@@ -2,8 +2,6 @@
 
 namespace Tests\Feature\Console;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class DumpFromGitTest extends TestCase
