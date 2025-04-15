@@ -19,6 +19,11 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
 
+/**
+ * Dump from old Git repository use only  one time on deployment
+ *
+ * @codeCoverageIgnore
+ */
 class DumpFromGit extends Command implements Isolatable
 {
     use CreateCategoriesAndGroupsTrait,CreateEntitiesTrait,CreateFederationTrait;
