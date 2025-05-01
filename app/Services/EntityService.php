@@ -59,7 +59,7 @@ class EntityService
                 throw new \InvalidArgumentException("Unable to delete file $pathToFile");
             }
         } else {
-            throw new \InvalidArgumentException("Unable to delete file $pathToFile");
+            throw new \InvalidArgumentException("Unable to find file $pathToFile");
         }
 
     }
