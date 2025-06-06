@@ -18,13 +18,9 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class EduGainDeleteEntity implements ShouldQueue
+class EdugainAddEntity implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    /**
-     * trait with failure  function
-     */
     use EdugainTrait, HandlesJobsFailuresTrait;
 
     private Entity $entity;
@@ -51,7 +47,7 @@ class EduGainDeleteEntity implements ShouldQueue
         $folderName = config('metaman.eduid2edugain');
 
         if (! Storage::disk($diskName)->exists($folderName)) {
-            $this->fail(new Exception("No $folderName in Disk"));
+            $this->fail(new Exception("no $folderName in Disk"));
 
             return;
         }
@@ -61,18 +57,17 @@ class EduGainDeleteEntity implements ShouldQueue
         $lock = Cache::lock($lockKey, config('constants.lock_constant'));
         try {
             $lock->block(config('constants.lock_constant'));
-            EntityFacade::deleteEntityMetadataFromFolder($this->getEntity()->file, $folderName);
-            NotificationService::sendModelNotification($this->getEntity(), new EntityEdugainStatusChanged($this->getEntity()));
+            EntityFacade::saveEntityMetadataToFolder($this->getEntity()->id, $folderName);
 
+            NotificationService::sendModelNotification($this->getEntity(), new EntityEdugainStatusChanged($this->entity));
             if ($lock->owner() === null) {
                 Log::warning("Lock owner is null for key: $lockKey");
 
                 return;
             }
-
-            EduGainRunMdaScript::dispatch($lock->owner());
+            EdugainRunMdaScript::dispatch($lock->owner());
         } catch (Exception $e) {
-            Log::error($e->getMessage());
+            Log::error($e);
         } finally {
             if ($lock->isOwnedByCurrentProcess()) {
                 $lock->release();

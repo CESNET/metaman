@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Jobs;
 
-use App\Jobs\EduGainRunMdaScript;
+use App\Jobs\EdugainRunMdaScript;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Log;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class EduGainRunMdaScriptTest extends TestCase
+class EdugainRunMdaScriptTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
@@ -19,11 +19,11 @@ class EduGainRunMdaScriptTest extends TestCase
         Storage::fake('metadata');
         config([
             'metaman.metadata' => 'metadata',
-            'metaman.eduid2edugain' => 'edu2edugain-dir',
+            'metaman.eduid2edugain' => 'eduid2edugain-dir',
             'metaman.mdaScript' => base_path('fake-script.sh'),
             'metaman.mdaConfigFolder' => storage_path('mda-config'),
         ]);
-        Storage::disk('metadata')->makeDirectory('edu2edugain-dir');
+        Storage::disk('metadata')->makeDirectory('eduid2edugain-dir');
 
         Process::fake([
             '*' => Process::result(
@@ -33,7 +33,7 @@ class EduGainRunMdaScriptTest extends TestCase
 
         Log::shouldReceive('error')->never();
 
-        $job = $this->getMockBuilder(EduGainRunMdaScript::class)
+        $job = $this->getMockBuilder(EdugainRunMdaScript::class)
             ->setConstructorArgs(['test-owner'])
             ->onlyMethods(['fail'])
             ->getMock();

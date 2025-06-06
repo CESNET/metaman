@@ -29,13 +29,13 @@ class FederationServiceTest extends TestCase
         $this->assertDirectoryExists($path);
     }
 
-    public function test_create_edu2_edu_gain_folder_create_edu2_edu_gain_folder()
+    public function test_create_eduid_2_edugain_folder()
     {
         Storage::fake('metadata');
 
         config(['metaman.metadata' => 'metadata']);
 
-        FederationService::createEdu2EduGainFolder();
+        FederationService::createEduid2EdugainFolder();
 
         $disk = Storage::disk('metadata');
         $path = $disk->path('eduid2edugain');

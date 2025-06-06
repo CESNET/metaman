@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
-class EduGainRunMdaScript implements ShouldQueue
+class EdugainRunMdaScript implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HandlesJobsFailuresTrait;

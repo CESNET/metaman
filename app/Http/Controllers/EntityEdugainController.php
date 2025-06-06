@@ -7,7 +7,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 
-class EntityEduGainController extends Controller
+class EntityEdugainController extends Controller
 {
     /**
      * @throws AuthorizationException

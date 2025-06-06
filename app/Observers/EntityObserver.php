@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Jobs\EduGainAddEntity;
-use App\Jobs\EduGainDeleteEntity;
+use App\Jobs\EdugainAddEntity;
+use App\Jobs\EdugainDeleteEntity;
 use App\Jobs\FolderAddEntity;
 use App\Jobs\FolderDeleteEntity;
 use App\Models\Entity;
@@ -17,21 +17,19 @@ class EntityObserver implements ShouldHandleEventsAfterCommit
      */
     public function updated(Entity $entity): void
     {
-        if ($entity->wasChanged('xml_file')
-        ) {
+        if ($entity->wasChanged('xml_file')) {
             FolderAddEntity::dispatch($entity);
         } elseif ($entity->approved == 1 && ! $entity->wasChanged('approved')) {
 
             if (! $entity->wasChanged('edugain') && ! $entity->wasChanged('deleted_at')) {
                 NotificationService::sendUpdateNotification($entity);
             }
-
         }
         if ($entity->wasChanged('edugain')) {
             if ($entity->edugain == 1) {
-                EduGainAddEntity::dispatch($entity);
+                EdugainAddEntity::dispatch($entity);
             } else {
-                EduGainDeleteEntity::dispatch($entity);
+                EdugainDeleteEntity::dispatch($entity);
             }
         }
     }
@@ -48,7 +46,7 @@ class EntityObserver implements ShouldHandleEventsAfterCommit
             FolderDeleteEntity::dispatch($entity->id, $federationIDs, $entity->file);
 
             if ($entity->edugain == 1) {
-                EduGainDeleteEntity::dispatch($entity);
+                EdugainDeleteEntity::dispatch($entity);
             }
         }
     }
@@ -62,7 +60,7 @@ class EntityObserver implements ShouldHandleEventsAfterCommit
             FolderAddEntity::dispatch($entity);
 
             if ($entity->edugain == 1) {
-                EduGainAddEntity::dispatch($entity);
+                EdugainAddEntity::dispatch($entity);
             }
         }
     }

@@ -26,10 +26,14 @@ use Illuminate\Contracts\Console\Isolatable;
  */
 class DumpFromGit extends Command implements Isolatable
 {
-    use CreateCategoriesAndGroupsTrait,CreateEntitiesTrait,CreateFederationTrait;
-    use EdugainTrait;
-    use FixEntityTrait,UpdateEntity;
-    use GitTrait, ValidatorTrait;
+    use CreateCategoriesAndGroupsTrait,
+        CreateEntitiesTrait,
+        CreateFederationTrait,
+        EdugainTrait,
+        FixEntityTrait,
+        GitTrait,
+        UpdateEntity,
+        ValidatorTrait;
 
     /**
      * The name and signature of the console command.
@@ -76,12 +80,10 @@ class DumpFromGit extends Command implements Isolatable
             FederationService::createFoldersToAllFederation();
             $this->fixEntities();
             $this->createMetadataFiles();
-            $this->makeEdu2Edugain();
+            $this->makeEduid2Edugain();
 
             $this->newLine();
             $this->info('All done!');
-
         });
-
     }
 }

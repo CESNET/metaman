@@ -12,7 +12,7 @@ class FederationService
         Storage::disk(config('metaman.metadata'))->makeDirectory($federation->xml_id);
     }
 
-    public static function createEdu2EduGainFolder(): void
+    public static function createEduid2EdugainFolder(): void
     {
         Storage::disk(config('metaman.metadata'))->makeDirectory(config('metaman.eduid2edugain'));
     }

@@ -3,7 +3,7 @@
 namespace Tests\Feature\Jobs;
 
 use App\Facades\EntityFacade;
-use App\Jobs\EduGainDeleteEntity;
+use App\Jobs\EdugainAddEntity;
 use App\Models\Entity;
 use App\Models\User;
 use App\Notifications\EntityEdugainStatusChanged;
@@ -16,14 +16,14 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class EduGainDeleteEntityTest extends TestCase
+class EdugainAddEntityTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     public function test_get_entity_returns_entity()
     {
         $entity = Entity::factory()->create();
-        $job = new EduGainDeleteEntity($entity);
+        $job = new EdugainAddEntity($entity);
         $this->assertEquals($entity, $job->getEntity());
     }
 
@@ -35,7 +35,7 @@ class EduGainDeleteEntityTest extends TestCase
             'metaman.eduid2edugain' => 'eduid2edugain',
         ]);
 
-        $job = $this->getMockBuilder(EduGainDeleteEntity::class)
+        $job = $this->getMockBuilder(EdugainAddEntity::class)
             ->setConstructorArgs([Entity::factory()->create()])
             ->onlyMethods(['fail'])
             ->getMock();
@@ -80,8 +80,8 @@ class EduGainDeleteEntityTest extends TestCase
             public function release() {}
         });
 
-        EntityFacade::shouldReceive('deleteEntityMetadataFromFolder')->once();
-        $job = new EduGainDeleteEntity($entity);
+        EntityFacade::shouldReceive('saveEntityMetadataToFolder')->once();
+        $job = new EdugainAddEntity($entity);
         $job->handle();
         Notification::assertSentTo([$operator], EntityEdugainStatusChanged::class);
     }
@@ -118,9 +118,9 @@ class EduGainDeleteEntityTest extends TestCase
             public function release() {}
         });
 
-        EntityFacade::shouldReceive('deleteEntityMetadataFromFolder')->once();
+        EntityFacade::shouldReceive('saveEntityMetadataToFolder')->once();
         Log::shouldReceive('warning')->once();
-        $job = new EduGainDeleteEntity($entity);
+        $job = new EdugainAddEntity($entity);
         $job->handle();
     }
 
@@ -156,9 +156,9 @@ class EduGainDeleteEntityTest extends TestCase
             public function release() {}
         });
 
-        EntityFacade::shouldReceive('deleteEntityMetadataFromFolder')->once();
+        EntityFacade::shouldReceive('saveEntityMetadataToFolder')->once();
         Log::shouldReceive('warning')->once();
-        $job = new EduGainDeleteEntity($entity);
+        $job = new EdugainAddEntity($entity);
         $job->handle();
     }
 }

@@ -16,7 +16,8 @@ use Illuminate\Contracts\Console\Isolatable;
  */
 class PrepareTestCase extends Command implements Isolatable
 {
-    use CreateCategoriesAndGroupsTrait,CreateFederationTrait,
+    use CreateCategoriesAndGroupsTrait,
+        CreateFederationTrait,
         EdugainTrait,
         GitTrait;
 
@@ -45,7 +46,6 @@ class PrepareTestCase extends Command implements Isolatable
         $this->initializeGit();
         $this->createFederations();
         $this->createCategoriesAndGroups();
-        $this->makeEdu2Edugain();
-
+        $this->makeEduid2Edugain();
     }
 }

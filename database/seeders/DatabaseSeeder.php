@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create(['active' => true]);
         User::factory(96)->create();
 
-        FederationService::createEdu2EduGainFolder();
+        FederationService::createEduid2EdugainFolder();
 
         /*        Federation::factory(20)->create();
                 Entity::factory(100)->create();*/

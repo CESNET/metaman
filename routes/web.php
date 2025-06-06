@@ -4,7 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EduidczStatisticController;
 use App\Http\Controllers\EntityCategoryController;
 use App\Http\Controllers\EntityController;
-use App\Http\Controllers\EntityEduGainController;
+use App\Http\Controllers\EntityEdugainController;
 use App\Http\Controllers\EntityFederationController;
 use App\Http\Controllers\EntityGroupController;
 use App\Http\Controllers\EntityHfdController;
@@ -101,7 +101,7 @@ Route::middleware('auth')->group(function () {
         Route::post('entities/{entity}/join', [EntityFederationController::class, 'store'])->name('entities.join');
         Route::post('entities/{entity}/leave', [EntityFederationController::class, 'destroy'])->name('entities.leave');
         Route::patch('entities/{entity}/state', [EntityStateController::class, 'update'])->name('entities.state')->withTrashed();
-        Route::patch('entities/{entity}/edugain', [EntityEduGainController::class, 'update'])->name('entities.edugain');
+        Route::patch('entities/{entity}/edugain', [EntityEdugainController::class, 'update'])->name('entities.edugain');
         Route::match(['put', 'patch'], 'entities/{entity}', [EntityController::class, 'update'])->name('entities.update')->withTrashed();
 
         Route::post('entities/{entity}/group/join', [EntityGroupController::class, 'store'])->name('entities.group.join');
