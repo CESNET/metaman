@@ -16,9 +16,9 @@ class CategoryTagService extends TagService
 
     public function create(Entity $entity): false|string
     {
-        $mdURI = config('xmlNameSpace.md');
-        $mdattrURI = config('xmlNameSpace.mdattr');
-        $samlURI = config('xmlNameSpace.saml');
+        $mdURI = config('xmlNameSpaces.md');
+        $mdattrURI = config('xmlNameSpaces.mdattr');
+        $samlURI = config('xmlNameSpaces.saml');
 
         $category = self::hasCategoryInDatabase($entity);
         if (! $category) {

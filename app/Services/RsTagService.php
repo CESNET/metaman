@@ -17,9 +17,9 @@ class RsTagService extends TagService
 
     public function create(Entity $entity): false|string
     {
-        $mdURI = config('xmlNameSpace.md');
-        $mdattrURI = config('xmlNameSpace.mdattr');
-        $samlURI = config('xmlNameSpace.saml');
+        $mdURI = config('xmlNameSpaces.md');
+        $mdattrURI = config('xmlNameSpaces.mdattr');
+        $samlURI = config('xmlNameSpaces.saml');
 
         $xml_document = $entity->xml_file;
         $isIdp = $entity->type == 'idp';

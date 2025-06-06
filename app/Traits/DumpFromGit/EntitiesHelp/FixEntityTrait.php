@@ -26,11 +26,11 @@ trait FixEntityTrait
     {
         foreach (Entity::select()->get() as $entity) {
 
-            $this->mdURI = config('xmlNameSpace.md');
-            $this->mdattrURI = config('xmlNameSpace.mdattr');
-            $this->samlURI = config('xmlNameSpace.saml');
-            $this->mdrpiURI = config('xmlNameSpace.mdrpi');
-            $this->mdui = config('xmlNameSpace.mdui');
+            $this->mdURI = config('xmlNameSpaces.md');
+            $this->mdattrURI = config('xmlNameSpaces.mdattr');
+            $this->samlURI = config('xmlNameSpaces.saml');
+            $this->mdrpiURI = config('xmlNameSpaces.mdrpi');
+            $this->mdui = config('xmlNameSpaces.mdui');
 
             $xml_document = $entity->xml_file;
 
@@ -94,6 +94,5 @@ trait FixEntityTrait
         $logo->setAttribute('width', 100);
         $logo->setAttribute('height', 100);
         $UIInfo->appendChild($logo);
-
     }
 }

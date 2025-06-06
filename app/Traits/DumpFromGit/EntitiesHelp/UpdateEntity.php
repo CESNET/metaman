@@ -24,7 +24,7 @@ trait UpdateEntity
 
     private string $mdrpiURI = 'urn:oasis:names:tc:SAML:metadata:rpi';
 
-    use TagTrait,ValidatorTrait;
+    use TagTrait, ValidatorTrait;
 
     private function prepareXmlStructure(DOMDocument $dom): \DOMNode|bool|DOMElement|\DOMNameSpaceNode|null
     {
@@ -234,15 +234,14 @@ trait UpdateEntity
         $xml_document = $this->updateRegistrationInfo($xml_document, $entity->entityid, $timestampDocumentArray);
 
         Entity::whereId($entity->id)->update(['xml_file' => $xml_document]);
-
     }
 
     public function updateEntitiesXml(): void
     {
-        $this->mdURI = config('xmlNameSpace.md');
-        $this->mdattrURI = config('xmlNameSpace.mdattr');
-        $this->samlURI = config('xmlNameSpace.saml');
-        $this->mdrpiURI = config('xmlNameSpace.mdrpi');
+        $this->mdURI = config('xmlNameSpaces.md');
+        $this->mdattrURI = config('xmlNameSpaces.mdattr');
+        $this->samlURI = config('xmlNameSpaces.saml');
+        $this->mdrpiURI = config('xmlNameSpaces.mdrpi');
 
         $timestampDocumentArray = $this->splitDocument();
         // dump($timestampDocumentArray);

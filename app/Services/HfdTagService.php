@@ -22,9 +22,9 @@ class HfdTagService extends TagService
 
     public function createFromXml(string $xml_document): false|string
     {
-        $mdURI = config('xmlNameSpace.md');
-        $mdattrURI = config('xmlNameSpace.mdattr');
-        $samlURI = config('xmlNameSpace.saml');
+        $mdURI = config('xmlNameSpaces.md');
+        $mdattrURI = config('xmlNameSpaces.mdattr');
+        $samlURI = config('xmlNameSpaces.saml');
 
         $dom = $this->createDOM($xml_document);
         $xPath = $this->createXPath($dom);
@@ -76,7 +76,6 @@ class HfdTagService extends TagService
             Log::critical("Exception occurred in {$entity->id}}: {$e->getMessage()}");
             throw $e;
         }
-
     }
 
     private function getOrCreateAttribute(DOMXPath $xPath, \DOMDocument $dom, \DOMNode $entityAttributes, string $samlURI): \DOMNode
