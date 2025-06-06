@@ -25,7 +25,7 @@ class EduGainDeleteEntity implements ShouldQueue
     /**
      * trait with failure  function
      */
-    use EdugainTrait,HandlesJobsFailuresTrait;
+    use EdugainTrait, HandlesJobsFailuresTrait;
 
     private Entity $entity;
 
@@ -47,8 +47,8 @@ class EduGainDeleteEntity implements ShouldQueue
      */
     public function handle(): void
     {
-        $diskName = config('storageCfg.name');
-        $folderName = config('storageCfg.edu2edugain');
+        $diskName = config('metaman.metadata');
+        $folderName = config('metaman.eduid2edugain');
 
         if (! Storage::disk($diskName)->exists($folderName)) {
             $this->fail(new Exception("No $folderName in Disk"));

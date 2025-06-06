@@ -32,7 +32,6 @@ class RunMdaScriptTest extends TestCase
                 return $e instanceof \Exception;
             }));
         $job->handle();
-
     }
 
     public function test_job_should_return_fail_when_federation_folder_does_not_exist()
@@ -52,7 +51,6 @@ class RunMdaScriptTest extends TestCase
                 return $e instanceof \Exception;
             }));
         $job->handle();
-
     }
 
     public function test_handle_should_run_script_for_each_filter()
@@ -63,8 +61,8 @@ class RunMdaScriptTest extends TestCase
         Process::fake();
 
         config([
-            'storageCfg.mdaScript' => base_path('fake-script.sh'),
-            'storageCfg.mdaConfigFolder' => storage_path('mda-config'),
+            'metaman.mdaScript' => base_path('fake-script.sh'),
+            'metaman.mdaConfigFolder' => storage_path('mda-config'),
         ]);
 
         $federation = Federation::factory()->create([
@@ -100,8 +98,8 @@ class RunMdaScriptTest extends TestCase
         ]);
 
         config([
-            'storageCfg.mdaScript' => base_path('fake-script.sh'),
-            'storageCfg.mdaConfigFolder' => storage_path('mda-config'),
+            'metaman.mdaScript' => base_path('fake-script.sh'),
+            'metaman.mdaConfigFolder' => storage_path('mda-config'),
         ]);
 
         $federation = Federation::factory()->create([
@@ -121,6 +119,5 @@ class RunMdaScriptTest extends TestCase
         $job->expects($this->never())->method('fail');
 
         $job->handle();
-
     }
 }

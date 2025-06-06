@@ -17,7 +17,7 @@ class FederationServiceTest extends TestCase
     {
         Storage::fake('metadata');
 
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $xmlId = 'test-federation-dir';
 
@@ -33,7 +33,7 @@ class FederationServiceTest extends TestCase
     {
         Storage::fake('metadata');
 
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         FederationService::createEdu2EduGainFolder();
 
@@ -47,7 +47,7 @@ class FederationServiceTest extends TestCase
     {
 
         Storage::fake('metadata');
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         Federation::factory()->create(['xml_id' => 'fed1']);
         Federation::factory()->create(['xml_id' => 'fed2']);
@@ -68,7 +68,7 @@ class FederationServiceTest extends TestCase
     {
 
         Storage::fake('metadata');
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $xmlId = 'test-fed-dir';
 
@@ -92,7 +92,7 @@ class FederationServiceTest extends TestCase
     public function test_get_federation_folder_by_id_returns_path_when_federation_exists()
     {
         Storage::fake('metadata');
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $federation = Federation::factory()->create([
             'xml_id' => 'test-fed-dir',

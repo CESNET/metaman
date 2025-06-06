@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Storage;
 class EduGainAddEntity implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    use EdugainTrait,HandlesJobsFailuresTrait;
+    use EdugainTrait, HandlesJobsFailuresTrait;
 
     private Entity $entity;
 
@@ -43,8 +43,8 @@ class EduGainAddEntity implements ShouldQueue
      */
     public function handle(): void
     {
-        $diskName = config('storageCfg.name');
-        $folderName = config('storageCfg.edu2edugain');
+        $diskName = config('metaman.metadata');
+        $folderName = config('metaman.eduid2edugain');
 
         if (! Storage::disk($diskName)->exists($folderName)) {
             $this->fail(new Exception("no $folderName in Disk"));
@@ -66,7 +66,6 @@ class EduGainAddEntity implements ShouldQueue
                 return;
             }
             EduGainRunMdaScript::dispatch($lock->owner());
-
         } catch (Exception $e) {
             Log::error($e);
         } finally {
@@ -76,6 +75,5 @@ class EduGainAddEntity implements ShouldQueue
                 Log::warning("Lock not owned by current process or lock lost for key: $lockKey");
             }
         }
-
     }
 }

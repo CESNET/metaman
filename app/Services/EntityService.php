@@ -31,7 +31,7 @@ class EntityService
      */
     public function saveEntityMetadataToFolder($entity_id, $folderName): void
     {
-        $diskName = config('storageCfg.name');
+        $diskName = config('metaman.metadata');
 
         $entity = Entity::find($entity_id);
         if (! $entity) {
@@ -44,12 +44,11 @@ class EntityService
         $filePath = $folderName.'/'.$fileName;
         $content = $entity->xml_file;
         Storage::disk($diskName)->put($filePath, $content);
-
     }
 
     public function deleteEntityMetadataFromFolder($fileName, $folderName): void
     {
-        $diskName = config('storageCfg.name');
+        $diskName = config('metaman.metadata');
         $pathToFile = $folderName.'/'.$fileName;
 
         if (Storage::disk($diskName)->exists($pathToFile)) {
@@ -61,6 +60,5 @@ class EntityService
         } else {
             throw new \InvalidArgumentException("Unable to find file $pathToFile");
         }
-
     }
 }

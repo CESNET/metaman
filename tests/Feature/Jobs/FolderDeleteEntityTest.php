@@ -74,7 +74,7 @@ class FolderDeleteEntityTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $entity = Entity::factory()->create();
@@ -129,7 +129,7 @@ class FolderDeleteEntityTest extends TestCase
         Storage::fake('metadata');
         Queue::fake();
         Notification::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $entity = Entity::factory()->create();
@@ -175,7 +175,7 @@ class FolderDeleteEntityTest extends TestCase
         Storage::fake('metadata');
         Queue::fake();
         Notification::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $entity = Entity::factory()->create();
@@ -221,7 +221,7 @@ class FolderDeleteEntityTest extends TestCase
         Storage::fake('metadata');
         Queue::fake();
         Notification::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $entity = Entity::factory()->create();

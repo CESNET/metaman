@@ -24,7 +24,7 @@ class RestoreFederationTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $federation = Federation::factory()->create();
@@ -42,14 +42,13 @@ class RestoreFederationTest extends TestCase
 
         $job = new RestoreFederation($membership);
         $this->assertEquals($membership, $job->membership);
-
     }
 
     public function test_handle_should_call_fail_if_batch_was_cancelled()
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $federation = Federation::factory()->create();
@@ -87,7 +86,7 @@ class RestoreFederationTest extends TestCase
         Storage::fake('metadata');
         Queue::fake();
         Bus::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $federation = Federation::factory()->create();
@@ -117,7 +116,6 @@ class RestoreFederationTest extends TestCase
         $job->handle();
 
         $this->assertTrue(true);
-
     }
 
     public function test_handle_should_save_metadata_to_federation_folder2()
@@ -125,7 +123,7 @@ class RestoreFederationTest extends TestCase
         Storage::fake('metadata');
         Queue::fake();
         Bus::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $federation = Federation::factory()->create();

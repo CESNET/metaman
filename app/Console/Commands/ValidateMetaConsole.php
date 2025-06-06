@@ -31,7 +31,7 @@ class ValidateMetaConsole extends Command
      */
     protected $description = 'Command description';
 
-    use FixEntityTrait,UpdateEntity,ValidatorTrait;
+    use FixEntityTrait, UpdateEntity, ValidatorTrait;
 
     /**
      * Execute the console command.
@@ -74,7 +74,6 @@ class ValidateMetaConsole extends Command
 
             dump($res);
             if ($res['code'] == 1) {
-
             }
         }
     }
@@ -83,8 +82,8 @@ class ValidateMetaConsole extends Command
     {
         $filterArray = explode(', ', $federation->filters);
 
-        $scriptPath = config('storageCfg.mdaScript');
-        $command = 'sh '.config('storageCfg.mdaScript');
+        $scriptPath = config('metaman.mdaScript');
+        $command = 'sh '.config('metaman.mdaScript');
 
         $realScriptPath = realpath($scriptPath);
 

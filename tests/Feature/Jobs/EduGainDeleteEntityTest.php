@@ -31,8 +31,8 @@ class EduGainDeleteEntityTest extends TestCase
     {
         Storage::fake('metadata');
         config([
-            'storageCfg.name' => 'metadata',
-            'storageCfg.edu2edugain' => 'eduid2edugain',
+            'metaman.metadata' => 'metadata',
+            'metaman.eduid2edugain' => 'eduid2edugain',
         ]);
 
         $job = $this->getMockBuilder(EduGainDeleteEntity::class)
@@ -54,8 +54,8 @@ class EduGainDeleteEntityTest extends TestCase
         Queue::fake();
         Notification::fake();
         config([
-            'storageCfg.name' => 'metadata',
-            'storageCfg.edu2edugain' => 'eduid2edugain',
+            'metaman.metadata' => 'metadata',
+            'metaman.eduid2edugain' => 'eduid2edugain',
         ]);
         Storage::disk('metadata')->makeDirectory('eduid2edugain');
 
@@ -92,8 +92,8 @@ class EduGainDeleteEntityTest extends TestCase
         Queue::fake();
         Notification::fake();
         config([
-            'storageCfg.name' => 'metadata',
-            'storageCfg.edu2edugain' => 'eduid2edugain',
+            'metaman.metadata' => 'metadata',
+            'metaman.eduid2edugain' => 'eduid2edugain',
         ]);
         Storage::disk('metadata')->makeDirectory('eduid2edugain');
 
@@ -130,8 +130,8 @@ class EduGainDeleteEntityTest extends TestCase
         Queue::fake();
         Notification::fake();
         config([
-            'storageCfg.name' => 'metadata',
-            'storageCfg.edu2edugain' => 'eduid2edugain',
+            'metaman.metadata' => 'metadata',
+            'metaman.eduid2edugain' => 'eduid2edugain',
         ]);
         Storage::disk('metadata')->makeDirectory('eduid2edugain');
 
@@ -160,6 +160,5 @@ class EduGainDeleteEntityTest extends TestCase
         Log::shouldReceive('warning')->once();
         $job = new EduGainDeleteEntity($entity);
         $job->handle();
-
     }
 }

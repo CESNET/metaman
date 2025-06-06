@@ -18,10 +18,10 @@ class EduGainRunMdaScriptTest extends TestCase
     {
         Storage::fake('metadata');
         config([
-            'storageCfg.name' => 'metadata',
-            'storageCfg.edu2edugain' => 'edu2edugain-dir',
-            'storageCfg.mdaScript' => base_path('fake-script.sh'),
-            'storageCfg.mdaConfigFolder' => storage_path('mda-config'),
+            'metaman.metadata' => 'metadata',
+            'metaman.eduid2edugain' => 'edu2edugain-dir',
+            'metaman.mdaScript' => base_path('fake-script.sh'),
+            'metaman.mdaConfigFolder' => storage_path('mda-config'),
         ]);
         Storage::disk('metadata')->makeDirectory('edu2edugain-dir');
 
@@ -41,6 +41,5 @@ class EduGainRunMdaScriptTest extends TestCase
         $job->expects($this->never())->method('fail');
 
         $job->handle();
-
     }
 }

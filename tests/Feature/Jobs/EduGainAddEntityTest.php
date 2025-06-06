@@ -31,8 +31,8 @@ class EduGainAddEntityTest extends TestCase
     {
         Storage::fake('metadata');
         config([
-            'storageCfg.name' => 'metadata',
-            'storageCfg.edu2edugain' => 'eduid2edugain',
+            'metaman.metadata' => 'metadata',
+            'metaman.eduid2edugain' => 'eduid2edugain',
         ]);
 
         $job = $this->getMockBuilder(EduGainAddEntity::class)
@@ -54,8 +54,8 @@ class EduGainAddEntityTest extends TestCase
         Queue::fake();
         Notification::fake();
         config([
-            'storageCfg.name' => 'metadata',
-            'storageCfg.edu2edugain' => 'eduid2edugain',
+            'metaman.metadata' => 'metadata',
+            'metaman.eduid2edugain' => 'eduid2edugain',
         ]);
         Storage::disk('metadata')->makeDirectory('eduid2edugain');
 
@@ -84,7 +84,6 @@ class EduGainAddEntityTest extends TestCase
         $job = new EduGainAddEntity($entity);
         $job->handle();
         Notification::assertSentTo([$operator], EntityEdugainStatusChanged::class);
-
     }
 
     public function test_handle_should_return_warning_where_lock_owner_is_null()
@@ -93,8 +92,8 @@ class EduGainAddEntityTest extends TestCase
         Queue::fake();
         Notification::fake();
         config([
-            'storageCfg.name' => 'metadata',
-            'storageCfg.edu2edugain' => 'eduid2edugain',
+            'metaman.metadata' => 'metadata',
+            'metaman.eduid2edugain' => 'eduid2edugain',
         ]);
         Storage::disk('metadata')->makeDirectory('eduid2edugain');
 
@@ -123,7 +122,6 @@ class EduGainAddEntityTest extends TestCase
         Log::shouldReceive('warning')->once();
         $job = new EduGainAddEntity($entity);
         $job->handle();
-
     }
 
     public function test_handle_should_return_warning_where_lock_now_own_by_process()
@@ -132,8 +130,8 @@ class EduGainAddEntityTest extends TestCase
         Queue::fake();
         Notification::fake();
         config([
-            'storageCfg.name' => 'metadata',
-            'storageCfg.edu2edugain' => 'eduid2edugain',
+            'metaman.metadata' => 'metadata',
+            'metaman.eduid2edugain' => 'eduid2edugain',
         ]);
         Storage::disk('metadata')->makeDirectory('eduid2edugain');
 
@@ -162,6 +160,5 @@ class EduGainAddEntityTest extends TestCase
         Log::shouldReceive('warning')->once();
         $job = new EduGainAddEntity($entity);
         $job->handle();
-
     }
 }

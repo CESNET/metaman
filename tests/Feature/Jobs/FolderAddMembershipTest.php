@@ -25,7 +25,7 @@ class FolderAddMembershipTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $federation = Federation::factory()->create();
@@ -73,7 +73,7 @@ class FolderAddMembershipTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $federation = Federation::factory()->create();
@@ -122,7 +122,7 @@ class FolderAddMembershipTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $federation = Federation::factory()->create();

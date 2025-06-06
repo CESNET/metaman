@@ -57,14 +57,14 @@ class RunMdaScript implements ShouldQueue
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
 
         $filterArray = explode(', ', $federation->filters);
-        $scriptPath = config('storageCfg.mdaScript');
+        $scriptPath = config('metaman.mdaScript');
 
         $realScriptPath = realpath($scriptPath);
 
         try {
 
             foreach ($filterArray as $filter) {
-                $file = config('storageCfg.mdaConfigFolder').'/'.escapeshellarg($filter).'.xml';
+                $file = config('metaman.mdaConfigFolder').'/'.escapeshellarg($filter).'.xml';
                 $pipeline = 'main';
                 $command = 'bash '.escapeshellarg($realScriptPath).' '.$file.' '.$pipeline;
                 $result = Process::run($command);

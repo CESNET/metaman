@@ -34,16 +34,16 @@ class EduGainRunMdaScript implements ShouldQueue
      */
     public function handle(): void
     {
-        $diskName = config('storageCfg.name');
-        $folderName = config('storageCfg.edu2edugain');
+        $diskName = config('metaman.metadata');
+        $folderName = config('metaman.eduid2edugain');
 
         $pathToDirectory = Storage::disk($diskName)->path($folderName);
         $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
-        $scriptPath = config('storageCfg.mdaScript');
+        $scriptPath = config('metaman.mdaScript');
         $realScriptPath = realpath($scriptPath);
 
         try {
-            $file = config('storageCfg.mdaConfigFolder').'/'.escapeshellarg($folderName).'.xml';
+            $file = config('metaman.mdaConfigFolder').'/'.escapeshellarg($folderName).'.xml';
             $pipeline = 'main';
             $command = 'sh '.escapeshellarg($realScriptPath).' '.$file.' '.$pipeline;
             $result = Process::run($command);
@@ -51,13 +51,10 @@ class EduGainRunMdaScript implements ShouldQueue
             if ($result->failed() || str_contains($result->output(), 'ERROR') || str_contains($result->output(), 'WARN')) {
                 Log::error('Script execution error '.$command.' Message: '.$result->output());
             }
-
         } catch (Exception $e) {
             $this->fail($e);
         } finally {
             Cache::restoreLock($lockKey, $this->owner)->release();
-
         }
-
     }
 }

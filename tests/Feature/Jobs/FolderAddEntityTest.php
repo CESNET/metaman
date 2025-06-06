@@ -31,7 +31,7 @@ class FolderAddEntityTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $entity = Entity::factory()->create();
@@ -85,7 +85,7 @@ class FolderAddEntityTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $federation = Federation::factory()->create();
@@ -132,7 +132,7 @@ class FolderAddEntityTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $federation = Federation::factory()->create();
@@ -177,7 +177,7 @@ class FolderAddEntityTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $federation = Federation::factory()->create();
@@ -222,7 +222,7 @@ class FolderAddEntityTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $federation = Federation::factory()->create();

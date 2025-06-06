@@ -48,7 +48,7 @@ class FolderDeleteMembership implements ShouldQueue
     {
         $federation = $this->getFederation();
         $entity = $this->getEntity();
-        $diskName = config('storageCfg.name');
+        $diskName = config('metaman.metadata');
 
         try {
             $pathToDirectory = FederationService::getFederationFolder($federation);

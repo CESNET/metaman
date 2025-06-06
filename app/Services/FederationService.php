@@ -9,12 +9,12 @@ class FederationService
 {
     public static function createFederationFolder(Federation $federation): void
     {
-        Storage::disk(config('storageCfg.name'))->makeDirectory($federation->xml_id);
+        Storage::disk(config('metaman.metadata'))->makeDirectory($federation->xml_id);
     }
 
     public static function createEdu2EduGainFolder(): void
     {
-        Storage::disk(config('storageCfg.name'))->makeDirectory(config('storageCfg.edu2edugain'));
+        Storage::disk(config('metaman.metadata'))->makeDirectory(config('metaman.eduid2edugain'));
     }
 
     public static function createFoldersToAllFederation(): void
@@ -22,7 +22,7 @@ class FederationService
         $federations = Federation::all();
 
         foreach ($federations as $fed) {
-            if (! Storage::disk(config('storageCfg.name'))->exists($fed['xml_id'])) {
+            if (! Storage::disk(config('metaman.metadata'))->exists($fed['xml_id'])) {
                 self::createFederationFolder($fed);
             }
         }
@@ -30,7 +30,7 @@ class FederationService
 
     public static function deleteFederationFolderByXmlId(string $xmlId): void
     {
-        Storage::disk(config('storageCfg.name'))->deleteDirectory($xmlId);
+        Storage::disk(config('metaman.metadata'))->deleteDirectory($xmlId);
     }
 
     /**
@@ -59,7 +59,7 @@ class FederationService
      */
     public static function getFederationFolderByXmlId(string $xmlId): string
     {
-        $disk = Storage::disk(config('storageCfg.name'));
+        $disk = Storage::disk(config('metaman.metadata'));
 
         if ($disk->exists($xmlId)) {
             return $disk->path($xmlId);

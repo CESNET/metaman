@@ -30,7 +30,7 @@ class DeleteFederationTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $federation = Federation::factory()->create();
 
@@ -76,7 +76,7 @@ class DeleteFederationTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $federation = Federation::factory()->create();
 
@@ -110,7 +110,7 @@ class DeleteFederationTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $federation = Federation::factory()->create();
 

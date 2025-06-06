@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $diskName = config('storageCfg.name');
+        $diskName = config('metaman.metadata');
 
         if (Storage::disk($diskName)->exists('')) {
             Storage::disk($diskName)->deleteDirectory('');

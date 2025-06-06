@@ -45,7 +45,7 @@ class FolderDeleteMembershipTest extends TestCase
     {
         Storage::fake('metadata');
         Queue::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $entity = Entity::factory()->create();
         $federation = Federation::factory()->create();
@@ -93,7 +93,7 @@ class FolderDeleteMembershipTest extends TestCase
         Storage::fake('metadata');
         Queue::fake();
         Notification::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $user = User::factory()->create();
         $entity = Entity::factory()->create();
@@ -139,7 +139,7 @@ class FolderDeleteMembershipTest extends TestCase
         Storage::fake('metadata');
         Queue::fake();
         Notification::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $xml_document = <<<'XML'
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="">
@@ -197,7 +197,7 @@ XML;
         Storage::fake('metadata');
         Queue::fake();
         Notification::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $xml_document = <<<'XML'
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="">
@@ -256,7 +256,7 @@ XML;
         Storage::fake('metadata');
         Queue::fake();
         Notification::fake();
-        config(['storageCfg.name' => 'metadata']);
+        config(['metaman.metadata' => 'metadata']);
 
         $xml_document = <<<'XML'
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="">
