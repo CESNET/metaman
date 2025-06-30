@@ -34,9 +34,9 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Federation::observe(FederationObserver::class);
         Entity::observe(EntityObserver::class);
         Membership::observe(MembershipObserver::class);
-        Federation::observe(FederationObserver::class);
     }
 
     protected function configureEmailVerification()
