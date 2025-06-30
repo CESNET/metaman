@@ -28,11 +28,8 @@ class FederationObserver
      */
     public function deleted(Federation $federation): void
     {
-        $fed = Federation::withTrashed()->find($federation->id);
-        if ($fed) {
-            if ($federation->approved) {
-                DeleteFederation::dispatch($fed->xml_id);
-            }
+        if ($federation->approved) {
+            DeleteFederation::dispatch($federation->xml_id);
         }
     }
 
@@ -71,6 +68,5 @@ class FederationObserver
                 $lock->release();
             }
         }
-
     }
 }
