@@ -10,8 +10,6 @@ class EduidczOrganization extends Model
 
     /**
      * The object classes of the LDAP model.
-     *
-     * @var array
      */
     public static array $objectClasses = [
         'top',
