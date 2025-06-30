@@ -6,6 +6,7 @@ use App\Models\Entity;
 use App\Traits\EntitiesXML\TagTrait;
 use DOMNode;
 use DOMXPath;
+use RuntimeException;
 
 abstract class TagService
 {
@@ -23,9 +24,7 @@ abstract class TagService
     protected function getRootTag(DOMXPath $xPath): DOMNode
     {
         $rootTag = $xPath->query("//*[local-name()='EntityDescriptor']")->item(0);
-        if (! $rootTag) {
-            throw new \RuntimeException('Root tag EntityDescriptor not found');
-        }
+        throw_unless($rootTag, new RuntimeException(('Root tag EntityDescriptor not found.')));
 
         return $rootTag;
     }
