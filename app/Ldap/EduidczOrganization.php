@@ -6,14 +6,14 @@ use LdapRecord\Models\Model;
 
 class EduidczOrganization extends Model
 {
-    protected $connection = 'eduidczorganizations';
+    protected ?string $connection = 'eduidczorganizations';
 
     /**
      * The object classes of the LDAP model.
      *
      * @var array
      */
-    public static $objectClasses = [
+    public static array $objectClasses = [
         'top',
         'eduidczorganization',
     ];
@@ -21,7 +21,7 @@ class EduidczOrganization extends Model
     /**
      * @codeCoverageIgnore
      */
-    protected function getCreatableRdnAttribute()
+    protected function getCreatableRdnAttribute(): string
     {
         return 'dc';
     }
