@@ -46,19 +46,15 @@ class EntityService
         Storage::disk($diskName)->put($filePath, $content);
     }
 
-    public function deleteEntityMetadataFromFolder($fileName, $folderName): void
+    public function deleteEntityMetadataFromFolder($file, $folder): void
     {
-        $diskName = config('metaman.metadata');
-        $pathToFile = $folderName.'/'.$fileName;
+        $disk = config('metaman.metadata');
+        $path = $folder.'/'.$file;
 
-        if (Storage::disk($diskName)->exists($pathToFile)) {
-            try {
-                Storage::disk($diskName)->delete($pathToFile);
-            } catch (\Exception $e) {
-                throw new \InvalidArgumentException("Unable to delete file $pathToFile");
-            }
-        } else {
-            throw new \InvalidArgumentException("Unable to find file $pathToFile");
+        try {
+            Storage::disk($disk)->delete($path);
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException("Unable to delete non-existent file: $path");
         }
     }
 }

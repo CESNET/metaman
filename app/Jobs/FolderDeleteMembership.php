@@ -31,23 +31,13 @@ class FolderDeleteMembership implements ShouldQueue
         private Federation $federation
     ) {}
 
-    public function getFederation(): Federation
-    {
-        return $this->federation;
-    }
-
-    public function getEntity(): Entity
-    {
-        return $this->entity;
-    }
-
     /**
      * Execute the job.
      */
     public function handle(): void
     {
-        $federation = $this->getFederation();
-        $entity = $this->getEntity();
+        $federation = $this->federation;
+        $entity = $this->entity;
         $diskName = config('metaman.metadata');
 
         try {
