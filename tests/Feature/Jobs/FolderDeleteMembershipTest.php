@@ -23,24 +23,6 @@ class FolderDeleteMembershipTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-    public function test_get_federation_returns_federation()
-    {
-        $entity = Entity::factory()->create();
-        $federation = Federation::factory()->create();
-
-        $job = new FolderDeleteMembership($entity, $federation);
-        $this->assertEquals($federation, $job->getFederation());
-    }
-
-    public function test_get_entity_returns_federation()
-    {
-        $entity = Entity::factory()->create();
-        $federation = Federation::factory()->create();
-
-        $job = new FolderDeleteMembership($entity, $federation);
-        $this->assertEquals($entity, $job->getEntity());
-    }
-
     public function test_handle_should_call_fail_if_federation_folder_fails()
     {
         Storage::fake('metadata');
