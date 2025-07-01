@@ -118,7 +118,7 @@
                 {{ __('common.eduidcz_category') }}
             </dt>
             <dd class="sm:col-span-2">
-                <form class="inline-block" action="{{ route('entities.category.update', $entity) }}" method="post">
+                <form class="inline-block mb-4" action="{{ route('entities.category.update', $entity) }}" method="post">
                     @csrf
                     @method('patch')
                     <select class="text-sm rounded" name="category" id="category">
@@ -135,6 +135,9 @@
                             type="reset">{{ __('common.reset') }}</button>
                     <x-button>{{ __('common.update') }}</x-button>
                 </form>
+                @error('category')
+                    <div class="p-4 font-bold text-red-700 bg-red-100 border border-red-200 rounded shadow">{{ $message }}</div>
+                @enderror
             </dd>
         </div>
     @endif

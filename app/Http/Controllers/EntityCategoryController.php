@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Facades\CategoryTag;
+use App\Http\Requests\UpdateEntityCategory;
 use App\Models\Category;
 use App\Models\Entity;
 use App\Models\User;
@@ -16,18 +17,12 @@ class EntityCategoryController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function update(Entity $entity): RedirectResponse
+    public function update(UpdateEntityCategory $request, Entity $entity): RedirectResponse
     {
         $this->authorize('do-everything');
 
-        if (empty(request('category'))) {
-            return redirect()
-                ->back()
-                ->with('status', __('categories.no_category_selected'))
-                ->with('color', 'red');
-        }
-
-        $category = Category::findOrFail(request('category'));
+        $validated = $request->validated();
+        $category = Category::findOrFail($validated['category']);
 
         $xml_file = CategoryTag::delete($entity);
         if ($xml_file) {
@@ -38,13 +33,12 @@ class EntityCategoryController extends Controller
         $entity->xml_file = CategoryTag::create($entity);
         $entity->save();
 
+        if (! $entity->wasChanged('category_id')) {
+            return redirect()->back();
+        }
+
         $admins = User::activeAdmins()->select('id', 'email')->get();
         Notification::send($admins, new IdpCategoryChanged($entity, $category));
-
-        if (! $entity->wasChanged()) {
-            return redirect()
-                ->back();
-        }
 
         return redirect()
             ->route('entities.show', $entity)
