@@ -24,11 +24,7 @@ class EntityCategoryController extends Controller
         $validated = $request->validated();
         $category = Category::findOrFail($validated['category']);
 
-        $xml_file = CategoryTag::delete($entity);
-        if ($xml_file) {
-            $entity->xml_file = $xml_file;
-        }
-
+        $entity->xml_file = CategoryTag::delete($entity);
         $entity->category()->associate($category);
         $entity->xml_file = CategoryTag::create($entity);
         $entity->save();

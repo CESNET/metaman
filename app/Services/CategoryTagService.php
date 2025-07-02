@@ -26,9 +26,6 @@ class CategoryTagService extends TagService
         }
 
         $attributeValue = $this->hasAtributeValueInConfig($category);
-        if (! $attributeValue) {
-            return false;
-        }
 
         $xml_document = $entity->xml_file;
 
@@ -38,10 +35,8 @@ class CategoryTagService extends TagService
         $extensions = $this->getOrCreateExtensions($xPath, $dom, $rootTag, $mdURI);
         $entityAttributes = $this->getOrCreateEntityAttributes($xPath, $dom, $extensions, $mdattrURI);
         $attribute = $this->getOrCreateAttribute($xPath, $dom, $entityAttributes, $samlURI);
-
         $attributeValue = $dom->createElementNS($samlURI, 'saml:AttributeValue', $attributeValue);
         $attribute->appendChild($attributeValue);
-
         $dom->normalize();
 
         return $dom->saveXML();
@@ -55,9 +50,6 @@ class CategoryTagService extends TagService
         }
 
         $attributeValue = $this->hasAtributeValueInConfig($category);
-        if (! $attributeValue) {
-            return false;
-        }
 
         $dom = $this->createDOM($entity->xml_file);
         $xPath = $this->createXPath($dom);
@@ -70,28 +62,15 @@ class CategoryTagService extends TagService
 
     private static function hasCategoryInDatabase(Entity $entity): false|Category
     {
-        $category = $entity->category;
-        if (is_null($category)) {
-            return false;
-        } else {
-            return $category;
-        }
+        return $entity->category ?: false;
     }
 
-    private function hasAtributeValueInConfig(Category $category): false|string
+    private function hasAtributeValueInConfig(Category $category): string
     {
-        try {
-            $attributeValue = config("categories.$category->name");
-            if (is_null($attributeValue)) {
-                throw new Exception('No category attribute in config please update');
-            } else {
-                return $attributeValue;
-            }
-        } catch (Exception $exception) {
-            $this->failed($exception);
-        }
+        $attributeValue = config("categories.$category->name") ?? false;
+        throw_unless($attributeValue, new Exception('Missing category definition in config/categories.php.'));
 
-        return false;
+        return $attributeValue;
     }
 
     protected function getOrCreateAttribute(DOMXPath $xPath, \DOMDocument $dom, \DOMNode $entityAttributes, string $samlURI): \DOMNode|bool|\DOMElement|null
