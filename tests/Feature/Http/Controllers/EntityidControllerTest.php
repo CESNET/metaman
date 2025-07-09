@@ -23,9 +23,13 @@ class EntityidControllerTest extends TestCase
     #[Test]
     public function organization_not_found_returns_not_found_response(): void
     {
+        DirectoryEmulator::setup();
+
         $this
             ->get(route('api:entityid', ['ico' => '123']))
             ->assertNotFound();
+
+        DirectoryEmulator::tearDown();
     }
 
     #[Test]
