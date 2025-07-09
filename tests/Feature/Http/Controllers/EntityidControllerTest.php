@@ -40,6 +40,7 @@ class EntityidControllerTest extends TestCase
         DirectoryEmulator::setup();
 
         CesnetOrganization::create([
+            'dc' => 'Example',
             'ico' => $ico,
         ]);
 
