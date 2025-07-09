@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EntityidController;
 use App\Http\Controllers\StatisticController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,4 +15,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('entityid', EntityidController::class)->name('api:entityid');
 Route::get('statistics', [StatisticController::class, 'index'])->name('api:statistics');
