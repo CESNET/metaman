@@ -13,29 +13,23 @@ class FakeController extends Controller
 {
     public function store(Request $request): RedirectResponse
     {
-        if (App::environment(['local', 'testing'])) {
-            $user = User::findOrFail($request->id);
+        abort_if(App::environment('production'), 500, 'Not available in production environment!');
 
-            Auth::login($user);
-            Session::regenerate();
+        $user = User::findOrFail($request->id);
 
-            return redirect()->intended('/');
-        }
+        Auth::login($user);
+        Session::regenerate();
 
-        // use default case
-        return redirect('/');
+        return redirect()->intended('/');
     }
 
     public function destroy(): RedirectResponse
     {
-        if (App::environment(['local', 'testing'])) {
-            Auth::logout();
-            Session::flush();
+        abort_if(App::environment('production'), 500, 'Not available in production environment!');
 
-            return redirect('/');
-        }
+        Auth::logout();
+        Session::flush();
 
-        // use default case
         return redirect('/');
     }
 }
