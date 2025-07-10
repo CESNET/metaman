@@ -25,11 +25,8 @@ class EntityHfdController extends Controller
 
         $entity = DB::transaction(function () use ($entity) {
             $entity->hfd = ! $entity->hfd;
-            $xml_document = HfdTag::update($entity);
-            if ($xml_document) {
-                $entity->xml_file = $xml_document;
-                $entity->update();
-            }
+            $entity->xml_file = HfdTag::update($entity);
+            $entity->update();
 
             return $entity;
         });

@@ -42,36 +42,33 @@ class HfdTagService extends TagService
         return $dom->saveXML();
     }
 
-    public function delete(Entity $entity): false|string
+    public function delete(Entity $entity): string
     {
         $dom = $this->createDOM($entity->xml_file);
         $xPath = $this->createXPath($dom);
-        $this->deleteByXpath($xPath);
+        $xpathQuery = $this->buildXPathQuery($this->value);
+        $this->DeleteAllTags($xpathQuery, $xPath);
         $dom->normalize();
 
         return $dom->saveXML();
     }
 
-    public function deleteByXpath(DOMXPath $xPath): void
-    {
-        $xpathQuery = $this->buildXPathQuery($this->value);
-        $this->DeleteAllTags($xpathQuery, $xPath);
-    }
-
-    public function update(Entity $entity): false|string
+    public function update(Entity $entity): string
     {
         try {
             if ($entity->hfd) {
                 if (! $this->hasTagInDocument($entity->xml_file, $this->value)) {
                     return $this->create($entity);
                 }
+
+                return $entity->xml_file;
             } else {
                 if ($this->hasTagInDocument($entity->xml_file, $this->value)) {
                     return $this->delete($entity);
                 }
-            }
 
-            return false;
+                return $entity->xml_file;
+            }
         } catch (Exception $e) {
             Log::critical("Exception occurred in {$entity->id}}: {$e->getMessage()}");
             throw $e;
