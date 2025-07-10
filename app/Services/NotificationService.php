@@ -10,46 +10,38 @@ use App\Notifications\EntityDeletedFromHfd;
 use App\Notifications\EntityDeletedFromRs;
 use App\Notifications\EntityUpdated;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notification as NotificationsNotification;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Notification;
+use InvalidArgumentException;
 
 class NotificationService
 {
-    public static function sendModelNotification(Model $model, $notification): void
+    public static function sendModelNotification(Model $model, NotificationsNotification $notification): void
     {
-        if (! method_exists($model, 'operators')) {
-            throw new \InvalidArgumentException('The given model does not have an operators relationship.');
-        }
+        throw_unless(
+            method_exists($model, 'operators'),
+            InvalidArgumentException::class,
+            'The given model does not have an operators relationship.'
+        );
 
         self::sendOperatorNotification($model->operators, $notification);
     }
 
-    public static function sendOperatorNotification(Collection $operators, $notification): void
+    public static function sendOperatorNotification(Collection $operators, NotificationsNotification $notification): void
     {
-        if ($notification == null) {
-            return;
-        }
-
         $admins = User::activeAdmins()->select('id', 'email')->get();
-        $operatorIds = $operators->pluck('id');
-
-        $filteredAdmins = $admins->filter(function ($admin) use ($operatorIds) {
-            return ! $operatorIds->contains($admin->id);
-        });
 
         Notification::send($operators, $notification);
-        Notification::send($filteredAdmins, $notification);
+        Notification::send($admins->diff($operators), $notification);
     }
 
     private static function sendRsNotification(Entity $entity): bool
     {
         if ($entity->wasChanged('rs')) {
-
-            if ($entity->rs == 1) {
-                self::sendModelNotification($entity, new EntityAddedToRs($entity));
-            } else {
-                self::sendModelNotification($entity, new EntityDeletedFromRs($entity));
-            }
+            $entity->rs
+                ? self::sendModelNotification($entity, new EntityAddedToRs($entity))
+                : self::sendModelNotification($entity, new EntityDeletedFromRs($entity));
 
             return true;
         }
@@ -57,15 +49,12 @@ class NotificationService
         return false;
     }
 
-    private static function sendHfDNotification(Entity $entity): bool
+    private static function sendHfdNotification(Entity $entity): bool
     {
         if ($entity->wasChanged('hfd')) {
-
-            if ($entity->hfd) {
-                self::sendModelNotification($entity, new EntityAddedToHfd($entity));
-            } else {
-                self::sendModelNotification($entity, new EntityDeletedFromHfd($entity));
-            }
+            $entity->hfd
+                ? self::sendModelNotification($entity, new EntityAddedToHfd($entity))
+                : self::sendModelNotification($entity, new EntityDeletedFromHfd($entity));
 
             return true;
         }
@@ -75,7 +64,7 @@ class NotificationService
 
     public static function sendUpdateNotification(Entity $entity): void
     {
-        if (! self::sendRsNotification($entity) && ! self::sendHfDNotification($entity)) {
+        if (! self::sendRsNotification($entity) && ! self::sendHfdNotification($entity)) {
             self::sendModelNotification($entity, new EntityUpdated($entity));
         }
     }
