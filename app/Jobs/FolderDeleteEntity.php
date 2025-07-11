@@ -30,32 +30,23 @@ class FolderDeleteEntity implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    private int $entityId;
-
-    private array $federationsIDs;
-
-    private string $file;
-
-    public function __construct(int $entityId, array $federationsIDs, string $file)
-    {
-        $this->entityId = $entityId;
-        $this->federationsIDs = $federationsIDs;
-        $this->file = $file;
-    }
+    public function __construct(
+        private Entity $entity
+    ) {}
 
     public function getEntityId(): int
     {
-        return $this->entityId;
+        return $this->entity->id;
     }
 
     public function getFederationsIDs(): array
     {
-        return $this->federationsIDs;
+        return $this->entity->federations->pluck('id')->toArray();
     }
 
     public function getFile(): string
     {
-        return $this->file;
+        return $this->entity->file;
     }
 
     /**
@@ -104,8 +95,6 @@ class FolderDeleteEntity implements ShouldQueue
                     Log::warning("Lock not owned by current process or lock lost for key: $lockKey");
                 }
             }
-
         }
-
     }
 }

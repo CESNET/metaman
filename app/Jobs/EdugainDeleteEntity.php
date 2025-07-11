@@ -27,15 +27,12 @@ class EdugainDeleteEntity implements ShouldQueue
      */
     use EdugainTrait, HandlesJobsFailuresTrait;
 
-    private Entity $entity;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(Entity $entity)
-    {
-        $this->entity = $entity;
-    }
+    public function __construct(
+        private Entity $entity
+    ) {}
 
     public function getEntity(): Entity
     {
@@ -62,7 +59,7 @@ class EdugainDeleteEntity implements ShouldQueue
         try {
             $lock->block(config('constants.lock_constant'));
             EntityFacade::deleteEntityMetadataFromFolder($this->getEntity()->file, $folderName);
-            NotificationService::sendModelNotification($this->getEntity(), new EntityEdugainStatusChanged($this->getEntity()));
+            // NotificationService::sendModelNotification($this->getEntity(), new EntityEdugainStatusChanged($this->getEntity()));
 
             if ($lock->owner() === null) {
                 Log::warning("Lock owner is null for key: $lockKey");

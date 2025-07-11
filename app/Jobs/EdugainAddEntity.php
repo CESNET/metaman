@@ -23,15 +23,12 @@ class EdugainAddEntity implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use EdugainTrait, HandlesJobsFailuresTrait;
 
-    private Entity $entity;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(Entity $entity)
-    {
-        $this->entity = $entity;
-    }
+    public function __construct(
+        private Entity $entity
+    ) {}
 
     public function getEntity(): Entity
     {
@@ -59,7 +56,7 @@ class EdugainAddEntity implements ShouldQueue
             $lock->block(config('constants.lock_constant'));
             EntityFacade::saveEntityMetadataToFolder($this->getEntity()->id, $folderName);
 
-            NotificationService::sendModelNotification($this->getEntity(), new EntityEdugainStatusChanged($this->entity));
+            // NotificationService::sendModelNotification($this->getEntity(), new EntityEdugainStatusChanged($this->entity));
             if ($lock->owner() === null) {
                 Log::warning("Lock owner is null for key: $lockKey");
 

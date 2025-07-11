@@ -8,6 +8,7 @@ use App\Notifications\EntityAddedToHfd;
 use App\Notifications\EntityAddedToRs;
 use App\Notifications\EntityDeletedFromHfd;
 use App\Notifications\EntityDeletedFromRs;
+use App\Notifications\EntityEdugainStatusChanged;
 use App\Notifications\EntityUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notification as NotificationsNotification;
@@ -62,9 +63,24 @@ class NotificationService
         return false;
     }
 
+    private static function sendEdugainNotification(Entity $entity): bool
+    {
+        if ($entity->wasChanged('edugain')) {
+            self::sendModelNotification($entity, new EntityEdugainStatusChanged($entity));
+
+            return true;
+        }
+
+        return false;
+    }
+
     public static function sendUpdateNotification(Entity $entity): void
     {
-        if (! self::sendRsNotification($entity) && ! self::sendHfdNotification($entity)) {
+        if (
+            ! self::sendRsNotification($entity) &&
+            ! self::sendHfdNotification($entity) &&
+            ! self::sendEdugainNotification($entity)
+        ) {
             self::sendModelNotification($entity, new EntityUpdated($entity));
         }
     }
