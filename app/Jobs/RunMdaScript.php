@@ -21,18 +21,13 @@ class RunMdaScript implements ShouldQueue
 {
     use Dispatchable, HandlesJobsFailuresTrait, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $federationId;
-
-    public string $owner;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(int $federationId, string $owner)
-    {
-        $this->federationId = $federationId;
-        $this->owner = $owner;
-    }
+    public function __construct(
+        public int $federationId,
+        public string $owner
+    ) {}
 
     /**
      * Execute the job.

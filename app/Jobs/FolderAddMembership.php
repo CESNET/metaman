@@ -24,15 +24,12 @@ class FolderAddMembership implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HandlesJobsFailuresTrait;
 
-    private Membership $membership;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(Membership $membership)
-    {
-        $this->membership = $membership;
-    }
+    public function __construct(
+        private Membership $membership
+    ) {}
 
     public function getMembership(): Membership
     {
@@ -80,6 +77,5 @@ class FolderAddMembership implements ShouldQueue
                 Log::warning("Lock not owned by current process or lock lost for key: $lockKey");
             }
         }
-
     }
 }

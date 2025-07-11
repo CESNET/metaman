@@ -18,15 +18,12 @@ class RestoreFederation implements ShouldQueue
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HandlesJobsFailuresTrait;
 
-    public Membership $membership;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(Membership $membership)
-    {
-        $this->membership = $membership;
-    }
+    public function __construct(
+        public Membership $membership
+    ) {}
 
     /**
      * Execute the job.
@@ -42,12 +39,10 @@ class RestoreFederation implements ShouldQueue
             $federation = $this->membership->federation;
             $entity = $this->membership->entity;
             EntityFacade::saveMetadataToFederationFolder($entity->id, $federation->id);
-
         } catch (Exception $e) {
             $this->fail($e);
 
             return;
         }
-
     }
 }

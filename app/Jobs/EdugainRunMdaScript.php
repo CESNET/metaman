@@ -19,15 +19,12 @@ class EdugainRunMdaScript implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HandlesJobsFailuresTrait;
 
-    public string $owner;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(string $owner)
-    {
-        $this->owner = $owner;
-    }
+    public function __construct(
+        public string $owner
+    ) {}
 
     /**
      * Execute the job.

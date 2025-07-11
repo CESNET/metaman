@@ -30,15 +30,12 @@ class FolderAddEntity implements ShouldQueue
      */
     use HandlesJobsFailuresTrait;
 
-    private Entity $entity;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(Entity $entity)
-    {
-        $this->entity = $entity;
-    }
+    public function __construct(
+        private Entity $entity
+    ) {}
 
     public function getEntity(): Entity
     {
@@ -89,7 +86,6 @@ class FolderAddEntity implements ShouldQueue
                     return;
                 }
                 RunMdaScript::dispatch($federation->id, $lock->owner());
-
             } catch (Exception $e) {
                 $this->fail($e);
             } finally {
@@ -99,7 +95,6 @@ class FolderAddEntity implements ShouldQueue
                     Log::warning("Lock not owned by current process or lock lost for key: $lockKey");
                 }
             }
-
         }
     }
 
@@ -114,6 +109,7 @@ class FolderAddEntity implements ShouldQueue
     {
         return [
             (new WithoutOverlapping($this->getEntity()->id)
-        )];
+            ),
+        ];
     }
 }
