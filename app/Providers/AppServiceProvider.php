@@ -38,7 +38,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(CategoryTagService::class, function () {
             return new CategoryTagService;
         });
-
     }
 
     /**
@@ -52,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
             // Mail::alwaysTo('foo@example.org');
             Model::preventLazyLoading();
         }
+
         RateLimiter::for('mda-run-limit', function (RunMdaScript $job) {
             $pathToDirectory = FederationService::getFederationFolderById($job->federationId);
             $lockKey = 'directory-'.md5($pathToDirectory).'-lock';
@@ -59,7 +59,6 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(1)->by($lockKey);
         });
 
-        // AntiSpamFilter based on UserId
         RateLimiter::for('anti-ddos-limit', function () {
             $key = Auth::id();
 
@@ -68,13 +67,12 @@ class AppServiceProvider extends ServiceProvider
                 ->response(function () use ($key) {
                     Log::info('Rate limit exceeded, redirecting...');
                     $admins = User::activeAdmins()->select('id', 'email')->get();
-                    Notification::sendNow($admins, new TooManyRequests(User::find($key)));
+                    Notification::send($admins, new TooManyRequests(User::find($key)));
 
                     return redirect()->back()
                         ->with('status', __('notifications.too_many_requests_subject_notification'))
                         ->with('color', 'red');
                 });
         });
-
     }
 }

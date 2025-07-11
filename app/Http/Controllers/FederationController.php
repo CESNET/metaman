@@ -71,7 +71,7 @@ class FederationController extends Controller
         });
 
         $admins = User::activeAdmins()->select('id', 'email')->get();
-        Notification::sendNow($admins, new FederationRequested($federation));
+        Notification::send($admins, new FederationRequested($federation));
 
         return redirect('federations')
             ->with('status', __('federations.requested', ['name' => $federation->name]));
