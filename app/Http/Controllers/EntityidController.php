@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Ldap\CesnetOrganization;
 use App\Ldap\EduidczOrganization;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class EntityidController extends Controller
@@ -11,7 +12,7 @@ class EntityidController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request)
+    public function __invoke(Request $request): JsonResponse
     {
         abort_unless($request->ico, 400, 'Missing company ID.');
 
