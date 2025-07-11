@@ -3,17 +3,18 @@
 namespace App\Traits;
 
 use App\Mail\ExceptionOccured;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 trait HandlesJobsFailuresTrait
 {
-    public function failed(Throwable $exception)
+    public function failed(?Throwable $exception): void
     {
         Log::critical("Exception occurred in {$exception->getFile()} on line {$exception->getLine()}: {$exception->getMessage()}");
 
-        if (app()->environment() == 'production') {
+        if (App::environment('production')) {
             Log::channel('slack')->critical("Exception occurred in {$exception->getFile()} on line {$exception->getLine()}: {$exception->getMessage()}");
         }
 
