@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Cache;
 
 class StatisticController extends Controller
 {
-    public function index(): JsonResponse
+    /**
+     * Handle the incoming request.
+     */
+    public function __invoke(): JsonResponse
     {
         $cache_time = now('Europe/Prague')->addHour();
 

@@ -16,4 +16,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('entityid', EntityidController::class)->name('api:entityid');
-Route::get('statistics', [StatisticController::class, 'index'])->name('api:statistics');
+Route::get('statistics', StatisticController::class)->name('api:statistics');
