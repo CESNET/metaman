@@ -10,6 +10,7 @@ use App\Notifications\FederationRejected;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
 use PHPUnit\Framework\Attributes\Test;
@@ -194,7 +195,6 @@ class FederationControllerTest extends TestCase
 
         $this->assertEquals(1, $federation->entities()->count());
         $this->assertEquals(route('login'), url()->current());
-
     }
 
     #[Test]
@@ -394,6 +394,7 @@ class FederationControllerTest extends TestCase
     public function a_user_with_operator_permission_can_change_an_existing_federations_state()
     {
         Bus::fake();
+        Event::fake();
 
         $federation = Federation::factory()->create();
         $federation->operators()->attach(User::factory()->create());
@@ -502,7 +503,6 @@ class FederationControllerTest extends TestCase
         $federation->refresh();
         $this->assertEquals(1, $federation->entities()->count());
         $this->assertEquals(route('federations.entities.index', $federation), url()->current());
-
     }
 
     #[Test]
@@ -664,7 +664,6 @@ class FederationControllerTest extends TestCase
         $federation->refresh();
         $this->assertEquals(1, $federation->entities()->count());
         $this->assertEquals(route('federations.entities.index', $federation), url()->current());
-
     }
 
     #[Test]
@@ -891,6 +890,7 @@ class FederationControllerTest extends TestCase
     public function an_admin_can_change_an_existing_federations_state()
     {
         Bus::fake();
+        Event::fake();
 
         $admin = User::factory()->create(['admin' => true]);
         $federation = Federation::factory()->create();
@@ -1036,7 +1036,6 @@ class FederationControllerTest extends TestCase
         $federation->refresh();
         $this->assertEquals(1, $federation->entities()->count());
         $this->assertEquals(route('federations.entities.index', $federation), url()->current());
-
     }
 
     #[Test]
@@ -1105,6 +1104,7 @@ class FederationControllerTest extends TestCase
     public function an_admin_can_approve_a_new_federation_request()
     {
         Bus::fake();
+        Event::fake();
 
         $admin = User::factory()->create(['admin' => true]);
         $federation = Federation::factory()->create([
